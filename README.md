@@ -30,3 +30,7 @@ npm install
 # sync all accounts
 ./run sync
 ```
+
+### Media
+
+The app currently syncs media to `$HOME/fulcrum-media`. One day the media location will be configurable.
