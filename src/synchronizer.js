@@ -146,7 +146,6 @@ export default class Synchronizer {
     const body = results.body;
 
     if (results.statusCode !== 200) {
-      // console.log(account.organizationName.green, 'failed'.red, 'to download photos in', form.name.blue);
       console.log(account.organizationName.green, 'failed'.red, 'to download videos');
       return;
     }
@@ -162,11 +161,6 @@ export default class Synchronizer {
 
       await Client.download(task.original, file);
 
-      // console.log(format('%s downloaded photo in %s | %s | %s',
-      //                    account.organizationName.green,
-      //                    form.name.blue,
-      //                    task.access_key.cyan,
-      //                    filesize(task.file_size).red));
       console.log(format('%s downloaded video | %s | %s',
                          account.organizationName.green,
                          task.access_key.cyan,
@@ -209,13 +203,6 @@ export default class Synchronizer {
 
     const totalTime = new Date().getTime() - now.getTime();
 
-    // console.log(format('%s downloaded photos in %s | %s | %s | %s',
-    //                    account.organizationName.green,
-    //                    form.name.blue,
-    //                    format('page %s/%s', page, data.total_pages || 1).yellow,
-    //                    (totalFetchTime + 'ms').cyan + ' (api)'.red,
-    //                    (totalTime + 'ms').cyan + ' (db)'.red));
-
     console.log(format('%s downloaded videos | %s | %s | %s',
                        account.organizationName.green,
                        format('page %s/%s', page, data.total_pages || 1).yellow,
@@ -241,7 +228,6 @@ export default class Synchronizer {
     const body = results.body;
 
     if (results.statusCode !== 200) {
-      // console.log(account.organizationName.green, 'failed'.red, 'to download photos in', form.name.blue);
       console.log(account.organizationName.green, 'failed'.red, 'to download photos');
       return;
     }
@@ -257,11 +243,6 @@ export default class Synchronizer {
 
       await Client.download(task.original, file);
 
-      // console.log(format('%s downloaded photo in %s | %s | %s',
-      //                    account.organizationName.green,
-      //                    form.name.blue,
-      //                    task.access_key.cyan,
-      //                    filesize(task.file_size).red));
       console.log(format('%s downloaded photo | %s | %s',
                          account.organizationName.green,
                          task.access_key.cyan,
@@ -304,13 +285,6 @@ export default class Synchronizer {
 
     const totalTime = new Date().getTime() - now.getTime();
 
-    // console.log(format('%s downloaded photos in %s | %s | %s | %s',
-    //                    account.organizationName.green,
-    //                    form.name.blue,
-    //                    format('page %s/%s', page, data.total_pages || 1).yellow,
-    //                    (totalFetchTime + 'ms').cyan + ' (api)'.red,
-    //                    (totalTime + 'ms').cyan + ' (db)'.red));
-
     console.log(format('%s downloaded photos | %s | %s | %s',
                        account.organizationName.green,
                        format('page %s/%s', page, data.total_pages || 1).yellow,
@@ -327,12 +301,6 @@ export default class Synchronizer {
   }
 
   async syncRecordPage(account, form, page, total) {
-    // console.log(format('%s downloading records in %s (page %s/%s)',
-    //                    account.organizationName.green,
-    //                    form.name.blue,
-    //                    page,
-    //                    total || 1));
-
     const beginFetchTime = new Date();
 
     const results = await Client.getRecords(account, form, page);
