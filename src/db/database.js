@@ -5,7 +5,7 @@ import mkdirp from 'mkdirp';
 
 let instance = null;
 
-let dir = path.join('.', 'data')
+let dir = path.join('.', 'data');
 mkdirp.sync(dir);
 
 let options = {
