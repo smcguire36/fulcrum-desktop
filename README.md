@@ -1,8 +1,7 @@
 ## Fulcrum Sync
 
 Sync Fulcrum data to a local database. The local database is a complete API representation with search indexes and
-query tables. It also supports downloading all media files locally. It's intended to be the foundation for local/disconnected
-data synchronization and reporting.
+query tables. It also supports downloading all media files locally. It's intended to be the foundation for local/disconnected data synchronization and reporting.
 
 Goals:
 
