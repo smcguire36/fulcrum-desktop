@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron
 
 require('source-map-support').install();
 require('babel-register');
