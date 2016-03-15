@@ -58,8 +58,8 @@ export default class Synchronizer {
     // const recordTasks = forms.map((form) => self.syncRecords(account, form));
     // await Promise.all(recordTasks);
 
-    // await this.syncVideos(account, null);
-    // await this.syncPhotos(account, null);
+    await this.syncVideos(account, null);
+    await this.syncPhotos(account, null);
 
     for (const form of forms) {
       await new Promise((resolve, reject) => {
