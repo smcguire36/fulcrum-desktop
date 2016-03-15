@@ -31,6 +31,8 @@ function getUserHome() {
 const mediaPath = path.join(getUserHome(), 'Documents', 'fulcrum-media');
 
 mkdirp.sync(mediaPath);
+mkdirp.sync(path.join(mediaPath, 'videos'));
+mkdirp.sync(path.join(mediaPath, 'photos'));
 
 const MEDIA_CONCURRENCY = 5;
 
