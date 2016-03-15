@@ -54,10 +54,6 @@ export default class Synchronizer {
 
     const forms = await Form.findAll(account.db, {account_id: account.id}, 'name ASC');
 
-    // const self = this;
-    // const recordTasks = forms.map((form) => self.syncRecords(account, form));
-    // await Promise.all(recordTasks);
-
     await this.syncVideos(account, null);
     await this.syncPhotos(account, null);
 
