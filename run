@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
 require('source-map-support').install();
-require("babel-register");
+require('babel-register');
 require('./src/' + process.argv[2]);
