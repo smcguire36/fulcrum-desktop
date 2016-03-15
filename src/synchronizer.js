@@ -32,7 +32,7 @@ const mediaPath = path.join(getUserHome(), 'Documents', 'fulcrum-media');
 
 mkdirp.sync(mediaPath);
 
-const MEDIA_CONCURRENCY = 3;
+const MEDIA_CONCURRENCY = 5;
 
 const models = {
   Form: Form,
