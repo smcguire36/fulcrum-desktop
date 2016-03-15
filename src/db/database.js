@@ -1,11 +1,15 @@
 import {SQLite} from 'minidb';
 import Migrations from './migrations';
 import path from 'path';
+import mkdirp from 'mkdirp';
 
 let instance = null;
 
+let dir = path.join('.', 'data')
+mkdirp.sync(dir);
+
 let options = {
-  file: path.join('.', 'data', 'fulcrumapp.db'),
+  file: path.join(dir, 'fulcrumapp.db'),
   wal: true,
   autoVacuum: true,
   synchronous: 'off'
