@@ -15,5 +15,9 @@ This is very very very alpha at the moment.
 ### Sync
 
 ```sh
+# sync a specific account
 ./run sync 'Fulcrum Labs'
+
+# sync all accounts
+./run sync
 ```
