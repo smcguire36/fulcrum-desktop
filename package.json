@@ -41,7 +41,7 @@
     "electron-prebuilt": "^0.37.2",
     "eslint-plugin-react": "^4.2.2",
     "filesize": "^3.1.6",
-    "fulcrum-core": "fulcrumapp/fulcrum-core#sync-hax",
+    "fulcrum-core": "fulcrumapp/fulcrum-core#master",
     "fulcrum-schema": "fulcrumapp/fulcrum-schema#v2",
     "inquirer": "^0.11.0",
     "lodash": "^3.10.1",
