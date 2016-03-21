@@ -53,4 +53,4 @@ npm install
 
 ### Media
 
-The app currently syncs media to `$HOME/fulcrum-media`. One day the media location will be configurable.
+The app currently syncs media to `$HOME/Documents/fulcrum-media`. One day the media location will be configurable.
