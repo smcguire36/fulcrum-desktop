@@ -44,6 +44,9 @@ npm install
 # sync a specific account
 ./run sync 'Fulcrum Labs'
 
+# sync a specific account and form
+./run sync 'Fulcrum Labs' 'GeoFood'
+
 # sync all accounts
 ./run sync
 ```
