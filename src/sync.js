@@ -12,13 +12,13 @@ Promise.longStackTraces();
 
 let db = null;
 
-async function synchronize(name) {
+async function synchronize(organizationName, formName) {
   db = await database();
 
   const where = {};
 
-  if (name) {
-    where.organization_name = name;
+  if (organizationName) {
+    where.organization_name = organizationName;
   }
 
   const accounts = await Account.findAll(db, where);
@@ -32,7 +32,7 @@ async function synchronize(name) {
 
     await sqliteSource.load(db);
 
-    await Synchronizer.instance.run(account, dataSource);
+    await Synchronizer.instance.run(account, formName, dataSource);
   }
 }
 
@@ -44,7 +44,8 @@ function onerror(err) {
 }
 
 const organizationName = process.argv[3];
+const formName = process.argv[4];
 
-synchronize(organizationName).then(function(result) {
+synchronize(organizationName, formName).then(function(result) {
   db.close();
 }).catch(onerror);

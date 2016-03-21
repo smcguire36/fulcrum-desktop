@@ -34,7 +34,7 @@ mkdirp.sync(mediaPath);
 mkdirp.sync(path.join(mediaPath, 'videos'));
 mkdirp.sync(path.join(mediaPath, 'photos'));
 
-const MEDIA_CONCURRENCY = 5;
+const MEDIA_CONCURRENCY = 10;
 
 const models = {
   Form: Form,
@@ -47,22 +47,31 @@ const models = {
 };
 
 export default class Synchronizer {
-  async run(account, dataSource) {
+  async run(account, formName, dataSource) {
     await Promise.all([ this.syncObject('ChoiceList', 'choice_lists', account),
                         this.syncObject('ClassificationSet', 'classification_sets', account),
                         this.syncObject('Project', 'projects', account) ]);
 
     await this.syncObject('Form', 'forms', account);
 
-    const forms = await Form.findAll(account.db, {account_id: account.id}, 'name ASC');
+    const where = {
+      account_id: account.id
+    };
 
-    await this.syncVideos(account, null);
-    await this.syncPhotos(account, null);
+    if (formName) {
+      where.name = formName;
+    }
+
+    const forms = await Form.findAll(account.db, where, 'name ASC');
 
     for (const form of forms) {
+      await this.syncVideos(account, form);
+      await this.syncPhotos(account, form);
+
       await new Promise((resolve, reject) => {
         form.load(dataSource, resolve);
       });
+
       await this.syncRecords(account, form);
     }
   }
