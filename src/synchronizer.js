@@ -16,7 +16,7 @@ import ConcurrentQueue from './concurrent-queue';
 import filesize from 'filesize';
 import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
-import exif from 'exif';
+// import exif from 'exif';
 
 const {SchemaDiffer, Sqlite} = sqldiff;
 
