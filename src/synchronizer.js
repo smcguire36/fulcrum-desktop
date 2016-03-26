@@ -16,6 +16,7 @@ import ConcurrentQueue from './concurrent-queue';
 import filesize from 'filesize';
 import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
+import exif from 'exif';
 
 const {SchemaDiffer, Sqlite} = sqldiff;
 
@@ -249,10 +250,28 @@ export default class Synchronizer {
 
     let now = new Date();
 
+    // const extractExif = (filePath) => {
+    //   return new Promise((resolve, reject) => {
+    //     /* eslint-disable no-new */
+    //     new exif.ExifImage({image: filePath}, (err, exifData) => {
+    //     /* eslint-enable no-new */
+    //       console.log(exifData.gps);
+
+    //       if (err) {
+    //         reject(err);
+    //       } else {
+    //         resolve(exifData);
+    //       }
+    //     });
+    //   });
+    // };
+
     const queue = new ConcurrentQueue(async function (task) {
       const file = path.join(mediaPath, 'photos', task.access_key + '.jpg');
 
       await Client.download(task.original, file);
+
+      // await extractExif(file);
 
       console.log(format('%s downloaded photo | %s | %s',
                          account.organizationName.green,
