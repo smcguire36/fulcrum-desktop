@@ -59,11 +59,11 @@ async function setup() {
 
         const account = await Account.findOrCreate(db, contextAttributes);
 
-        account.organizationName = context.name;
-        account.firstName = user.first_name;
-        account.lastName = user.last_name;
-        account.email = user.email;
-        account.token = context.api_token;
+        account._organizationName = context.name;
+        account._firstName = user.first_name;
+        account._lastName = user.last_name;
+        account._email = user.email;
+        account._token = context.api_token;
 
         await account.save();
 

@@ -56,7 +56,7 @@ export default class Synchronizer {
     await this.syncObject('Form', 'forms', account);
 
     const where = {
-      account_id: account.id
+      account_id: account.rowID
     };
 
     if (formName) {
@@ -85,26 +85,25 @@ export default class Synchronizer {
     const data = JSON.parse(body);
 
     for (const attributes of data[key]) {
-      const object = await models[objectName].findOrCreate(account.db, {resource_id: attributes.id, account_id: account.id});
+      const object = await models[objectName].findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
 
       let oldForm = null;
 
-      if (object.id) {
+      if (object.isPersisted) {
         oldForm = {
-          id: object.resourceID,
-          row_id: object.id,
-          name: object.name,
+          id: object._id,
+          row_id: object.rowID,
+          name: object._name,
           elements: object.elements
         };
       }
 
       object.updateFromAPIAttributes(attributes);
-      object.accountID = account.id;
 
       await object.save();
 
       if (objectName === 'Form') {
-        const newForm = Object.assign({row_id: object.id}, {elements: object.elementsJSON});
+        const newForm = Object.assign({row_id: object.rowID}, {elements: object._elementsJSON});
 
         await this.updateFormTables(account, oldForm, newForm);
       }
@@ -127,11 +126,11 @@ export default class Synchronizer {
 
     const differ = new SchemaDiffer(oldSchema, newSchema);
 
-    const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.id + '_'});
+    const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.rowID + '_'});
 
     const generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
 
-    generator.tablePrefix = 'account_' + account.id + '_';
+    generator.tablePrefix = 'account_' + account.rowID + '_';
 
     const statements = generator.generate();
 
@@ -181,10 +180,9 @@ export default class Synchronizer {
 
     await db.transaction(async function () {
       for (const attributes of data.videos) {
-        const object = await models.Video.findOrCreate(account.db, {account_id: account.id, resource_id: attributes.access_key});
+        const object = await models.Video.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.access_key});
 
         object.updateFromAPIAttributes(attributes);
-        object.accountID = account.id;
 
         if (attributes.processed) {
           if (!object.isDownloaded) {
@@ -281,10 +279,9 @@ export default class Synchronizer {
 
     await db.transaction(async function () {
       for (const attributes of data.photos) {
-        const object = await models.Photo.findOrCreate(account.db, {account_id: account.id, resource_id: attributes.access_key});
+        const object = await models.Photo.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.access_key});
 
         object.updateFromAPIAttributes(attributes);
-        object.accountID = account.id;
 
         if (attributes.processed) {
           if (!object.isDownloaded) {
@@ -354,18 +351,17 @@ export default class Synchronizer {
 
     await db.transaction(async function () {
       for (const attributes of data.records) {
-        const object = await models.Record.findOrCreate(account.db, {account_id: account.id, resource_id: attributes.id});
+        const object = await models.Record.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.id});
 
         object.updateFromAPIAttributes(attributes);
-        object.accountID = account.id;
-        object.form = form;
-        object.formID = form.id;
+        object._form = form;
+        object._formRowID = form.rowID;
 
         if (attributes.project_id) {
           const project = await account.projectByResourceID(attributes.project_id);
 
           if (project) {
-            object.projectId = project.id;
+            object._projectRowID = project.rowID;
           }
         }
 

@@ -93,7 +93,7 @@ export default class Client {
     };
 
     if (form) {
-      options.qs.form_id = form.resourceID;
+      options.qs.form_id = form.id;
     }
 
     return await req(options);
@@ -111,7 +111,7 @@ export default class Client {
     };
 
     if (form) {
-      options.qs.form_id = form.resourceID;
+      options.qs.form_id = form.id;
     }
 
     return await req(options);
@@ -132,7 +132,7 @@ export default class Client {
     });
 
     options.qs = {
-      form_id: form.resourceID,
+      form_id: form.id,
       per_page: 1000,
       page: page
     };

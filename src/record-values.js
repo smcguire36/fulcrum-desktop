@@ -82,7 +82,7 @@ export default class RecordValues {
 
     for (const multipleValueItem of values) {
       const insertValues = Object.assign({}, {key: multipleValueItem.element.key, text_value: multipleValueItem.value},
-                                         {record_id: record.id, parent_resource_id: parentResourceId});
+                                         {record_id: record.rowID, parent_resource_id: parentResourceId});
 
       await db.insert(tableName, insertValues);
     }
@@ -120,8 +120,8 @@ export default class RecordValues {
   static systemColumnValuesForFeature(feature, parentFeature, record) {
     const values = {};
 
-    values.record_id = record.id;
-    values.record_resource_id = record.resourceID;
+    values.record_id = record.rowID;
+    values.record_resource_id = record.id;
 
     if (feature instanceof Record) {
       // TODO(zhm) projectID is busted probably
@@ -231,7 +231,7 @@ export default class RecordValues {
 
   static async deleteRowsForRecord(db, record, tableName) {
     // TODO(zhm) this needs to use an indexed column, but which is it?
-    await db.execute(format("DELETE FROM %s WHERE record_resource_id = '%s'", tableName, record.resourceID));
+    await db.execute(format("DELETE FROM %s WHERE record_resource_id = '%s'", tableName, record.id));
   }
 
   static async updateForAccount(account, progressCallback) {
@@ -312,14 +312,14 @@ export default class RecordValues {
   }
 
   static multipleValueTableNameWithForm(form) {
-    return format('account_%s_form_%s_values', form.accountID, form.id);
+    return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
   }
 
   static tableNameWithForm(form, repeatable) {
     if (repeatable == null) {
-      return format('account_%s_form_%s', form.accountID, form.id);
+      return format('account_%s_form_%s', form._accountRowID, form.rowID);
     }
 
-    return format('account_%s_form_%s_%s', form.accountID, form.id, repeatable.key);
+    return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
   }
 }

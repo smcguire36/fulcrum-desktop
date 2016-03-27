@@ -1,28 +1,19 @@
-import Base from './base';
+import { PersistentObject } from 'minidb';
+import { Project as ProjectBase } from 'fulcrum-core';
 
-export default class Project extends Base {
-  // constructor(db, attributes) {
-  //   this.initializePersistentObject(db, attributes);
-  // }
-
+export default class Project extends ProjectBase {
   static get tableName() {
     return 'projects';
   }
 
   static get columns() {
     return [
-      { name: 'accountID', column: 'account_id', type: 'integer', null: false },
-      { name: 'resourceID', column: 'resource_id', type: 'string', null: false },
+      { name: 'accountRowID', column: 'account_id', type: 'integer', null: false },
+      { name: 'id', column: 'resource_id', type: 'string', null: false },
       { name: 'name', column: 'name', type: 'string', null: false },
       { name: 'description', column: 'description', type: 'string' }
     ];
   }
-
-  updateFromAPIAttributes(attributes) {
-    this.resourceID = attributes.id;
-    this.name = attributes.name;
-    this.description = attributes.description;
-  }
 }
 
-Base.register(Project);
+PersistentObject.register(Project);

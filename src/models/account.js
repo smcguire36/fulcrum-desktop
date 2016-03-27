@@ -1,15 +1,15 @@
-import Base from './base';
+import { PersistentObject } from 'minidb';
 import Project from './project';
 import Form from './form';
 
-export default class Account extends Base {
+export default class Account {
   static get tableName() {
     return 'accounts';
   }
 
   static get columns() {
     return [
-      { name: 'userResourceID', column: 'user_resource_id', type: 'integer', null: false },
+      { name: 'userResourceID', column: 'user_resource_id', type: 'string', null: false },
       { name: 'organizationResourceID', column: 'organization_resource_id', type: 'string', null: false },
       { name: 'organizationName', column: 'organization_name', type: 'string', null: false },
       { name: 'email', column: 'email', type: 'string', null: false },
@@ -19,11 +19,37 @@ export default class Account extends Base {
     ];
   }
 
+  get userResourceID() {
+    return this._userResourceID;
+  }
+
+  get organizationResourceID() {
+    return this._organizationResourceID;
+  }
+
+  get organizationName() {
+    return this._organizationName;
+  }
+
+  get email() {
+    return this._email;
+  }
+
+  get firstName() {
+    return this._firstName;
+  }
+
+  get lastName() {
+    return this._lastName;
+  }
+
+  get token() {
+    return this._token;
+  }
+
   static findByUserAndOrganization(userID, organizationID, callback) {
-    return Base.findFirst(Account, {
-      user_resource_id: userID,
-      organization_resource_id: organizationID
-    }, callback);
+    return Account.findFirst({user_resource_id: userID,
+                              organization_resource_id: organizationID}, callback);
   }
 
   findForms(where) {
@@ -35,4 +61,4 @@ export default class Account extends Base {
   }
 }
 
-Base.register(Account);
+PersistentObject.register(Account);

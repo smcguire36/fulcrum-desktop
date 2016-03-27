@@ -23,33 +23,11 @@ export default class SQLiteDataSource {
     const map = {};
 
     for (const object of objects) {
-      map[object.resourceID] = object;
+      map[object.id] = object;
     }
 
     return map;
   }
-
-  // async findObject(id, type, cache) {
-  //   if (cache[id]) {
-  //     return cache[id];
-  //   }
-
-  //   cache[id] = type.findFirst(this.db, {resource_id: id});
-
-  //   return cache[id];
-  // }
-
-  // getChoiceList(id) {
-  //   return this.findObject(id, ChoiceList, this.choiceLists);
-  // }
-
-  // getClassificationSet(id) {
-  //   return this.findObject(id, ClassificationSet, this.classificationSets);
-  // }
-
-  // getForm(id) {
-  //   return this.findObject(id, Form, this.forms);
-  // }
 
   getChoiceList(id, callback) {
     return callback(null, this.choiceLists[id]);

@@ -1,14 +1,14 @@
-import Base from './base';
+import { PersistentObject } from 'minidb';
 
-export default class Photo extends Base {
+export default class Photo {
   static get tableName() {
     return 'photos';
   }
 
   static get columns() {
     return [
-      { name: 'accountID', column: 'account_id', type: 'integer', null: false },
-      { name: 'resourceID', column: 'resource_id', type: 'string', null: false },
+      { name: 'accountRowID', column: 'account_id', type: 'integer', null: false },
+      { name: 'id', column: 'resource_id', type: 'string', null: false },
       { name: 'exif', column: 'exif', type: 'json' },
       { name: 'filePath', column: 'file_path', type: 'string' },
       { name: 'isDownloaded', column: 'is_downloaded', type: 'boolean', null: false }
@@ -16,9 +16,17 @@ export default class Photo extends Base {
   }
 
   updateFromAPIAttributes(attributes) {
-    this.resourceID = attributes.access_key;
-    this.exif = attributes.exif;
+    this._id = attributes.access_key;
+    this._exif = attributes.exif;
+  }
+
+  get isDownloaded() {
+    return this._isDownloaded;
+  }
+
+  set isDownloaded(value) {
+    this._isDownloaded = !!value;
   }
 }
 
-Base.register(Photo);
+PersistentObject.register(Photo);
