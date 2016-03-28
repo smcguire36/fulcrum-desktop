@@ -16,6 +16,7 @@ import ConcurrentQueue from './concurrent-queue';
 import filesize from 'filesize';
 import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
+import RecordValues from './record-values';
 // import exif from 'exif';
 
 const {SchemaDiffer, Sqlite, Postgres} = sqldiff;
@@ -106,6 +107,13 @@ export default class Synchronizer {
         const newForm = Object.assign({row_id: object.rowID}, {elements: object._elementsJSON});
 
         await this.updateFormTables(account, oldForm, newForm);
+
+        await account.db.execute(format('DROP VIEW IF EXISTS %s',
+                                        account.db.ident(object.name)));
+
+        await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s',
+                                        account.db.ident(object.name),
+                                        RecordValues.tableNameWithForm(object)));
       }
     }
 
