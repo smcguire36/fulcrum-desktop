@@ -18,6 +18,7 @@ import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
 import RecordValues from './record-values';
 // import exif from 'exif';
+import Generator from './reports/generator';
 
 const {SchemaDiffer, Sqlite, Postgres} = sqldiff;
 
@@ -380,6 +381,12 @@ export default class Synchronizer {
         }
 
         await object.save();
+
+        // TODO(zhm) implement actual PDF output
+
+        // const generator = new Generator(record);
+
+        // generator.generate();
       }
     });
 
