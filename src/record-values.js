@@ -34,7 +34,7 @@ export default class RecordValues {
       tableName = this.tableNameWithForm(form, null);
     }
 
-    await db.insert(tableName, values, {});
+    await db.insert(tableName, values, {pk: 'id'});
   }
 
   static async insertChildFeaturesForFeature(db, form, feature, record) {
@@ -59,7 +59,7 @@ export default class RecordValues {
 
       let columnValue = formValue.columnValue;
 
-      if (_.isNumber(columnValue) || _.isString(columnValue)) {
+      if (_.isNumber(columnValue) || _.isString(columnValue) || _.isArray(columnValue)) {
         values['f' + formValue.element.key] = columnValue;
       } else if (columnValue) {
         Object.assign(values, columnValue);
@@ -84,7 +84,7 @@ export default class RecordValues {
       const insertValues = Object.assign({}, {key: multipleValueItem.element.key, text_value: multipleValueItem.value},
                                          {record_id: record.rowID, parent_resource_id: parentResourceId});
 
-      await db.insert(tableName, insertValues);
+      await db.insert(tableName, insertValues, {pk: 'id'});
     }
   }
 
@@ -162,14 +162,15 @@ export default class RecordValues {
       values.updated_at = feature.updatedAt.timeIntervalSince1970;
     }
 
+    values.created_at = feature.createdAt;
+    values.updated_at = feature.updatedAt;
+    values.version = feature.version;
+
     // TODO(zhm) bring this back
-    values.created_at = 1;
-    values.updated_at = 1;
-    values.version = 1;
-    values.created_by_id = 1;
-    values.updated_by_id = 1;
-    values.server_created_at = 1;
-    values.server_updated_at = 1;
+    values.created_by_id = -1;
+    values.updated_by_id = -1;
+    values.server_created_at = feature.createdAt;
+    values.server_updated_at = feature.updatedAt;
 
     return values;
   }

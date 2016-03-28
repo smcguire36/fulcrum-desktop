@@ -18,7 +18,7 @@ import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
 // import exif from 'exif';
 
-const {SchemaDiffer, Sqlite} = sqldiff;
+const {SchemaDiffer, Sqlite, Postgres} = sqldiff;
 
 require('colors');
 
@@ -126,9 +126,15 @@ export default class Synchronizer {
 
     const differ = new SchemaDiffer(oldSchema, newSchema);
 
-    const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.rowID + '_'});
+    let generator = null;
 
-    const generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
+    if (account.db.dialect === 'sqlite') {
+      const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.rowID + '_'});
+      generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
+    } else if (account.db.dialect === 'postgresql') {
+      const meta = new Metadata(differ, {quote: '"', prefix: 'account_' + account.rowID + '_'});
+      generator = new Postgres(differ, {afterTransform: meta.build.bind(meta)});
+    }
 
     generator.tablePrefix = 'account_' + account.rowID + '_';
 

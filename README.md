@@ -33,6 +33,12 @@ npm install
 
 ### Setup
 
+PostgreSQL:
+
+```
+./setup-postgres.sh
+```
+
 ```sh
 # authenticate your account
 ./run setup

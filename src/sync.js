@@ -4,6 +4,8 @@ import Promise from 'bluebird';
 import Synchronizer from './synchronizer';
 import Account from './models/account';
 import database from './db/database';
+import fs from 'fs';
+import path from 'path';
 
 import { DataSource } from 'fulcrum-core';
 import SQLiteDataSource from './sqlite-data-source';
@@ -12,8 +14,10 @@ Promise.longStackTraces();
 
 let db = null;
 
+const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json')).toString());
+
 async function synchronize(organizationName, formName) {
-  db = await database();
+  db = await database(config);
 
   const where = {};
 

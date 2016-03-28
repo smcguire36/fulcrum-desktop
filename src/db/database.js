@@ -1,26 +1,37 @@
-import {SQLite} from 'minidb';
+import { SQLite, Postgres } from 'minidb';
 import Migrations from './migrations';
 import path from 'path';
 import mkdirp from 'mkdirp';
 
 let instance = null;
 
-let dir = path.join('.', 'data');
+const dir = path.join('.', 'data');
+
 mkdirp.sync(dir);
 
-let options = {
+const sqliteOptions = {
   file: path.join(dir, 'fulcrumapp.db'),
   wal: true,
   autoVacuum: true,
   synchronous: 'off'
 };
 
-export default async function database() {
+const postgresOptions = {
+  db: 'dbname = fulcrumapp'
+};
+
+export default async function database(options) {
   if (instance) {
     return instance;
   }
 
-  instance = new SQLite(options);
+  if (options.type === 'SQLite') {
+    instance = new SQLite(sqliteOptions);
+  } else if (options.type === 'PostgreSQL') {
+    instance = new Postgres(postgresOptions);
+  } else {
+    throw new Error('unsupported database type: ' + options.type);
+  }
 
   const migrations = new Migrations(instance);
 

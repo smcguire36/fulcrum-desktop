@@ -2,6 +2,8 @@ import 'colors';
 import inquirer from 'inquirer';
 import Account from './models/account';
 import database from './db/database';
+import fs from 'fs';
+import path from 'path';
 
 import Client from './api/client';
 
@@ -24,6 +26,12 @@ const questions = [
     type: 'password',
     message: 'Enter your Fulcrum password',
     name: 'password'
+  }, {
+    type: 'list',
+    message: 'Select database type',
+    choices: ['SQLite', 'PostgreSQL'],
+    default: 'SQLite',
+    name: 'database'
   }
 ];
 
@@ -39,10 +47,15 @@ let db = null;
 async function setup() {
   let exit = false;
 
-  db = await database();
-
   while (!exit) {
     const answers = await prompt(questions);
+
+    const config = {type: answers.database};
+
+    fs.writeFileSync(path.join('data', 'config.json'), JSON.stringify(config, null, 2));
+
+    db = await database({type: answers.database});
+
     const results = await Client.authenticate(answers.email, answers.password);
     const response = results;
     const body = results.body;
@@ -85,12 +98,19 @@ async function setup() {
 }
 
 function onerror(err) {
-  console.log('ERROR!');
-  db.close();
+  console.log('ERROR!', err);
+
+  if (db) {
+    db.close();
+  }
+
   console.error(err.stack);
+
   throw err;
 }
 
 setup().then(function(result) {
-  db.close();
+  if (db) {
+    db.close();
+  }
 }).catch(onerror);

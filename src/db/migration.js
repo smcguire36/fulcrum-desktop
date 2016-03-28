@@ -10,7 +10,9 @@ export default class Migration {
   }
 
   async executeMigrationSQL(suffix) {
-    const fileName = './src/db/migrations/version_' + this.versionName + '.' + suffix + '.sql';
+    const dialect = '.' + this.db.dialect;
+
+    const fileName = './src/db/migrations/version_' + this.versionName + '.' + suffix + dialect + '.sql';
 
     const data = await readFile(fileName, { encoding: 'utf8' });
 
