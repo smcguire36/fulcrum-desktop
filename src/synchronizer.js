@@ -36,6 +36,8 @@ const mediaPath = path.join(getUserHome(), 'Documents', 'fulcrum-media');
 mkdirp.sync(mediaPath);
 mkdirp.sync(path.join(mediaPath, 'videos'));
 mkdirp.sync(path.join(mediaPath, 'photos'));
+mkdirp.sync(path.join(mediaPath, 'audio'));
+mkdirp.sync(path.join(mediaPath, 'reports'));
 
 const MEDIA_CONCURRENCY = 10;
 
@@ -364,6 +366,21 @@ export default class Synchronizer {
 
     // profiler.startProfiling('1', true);
 
+    const queue = new ConcurrentQueue(async function (task) {
+      const generator = new Generator(task.record);
+
+      const reportDirectory = path.join(mediaPath, 'reports', form.name);
+
+      mkdirp.sync(reportDirectory);
+
+      const result = await generator.generate(reportDirectory);
+
+      console.log(format('%s generated report | %s | %s',
+                         account.organizationName.green,
+                         path.basename(result.file).cyan,
+                         filesize(result.size).red));
+    }, MEDIA_CONCURRENCY);
+
     await db.transaction(async function () {
       for (const attributes of data.records) {
         const object = await models.Record.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.id});
@@ -382,11 +399,15 @@ export default class Synchronizer {
 
         await object.save();
 
-        // TODO(zhm) implement actual PDF output
+        queue.push({record: object}, function(err) {
+          if (err) {
+            console.log('ERROR Generating Report', err);
+            throw err;
+          }
 
-        // const generator = new Generator(record);
-
-        // generator.generate();
+          // object.isDownloaded = true;
+          // object.save();
+        });
       }
     });
 
@@ -403,6 +424,8 @@ export default class Synchronizer {
     //   fs.writeFileSync('profile1.cpuprofile', result);
     //   profile1.delete();
     // });
+
+    await queue.drain();
 
     console.log(format('%s downloaded records in %s | %s | %s | %s',
                        account.organizationName.green,

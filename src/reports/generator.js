@@ -1,7 +1,13 @@
 import ejs from 'ejs';
 import fs from 'fs';
+import mv from 'mv';
 import path from 'path';
 import { DateUtils } from 'fulcrum-core';
+import HtmlToPdf from './html-to-pdf';
+import Promise from 'bluebird';
+import sanitize from 'sanitize-filename';
+
+const move = Promise.promisify(mv);
 
 export default class Generator {
   constructor(record) {
@@ -12,7 +18,7 @@ export default class Generator {
     return fs.readFileSync(path.join(__dirname, 'template.ejs')).toString();
   }
 
-  async generate() {
+  async generate(directory) {
     const data = {
       DateUtils: DateUtils,
       record: this.record,
@@ -23,9 +29,23 @@ export default class Generator {
 
     const html = ejs.render(this.contentTemplate, data, options);
 
-    // fs.writeFileSync('report.html', html);
+    const topdf = new HtmlToPdf(html);
 
-    console.log(html);
+    const result = await topdf.run();
+
+    let outputPath = null;
+
+    if (result) {
+      const reportName = sanitize(this.record.displayValue || this.record.id);
+
+      outputPath = path.join(directory, reportName + '.pdf');
+
+      await move(result.file, outputPath);
+    }
+
+    await topdf.cleanup();
+
+    return {file: outputPath, size: result.size};
   }
 
   renderValues = (feature, renderFunction) => {
