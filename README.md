@@ -55,6 +55,9 @@ PostgreSQL:
 
 # sync all accounts
 ./run sync
+
+# sync and generate reports
+REPORTS=1 ./run sync 'Fulcrum Labs' 'GeoFood'
 ```
 
 ### Media

@@ -1,5 +1,4 @@
 import uuid from 'uuid';
-// import { format } from 'util';
 import _ from 'lodash';
 import fs from 'fs';
 import os from 'os';

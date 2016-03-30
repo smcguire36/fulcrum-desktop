@@ -399,15 +399,17 @@ export default class Synchronizer {
 
         await object.save();
 
-        queue.push({record: object}, function(err) {
-          if (err) {
-            console.log('ERROR Generating Report', err);
-            throw err;
-          }
+        if (process.env.REPORTS === '1') {
+          queue.push({record: object}, function(err) {
+            if (err) {
+              console.log('ERROR Generating Report', err);
+              throw err;
+            }
 
-          // object.isDownloaded = true;
-          // object.save();
-        });
+            // object.isDownloaded = true;
+            // object.save();
+          });
+        }
       }
     });
 
