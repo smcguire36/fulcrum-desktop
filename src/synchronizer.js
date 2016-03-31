@@ -114,7 +114,7 @@ export default class Synchronizer {
         await account.db.execute(format('DROP VIEW IF EXISTS %s',
                                         account.db.ident(object.name)));
 
-        await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s',
+        await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
                                         account.db.ident(object.name),
                                         RecordValues.tableNameWithForm(object)));
       }
