@@ -59,6 +59,8 @@ export default class Synchronizer {
 
     await this.syncObject('Form', 'forms', account);
 
+    await dataSource.source.load(account.db);
+
     const where = {
       account_id: account.rowID
     };
@@ -111,10 +113,10 @@ export default class Synchronizer {
       if (objectName === 'Form') {
         const newForm = Object.assign({row_id: object.rowID}, {elements: object._elementsJSON});
 
-        await this.updateFormTables(account, oldForm, newForm);
-
         await account.db.execute(format('DROP VIEW IF EXISTS %s',
                                         account.db.ident(object.name)));
+
+        await this.updateFormTables(account, oldForm, newForm);
 
         await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
                                         account.db.ident(object.name),
@@ -153,13 +155,11 @@ export default class Synchronizer {
 
     const statements = generator.generate();
 
-    await account.db.execute('BEGIN TRANSACTION');
-
-    for (const statement of statements) {
-      await account.db.execute(statement);
-    }
-
-    await account.db.execute('COMMIT');
+    await account.db.transaction(async (db) => {
+      for (const statement of statements) {
+        await db.execute(statement);
+      }
+    });
   }
 
   async syncVideos(account, form) {
@@ -197,9 +197,9 @@ export default class Synchronizer {
                          filesize(task.file_size).red));
     }, MEDIA_CONCURRENCY);
 
-    await db.transaction(async function () {
+    await db.transaction(async function (database) {
       for (const attributes of data.videos) {
-        const object = await models.Video.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.access_key});
+        const object = await models.Video.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
 
         object.updateFromAPIAttributes(attributes);
 
@@ -296,9 +296,9 @@ export default class Synchronizer {
                          filesize(task.file_size).red));
     }, MEDIA_CONCURRENCY);
 
-    await db.transaction(async function () {
+    await db.transaction(async function (database) {
       for (const attributes of data.photos) {
-        const object = await models.Photo.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.access_key});
+        const object = await models.Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
 
         object.updateFromAPIAttributes(attributes);
 
@@ -383,9 +383,9 @@ export default class Synchronizer {
                          filesize(result.size).red));
     }, MEDIA_CONCURRENCY);
 
-    await db.transaction(async function () {
+    await db.transaction(async function (database) {
       for (const attributes of data.records) {
-        const object = await models.Record.findOrCreate(account.db, {account_id: account.rowID, resource_id: attributes.id});
+        const object = await models.Record.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
 
         object.updateFromAPIAttributes(attributes);
         object._form = form;

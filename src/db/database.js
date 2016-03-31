@@ -20,6 +20,11 @@ const postgresOptions = {
   db: 'dbname = fulcrumapp'
 };
 
+Postgres.setNoticeProcessor((message) => {
+  // TODO(zhm) handle warnings on the connection
+  // console.warn(message);
+});
+
 export default async function database(options) {
   if (instance) {
     return instance;

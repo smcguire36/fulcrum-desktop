@@ -18,7 +18,7 @@ export default class Record extends RecordBase {
       { name: 'status', column: 'status', type: 'string' },
       { name: 'formRowID', column: 'form_id', type: 'integer' },
       { name: 'projectRowID', column: 'project_id', type: 'integer' },
-      { name: 'version', column: 'version', type: 'integer' },
+      { name: 'version', column: 'version', type: 'integer', null: false },
       { name: 'hasChanges', column: 'has_changes', type: 'boolean' },
       { name: 'indexText', column: 'index_text', type: 'string' }
     ];

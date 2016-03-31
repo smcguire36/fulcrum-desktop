@@ -78,7 +78,14 @@ export default class Client {
       url: this.urlForResource('projects')
     });
 
-    return await req(options);
+    try {
+      return await req(options);
+    } catch (ex) {
+      console.log(ex);
+      console.log(ex.code === 'ETIMEDOUT');
+      console.log(ex.connect === true);
+      throw ex;
+    }
   }
 
   async getPhotos(account, form, page) {

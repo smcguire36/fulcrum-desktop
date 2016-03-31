@@ -125,9 +125,9 @@ export default class RecordValues {
 
     if (feature instanceof Record) {
       // TODO(zhm) projectID is busted probably
-      if (record.projectID) {
-        values.project_id = record.projectID;
-      }
+      // if (record.projectID) {
+      //   values.project_id = record.project.rowID;
+      // }
 
       if (record.status) {
         values.status = record.status;

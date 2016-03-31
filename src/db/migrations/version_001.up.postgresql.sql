@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS accounts (
   description TEXT,
   token TEXT,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT accounts_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_accounts_user_organization
@@ -31,7 +32,8 @@ CREATE TABLE IF NOT EXISTS records (
   project_id bigint,
   version bigint,
   has_changes boolean,
-  index_text TEXT
+  index_text TEXT,
+  CONSTRAINT records_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_records_account_resource_id
@@ -47,7 +49,8 @@ CREATE TABLE IF NOT EXISTS memberships (
   user_id bigint NOT NULL,
   organization_id bigint NOT NULL,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT memberships_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_memberships_user_organization
@@ -61,7 +64,8 @@ CREATE TABLE IF NOT EXISTS choice_lists (
   name TEXT,
   description TEXT,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT choice_lists_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_choice_lists_account_resource_id
@@ -75,7 +79,8 @@ CREATE TABLE IF NOT EXISTS classification_sets (
   name TEXT,
   description TEXT,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT classification_sets_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_classification_sets_account_resource_id
@@ -88,7 +93,8 @@ CREATE TABLE IF NOT EXISTS projects (
   name TEXT,
   description TEXT,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT projects_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_projects_account_resource_id
@@ -104,7 +110,8 @@ CREATE TABLE IF NOT EXISTS forms (
   updated_at timestamp without time zone,
   title_field_keys TEXT,
   status_field TEXT,
-  elements TEXT
+  elements TEXT,
+  CONSTRAINT forms_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_forms_account_resource_id
@@ -118,7 +125,8 @@ CREATE TABLE IF NOT EXISTS photos (
   exif TEXT,
   is_downloaded boolean NOT NULL DEFAULT false,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT photos_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_photos_account_resource_id
@@ -132,7 +140,8 @@ CREATE TABLE IF NOT EXISTS videos (
   metadata TEXT,
   is_downloaded boolean NOT NULL DEFAULT false,
   created_at timestamp without time zone,
-  updated_at timestamp without time zone
+  updated_at timestamp without time zone,
+  CONSTRAINT videos_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_videos_account_resource_id
