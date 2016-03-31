@@ -70,8 +70,10 @@ export default class Synchronizer {
     const forms = await Form.findAll(account.db, where, 'name ASC');
 
     for (const form of forms) {
-      await this.syncVideos(account, form);
-      await this.syncPhotos(account, form);
+      if (process.env.MEDIA === '1') {
+        await this.syncVideos(account, form);
+        await this.syncPhotos(account, form);
+      }
 
       await new Promise((resolve, reject) => {
         form.load(dataSource, resolve);
