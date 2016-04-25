@@ -146,3 +146,16 @@ CREATE TABLE IF NOT EXISTS videos (
 
 CREATE UNIQUE INDEX idx_videos_account_resource_id
 ON videos (account_id, resource_id);
+
+CREATE OR REPLACE FUNCTION convert_to_float(input_value text)
+RETURNS FLOAT AS $$
+DECLARE float_value FLOAT DEFAULT NULL;
+BEGIN
+    BEGIN
+        float_value := input_value::float;
+    EXCEPTION WHEN OTHERS THEN
+        RETURN NULL;
+    END;
+RETURN float_value;
+END;
+$$ LANGUAGE plpgsql;
