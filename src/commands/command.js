@@ -67,8 +67,13 @@ export default class Command {
       await this.destroy();
     } catch (err) {
       console.error(err.stack);
+      // if (this.args.verbose) {
+      //   console.error(err.stack);
+      // } else {
+      //   console.error(err.message);
+      // }
+
       await this.destroy();
-      throw err;
     }
   }
 }
