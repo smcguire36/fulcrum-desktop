@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { DataSource } from 'fulcrum-core';
 import LocalDatabaseDataSource from '../local-database-data-source';
+import { Postgres } from 'minidb';
 
 Promise.longStackTraces();
 
@@ -19,6 +20,8 @@ export default class Command {
 
   async destroy() {
     await this._db.close();
+
+    Postgres.shutdown();
   }
 
   get db() {
@@ -64,7 +67,7 @@ export default class Command {
       await this.destroy();
     } catch (err) {
       console.error(err.stack);
-      this.db.close();
+      await this.destroy();
       throw err;
     }
   }
