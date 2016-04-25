@@ -11,10 +11,8 @@ import Promise from 'bluebird';
 
 Promise.longStackTraces();
 
-function prompt(questions, callback) {
-  return new Promise((resolve, reject) => {
-    inquirer.prompt(questions, resolve);
-  });
+function prompt(questions) {
+  return inquirer.prompt(questions);
 }
 
 const questions = [
