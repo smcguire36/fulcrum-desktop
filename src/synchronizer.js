@@ -102,7 +102,7 @@ export default class Synchronizer {
           id: object._id,
           row_id: object.rowID,
           name: object._name,
-          elements: object.elements
+          elements: object._elementsJSON
         };
       }
 
