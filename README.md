@@ -48,16 +48,10 @@ PostgreSQL:
 
 ```sh
 # sync a specific account
-./run sync 'Fulcrum Labs'
+./run sync --org 'Fulcrum Labs'
 
 # sync a specific account and form
-./run sync 'Fulcrum Labs' 'GeoFood'
-
-# sync all accounts
-./run sync
-
-# sync and generate reports
-REPORTS=1 ./run sync 'Fulcrum Labs' 'GeoFood'
+./run sync --org 'Fulcrum Labs' --form 'GeoFood'
 ```
 
 ### Media

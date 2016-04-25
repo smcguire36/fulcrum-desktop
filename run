@@ -2,4 +2,4 @@
 
 require('source-map-support').install();
 require('babel-register');
-require('./src/' + process.argv[2]);
+require('./src/commands/' + process.argv[2]);

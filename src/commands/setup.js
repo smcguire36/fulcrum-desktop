@@ -1,11 +1,11 @@
 import 'colors';
 import inquirer from 'inquirer';
-import Account from './models/account';
-import database from './db/database';
+import Account from '../models/account';
+import database from '../db/database';
 import fs from 'fs';
 import path from 'path';
 
-import Client from './api/client';
+import Client from '../api/client';
 
 import Promise from 'bluebird';
 
