@@ -1,24 +1,24 @@
-import Client from './api/Client';
-import Form from './models/form';
-import ChoiceList from './models/choice-list';
-import ClassificationSet from './models/classification-set';
-import Project from './models/project';
-import Record from './models/record';
-import Photo from './models/photo';
-import Video from './models/video';
+import Client from '../api/Client';
+import Form from '../models/form';
+import ChoiceList from '../models/choice-list';
+import ClassificationSet from '../models/classification-set';
+import Project from '../models/project';
+import Record from '../models/record';
+import Photo from '../models/photo';
+import Video from '../models/video';
 import {format} from 'util';
 import Schema from 'fulcrum-schema/dist/schema';
 import Metadata from 'fulcrum-schema/dist/metadata';
 import sqldiff from 'sqldiff';
 import V2 from 'fulcrum-schema/dist/schemas/postgres-query-v2';
 import path from 'path';
-import ConcurrentQueue from './concurrent-queue';
+import ConcurrentQueue from '../concurrent-queue';
 import filesize from 'filesize';
 import Promise from 'bluebird';
 import mkdirp from 'mkdirp';
-import RecordValues from './record-values';
+import RecordValues from '../record-values';
 // import exif from 'exif';
-import Generator from './reports/generator';
+import Generator from '../reports/generator';
 
 import { Database } from 'minidb';
 

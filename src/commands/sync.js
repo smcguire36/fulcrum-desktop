@@ -1,5 +1,5 @@
 import Command from './command';
-import Synchronizer from '../synchronizer';
+import Synchronizer from '../sync/synchronizer';
 
 class Sync extends Command {
   async run() {
