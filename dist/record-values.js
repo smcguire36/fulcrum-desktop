@@ -1,9 +1,28 @@
-import { format } from 'util';
-import _ from 'lodash';
-import { Record, RepeatableItemValue } from 'fulcrum-core';
-import pgformat from 'pg-format';
+'use strict';
 
-export default class RecordValues {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _util = require('util');
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _fulcrumCore = require('fulcrum-core');
+
+var _pgFormat = require('pg-format');
+
+var _pgFormat2 = _interopRequireDefault(_pgFormat);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import {format} from 'util';
+// import _ from 'lodash';
+// import {Record, RepeatableItemValue} from 'fulcrum-core';
+
+class RecordValues {
   static updateForRecordStatements(db, record) {
     const statements = [];
 
@@ -32,14 +51,14 @@ export default class RecordValues {
 
     let tableName = null;
 
-    if (feature instanceof RepeatableItemValue) {
+    if (feature instanceof _fulcrumCore.RepeatableItemValue) {
       // TODO(zhm) add public interface for accessing _element, like `get repeatableElement()`
       tableName = this.tableNameWithForm(form, feature._element);
     } else {
       tableName = this.tableNameWithForm(form, null);
     }
 
-    return db.insertStatement(tableName, values, {pk: 'id'});
+    return db.insertStatement(tableName, values, { pk: 'id' });
   }
 
   static insertChildFeaturesForFeatureStatements(db, form, feature, record) {
@@ -68,9 +87,9 @@ export default class RecordValues {
 
       let columnValue = formValue.columnValue;
 
-      if (_.isNumber(columnValue) || _.isString(columnValue) || _.isArray(columnValue) || _.isDate(columnValue)) {
+      if (_lodash2.default.isNumber(columnValue) || _lodash2.default.isString(columnValue) || _lodash2.default.isArray(columnValue) || _lodash2.default.isDate(columnValue)) {
         // don't allow dates greater than 9999, yes - they exist in the wild
-        if (_.isDate(columnValue) && columnValue.getFullYear() > 9999) {
+        if (_lodash2.default.isDate(columnValue) && columnValue.getFullYear() > 9999) {
           columnValue = null;
         }
 
@@ -92,15 +111,14 @@ export default class RecordValues {
 
     let parentResourceId = null;
 
-    if (feature instanceof RepeatableItemValue) {
+    if (feature instanceof _fulcrumCore.RepeatableItemValue) {
       parentResourceId = feature.id;
     }
 
     for (const multipleValueItem of values) {
-      const insertValues = Object.assign({}, {key: multipleValueItem.element.key, text_value: multipleValueItem.value},
-                                         {record_id: record.rowID, record_resource_id: record.id, parent_resource_id: parentResourceId});
+      const insertValues = Object.assign({}, { key: multipleValueItem.element.key, text_value: multipleValueItem.value }, { record_id: record.rowID, record_resource_id: record.id, parent_resource_id: parentResourceId });
 
-      statements.push(db.insertStatement(tableName, insertValues, {pk: 'id'}));
+      statements.push(db.insertStatement(tableName, insertValues, { pk: 'id' }));
     }
 
     return statements;
@@ -145,7 +163,7 @@ export default class RecordValues {
     values.record_id = record.rowID;
     values.record_resource_id = record.id;
 
-    if (feature instanceof Record) {
+    if (feature instanceof _fulcrumCore.Record) {
       if (record._projectRowID) {
         values.project_id = record._projectRowID;
         values.project_resource_id = record.projectID;
@@ -188,7 +206,7 @@ export default class RecordValues {
       values.course = record.course;
       values.vertical_accuracy = record.verticalAccuracy;
       values.horizontal_accuracy = record.horizontalAccuracy;
-    } else if (feature instanceof RepeatableItemValue) {
+    } else if (feature instanceof _fulcrumCore.RepeatableItemValue) {
       values.resource_id = feature.id;
       values.index = feature.index;
       values.parent_resource_id = parentFeature.id;
@@ -294,7 +312,7 @@ export default class RecordValues {
   }
 
   static deleteRowsForRecordStatement(db, record, tableName) {
-    return db.deleteStatement(tableName, {record_resource_id: record.id});
+    return db.deleteStatement(tableName, { record_resource_id: record.id });
   }
 
   static deleteRowsStatement(db, tableName) {
@@ -346,14 +364,34 @@ export default class RecordValues {
   }
 
   static multipleValueTableNameWithForm(form) {
-    return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
+    return (0, _util.format)('account_%s_form_%s_values', form._accountRowID, form.rowID);
+    // return format('form_%s_values', form.rowID);
   }
 
   static tableNameWithForm(form, repeatable) {
     if (repeatable == null) {
-      return format('account_%s_form_%s', form._accountRowID, form.rowID);
+      return (0, _util.format)('account_%s_form_%s', form._accountRowID, form.rowID);
     }
 
-    return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+    return (0, _util.format)('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+    // if (repeatable == null) {
+    //   return format('form_%s', form.rowID);
+    // }
+
+    // return format('form_%s_%s', form.rowID, repeatable.key);
   }
+
+  // static multipleValueTableNameWithForm(form) {
+  //   return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
+  // }
+
+  // static tableNameWithForm(form, repeatable) {
+  //   if (repeatable == null) {
+  //     return format('account_%s_form_%s', form._accountRowID, form.rowID);
+  //   }
+
+  //   return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+  // }
 }
+exports.default = RecordValues;
+//# sourceMappingURL=record-values.js.map
