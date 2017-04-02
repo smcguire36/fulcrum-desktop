@@ -20,6 +20,10 @@ import RecordValues from './record-values';
 // import exif from 'exif';
 import Generator from './reports/generator';
 
+import { Database } from 'minidb';
+
+// Database.debug = true;
+
 const {SchemaDiffer, Sqlite, Postgres} = sqldiff;
 
 require('colors');
@@ -51,11 +55,17 @@ const models = {
   Video: Video
 };
 
+const scrub = (string) => string.replace(/\0/g, '');
+
 export default class Synchronizer {
   async run(account, formName, dataSource) {
-    await Promise.all([ this.syncObject('ChoiceList', 'choice_lists', account),
-                        this.syncObject('ClassificationSet', 'classification_sets', account),
-                        this.syncObject('Project', 'projects', account) ]);
+    // await Promise.all([ this.syncObject('ChoiceList', 'choice_lists', account),
+    //                     this.syncObject('ClassificationSet', 'classification_sets', account),
+    //                     this.syncObject('Project', 'projects', account) ]);
+
+    await this.syncObject('ChoiceList', 'choice_lists', account);
+    await this.syncObject('ClassificationSet', 'classification_sets', account);
+    await this.syncObject('Project', 'projects', account);
 
     await this.syncObject('Form', 'forms', account);
 
@@ -94,7 +104,6 @@ export default class Synchronizer {
 
     for (const attributes of data[key]) {
       const object = await models[objectName].findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
-
       let oldForm = null;
 
       if (object.isPersisted) {
@@ -111,7 +120,9 @@ export default class Synchronizer {
       await object.save();
 
       if (objectName === 'Form') {
-        const newForm = Object.assign({row_id: object.rowID}, {elements: object._elementsJSON});
+        const newForm = {row_id: object.rowID,
+                         name: object._name,
+                         elements: object._elementsJSON};
 
         await account.db.execute(format('DROP VIEW IF EXISTS %s',
                                         account.db.ident(object.name)));
@@ -144,11 +155,13 @@ export default class Synchronizer {
     let generator = null;
 
     if (account.db.dialect === 'sqlite') {
-      const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.rowID + '_'});
-      generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
+      // const meta = new Metadata(differ, {quote: '`', prefix: 'account_' + account.rowID + '_'});
+      // generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
+      generator = new Sqlite(differ, {afterTransform: null});
     } else if (account.db.dialect === 'postgresql') {
-      const meta = new Metadata(differ, {quote: '"', prefix: 'account_' + account.rowID + '_'});
-      generator = new Postgres(differ, {afterTransform: meta.build.bind(meta)});
+      // const meta = new Metadata(differ, {quote: '"', prefix: 'account_' + account.rowID + '_'});
+      // generator = new Postgres(differ, {afterTransform: meta.build.bind(meta)});
+      generator = new Postgres(differ, {afterTransform: null});
     }
 
     generator.tablePrefix = 'account_' + account.rowID + '_';
@@ -343,13 +356,14 @@ export default class Synchronizer {
   }
 
   async syncRecords(account, form) {
-    return this.syncRecordPage(account, form, 1);
+    return this.syncRecordPage(account, form, 1, null, form._lastSync);
   }
 
-  async syncRecordPage(account, form, page, total) {
+  async syncRecordPage(account, form, page, total, lastSync) {
     const beginFetchTime = new Date();
 
-    const results = await Client.getRecords(account, form, page);
+    const results = lastSync == null ? (await Client.getRecords(account, form, page))
+                                     : (await Client.getRecordsHistory(account, form, page, lastSync))
 
     const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
 
@@ -383,39 +397,56 @@ export default class Synchronizer {
                          filesize(result.size).red));
     }, MEDIA_CONCURRENCY);
 
+    let count = 0;
+
     await db.transaction(async function (database) {
       for (const attributes of data.records) {
         const object = await models.Record.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
 
-        object.updateFromAPIAttributes(attributes);
-        object._form = form;
-        object._formRowID = form.rowID;
+        if (attributes.history_change_type === 'd') {
+          if (object) {
+            object._form = form;
+            object._formRowID = form.rowID;
 
-        if (attributes.project_id) {
-          const project = await account.projectByResourceID(attributes.project_id);
-
-          if (project) {
-            object._projectRowID = project.rowID;
+            await object.delete();
           }
-        }
+        } else {
 
-        await object.save();
+          object.updateFromAPIAttributes(attributes);
+          object._form = form;
+          object._formRowID = form.rowID;
 
-        if (process.env.REPORTS === '1') {
-          queue.push({record: object}, function(err) {
-            if (err) {
-              console.log('ERROR Generating Report', err);
-              throw err;
+          form._lastSync = object.updatedAt;
+
+          if (attributes.project_id) {
+            const project = await account.projectByResourceID(attributes.project_id);
+
+            if (project) {
+              object._projectRowID = project.rowID;
             }
+          }
 
-            // object.isDownloaded = true;
-            // object.save();
-          });
+          await object.save();
+
+          if (process.env.REPORTS === '1') {
+            queue.push({record: object}, function(err) {
+              if (err) {
+                console.log('ERROR Generating Report', err);
+                throw err;
+              }
+
+              // object.isDownloaded = true;
+              // object.save();
+            });
+          }
         }
       }
     });
 
     const totalTime = new Date().getTime() - now.getTime();
+
+    // update the lastSync date
+    await form.save();
 
     // var profile1 = profiler.stopProfiling();
 
@@ -439,7 +470,7 @@ export default class Synchronizer {
                        (totalTime + 'ms').cyan + ' (db)'.red));
 
     if (data.total_pages > page) {
-      await this.syncRecordPage(account, form, page + 1, data.total_pages);
+      await this.syncRecordPage(account, form, page + 1, data.total_pages, lastSync);
     }
   }
 }

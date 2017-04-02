@@ -25,11 +25,19 @@ export default class Record extends RecordBase {
   }
 
   async afterSave(options) {
-    await RecordValues.updateForRecord(this);
+    const statements = RecordValues.updateForRecordStatements(this.db, this);
+
+    await this.db.execute(statements.map(o => o.sql).join('\n'));
   }
 
   async beforeSave(options) {
     this.indexText = this.formValues.searchableValue;
+  }
+
+  async beforeDelete(options) {
+    const statements = RecordValues.deleteForRecordStatements(this.db, this, this.form);
+
+    await this.db.execute(statements.map(o => o.sql).join('\n'));
   }
 
   getForm() {

@@ -31,7 +31,7 @@ export default async function database(options) {
   }
 
   if (options.type === 'SQLite') {
-    instance = new SQLite(sqliteOptions);
+    instance = await SQLite.open(sqliteOptions);
   } else if (options.type === 'PostgreSQL') {
     instance = new Postgres(postgresOptions);
   } else {
@@ -39,8 +39,6 @@ export default async function database(options) {
   }
 
   const migrations = new Migrations(instance);
-
-  await instance.open();
 
   await migrations.migrate();
 

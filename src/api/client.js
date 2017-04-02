@@ -3,7 +3,8 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import fs from 'fs';
 
-const req = Promise.promisify(request);
+const reqPromise = Promise.promisify(request);
+const req = (options) => reqPromise({forever: true, ...options});
 
 const defaultOptions = {
   headers: {
@@ -14,8 +15,9 @@ const defaultOptions = {
 
 // const baseURL = 'http://localhost:3000/api/v2/';
 const baseURL = 'https://api.fulcrumapp.com/api/v2/';
+// const baseURL = 'https://edge.fulcrumapp.com/api/v2/';
 
-export default class Client {
+class Client {
   urlForResource(resource) {
     return '' + baseURL + resource;
   }
@@ -142,6 +144,21 @@ export default class Client {
       form_id: form.id,
       per_page: 1000,
       page: page
+    };
+
+    return await req(options);
+  }
+
+  async getRecordsHistory(account, form, page, lastSync) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('records/history')
+    });
+
+    options.qs = {
+      form_id: form.id,
+      per_page: 1000,
+      page: page,
+      updated_since: lastSync ? lastSync.getTime() / 1000 : 0
     };
 
     return await req(options);

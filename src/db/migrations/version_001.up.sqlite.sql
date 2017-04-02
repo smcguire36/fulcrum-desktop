@@ -122,7 +122,8 @@ CREATE TABLE IF NOT EXISTS forms (
   updated_at INTEGER,
   title_field_keys TEXT,
   status_field TEXT,
-  elements TEXT
+  elements TEXT,
+  last_sync REAL
 );
 
 CREATE UNIQUE INDEX idx_forms_account_resource_id
@@ -155,3 +156,45 @@ CREATE TABLE IF NOT EXISTS videos (
 
 CREATE UNIQUE INDEX idx_videos_account_resource_id
 ON videos (account_id, resource_id);
+
+
+
+/* CREATE TABLE IF NOT EXISTS "tables" ( */
+/*   name text, */
+/*   alias text, */
+/*   type text, */
+/*   parent text, */
+/*   form_id text, */
+/*   field text, */
+/*   field_type text, */
+/*   data_name text */
+/* ); */
+
+/* CREATE VIEW IF NOT EXISTS "tables_view" AS */
+/* SELECT alias AS name, type, parent, form_id, field, field_type, data_name FROM "tables"; */
+
+/* CREATE INDEX idx_tables_name ON "tables" (name); */
+
+/* CREATE INDEX idx_tables_alias ON "tables" (alias); */
+
+/* CREATE TABLE IF NOT EXISTS "columns" ( */
+/*   table_name text, */
+/*   table_alias text, */
+/*   name text, */
+/*   ordinal INTEGER, */
+/*   type text, */
+/*   nullable INTEGER, */
+/*   form_id text, */
+/*   field text, */
+/*   field_type text, */
+/*   data_name text, */
+/*   part text, */
+/*   data text */
+/* ); */
+
+/* CREATE VIEW IF NOT EXISTS "columns_view" AS */
+/* SELECT table_alias AS table_name, name, ordinal, type, nullable, form_id, field, field_type, data_name, part FROM "columns"; */
+
+/* CREATE INDEX idx_columns_table_name ON "columns" (table_name); */
+
+/* CREATE INDEX idx_columns_table_alias ON "columns" (table_alias); */

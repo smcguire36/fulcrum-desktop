@@ -1,3 +1,10 @@
 {
-  "presets": ["es2015-node5", "stage-1"]
+  "presets": [
+    "stage-1",
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ]
 }

@@ -14,7 +14,8 @@ export default class Form extends FormBase {
       { name: 'description', column: 'description', type: 'string' },
       { name: 'elementsJSON', column: 'elements', type: 'json', null: false },
       { name: 'titleFieldKeysJSON', column: 'title_field_keys', type: 'json' },
-      { name: 'statusFieldJSON', column: 'status_field', type: 'json' }
+      { name: 'statusFieldJSON', column: 'status_field', type: 'json' },
+      { name: 'lastSync', column: 'last_sync', type: 'datetime' }
     ];
   }
 }

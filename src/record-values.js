@@ -1,25 +1,34 @@
-import {format} from 'util';
+// import {format} from 'util';
+// import _ from 'lodash';
+// import {Record, RepeatableItemValue} from 'fulcrum-core';
+
+import { format } from 'util';
 import _ from 'lodash';
-import {Record, RepeatableItemValue} from 'fulcrum-core';
+import { Record, RepeatableItemValue } from 'fulcrum-core';
+import pgformat from 'pg-format';
 
 export default class RecordValues {
-  static async updateForRecord(record) {
-    await this.deleteForRecord(record);
-    await this.insertForRecord(record);
+  static updateForRecordStatements(db, record) {
+    const statements = [];
+
+    statements.push.apply(statements, this.deleteForRecordStatements(db, record, record.form));
+    statements.push.apply(statements, this.insertForRecordStatements(db, record, record.form));
+
+    return statements;
   }
 
-  static async insertForRecord(record) {
-    const {db} = record;
+  static insertForRecordStatements(db, record, form) {
+    const statements = [];
 
-    const form = await record.getForm();
+    statements.push(this.insertRowForFeatureStatement(db, form, record, null, record));
+    statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, record, record));
+    statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, record, record));
+    statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, record, record));
 
-    await this.insertRowForFeature(db, form, record, null, record);
-    await this.insertChildFeaturesForFeature(db, form, record, record);
-    await this.insertMultipleValuesForFeature(db, form, record, record);
-    await this.insertChildMultipleValuesForFeature(db, form, record, record);
+    return statements;
   }
 
-  static async insertRowForFeature(db, form, feature, parentFeature, record) {
+  static insertRowForFeatureStatement(db, form, feature, parentFeature, record) {
     const values = this.columnValuesForFeature(feature);
     const systemValues = this.systemColumnValuesForFeature(feature, parentFeature, record);
 
@@ -34,19 +43,23 @@ export default class RecordValues {
       tableName = this.tableNameWithForm(form, null);
     }
 
-    await db.insert(tableName, values, {pk: 'id'});
+    return db.insertStatement(tableName, values, {pk: 'id'});
   }
 
-  static async insertChildFeaturesForFeature(db, form, feature, record) {
+  static insertChildFeaturesForFeatureStatements(db, form, feature, record) {
+    const statements = [];
+
     for (const formValue of feature.formValues.all) {
       if (formValue.element.isRepeatableElement) {
         // TODO(zhm) add public interface for _items
         for (const repeatableItem of formValue._items) {
-          await this.insertRowForFeature(db, form, repeatableItem, feature, record);
-          await this.insertChildFeaturesForFeature(db, form, repeatableItem, record);
+          statements.push(this.insertRowForFeatureStatement(db, form, repeatableItem, feature, record));
+          statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, repeatableItem, record));
         }
       }
     }
+
+    return statements;
   }
 
   static columnValuesForFeature(feature) {
@@ -59,8 +72,13 @@ export default class RecordValues {
 
       let columnValue = formValue.columnValue;
 
-      if (_.isNumber(columnValue) || _.isString(columnValue) || _.isArray(columnValue)) {
-        values['f' + formValue.element.key] = columnValue;
+      if (_.isNumber(columnValue) || _.isString(columnValue) || _.isArray(columnValue) || _.isDate(columnValue)) {
+        // don't allow dates greater than 9999, yes - they exist in the wild
+        if (_.isDate(columnValue) && columnValue.getFullYear() > 9999) {
+          columnValue = null;
+        }
+
+        values['f' + formValue.element.key.toLowerCase()] = columnValue;
       } else if (columnValue) {
         Object.assign(values, columnValue);
       }
@@ -69,7 +87,9 @@ export default class RecordValues {
     return values;
   }
 
-  static async insertMultipleValuesForFeature(db, form, feature, record) {
+  static insertMultipleValuesForFeatureStatements(db, form, feature, record) {
+    const statements = [];
+
     const values = this.multipleValuesForFeature(feature, record);
 
     const tableName = this.multipleValueTableNameWithForm(form);
@@ -82,21 +102,27 @@ export default class RecordValues {
 
     for (const multipleValueItem of values) {
       const insertValues = Object.assign({}, {key: multipleValueItem.element.key, text_value: multipleValueItem.value},
-                                         {record_id: record.rowID, parent_resource_id: parentResourceId});
+                                         {record_id: record.rowID, record_resource_id: record.id, parent_resource_id: parentResourceId});
 
-      await db.insert(tableName, insertValues, {pk: 'id'});
+      statements.push(db.insertStatement(tableName, insertValues, {pk: 'id'}));
     }
+
+    return statements;
   }
 
-  static async insertChildMultipleValuesForFeature(db, form, feature, record) {
+  static insertChildMultipleValuesForFeatureStatements(db, form, feature, record) {
+    const statements = [];
+
     for (const formValue of feature.formValues.all) {
       if (formValue.isRepeatableElement) {
         for (const repeatableItem of formValue._items) {
-          await this.insertMultipleValuesForFeature(db, form, repeatableItem, record);
-          await this.insertChildMultipleValuesForFeature(db, form, repeatableItem, record);
+          statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, repeatableItem, record));
+          statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, repeatableItem, record));
         }
       }
     }
+
+    return statements;
   }
 
   static multipleValuesForFeature(feature, record) {
@@ -124,10 +150,30 @@ export default class RecordValues {
     values.record_resource_id = record.id;
 
     if (feature instanceof Record) {
-      // TODO(zhm) projectID is busted probably
-      // if (record.projectID) {
-      //   values.project_id = record.project.rowID;
-      // }
+      if (record._projectRowID) {
+        values.project_id = record._projectRowID;
+        values.project_resource_id = record.projectID;
+      }
+
+      if (record._assignedToRowID) {
+        values.assigned_to_id = record._assignedToRowID;
+        values.assigned_to_resource_id = record.assignedToID;
+      }
+
+      if (record._createdByRowID) {
+        values.created_by_id = record._createdByRowID;
+        values.created_by_resource_id = record.createdByID;
+      }
+
+      if (record._updatedByRowID) {
+        values.updated_by_id = record._updatedByRowID;
+        values.updated_by_resource_id = record.updatedByID;
+      }
+
+      if (record._changesetRowID) {
+        values.changeset_id = record._changesetRowID;
+        values.changeset_resource_id = record.changesetID;
+      }
 
       if (record.status) {
         values.status = record.status;
@@ -140,180 +186,172 @@ export default class RecordValues {
       if (record.longitude) {
         values.longitude = record.longitude;
       }
+
+      values.altitude = record.altitude;
+      values.speed = record.speed;
+      values.course = record.course;
+      values.vertical_accuracy = record.verticalAccuracy;
+      values.horizontal_accuracy = record.horizontalAccuracy;
     } else if (feature instanceof RepeatableItemValue) {
       values.resource_id = feature.id;
-
-      if (parentFeature instanceof RepeatableItemValue) {
-        values.parent_resource_id = parentFeature.id;
-      }
+      values.index = feature.index;
+      values.parent_resource_id = parentFeature.id;
 
       if (feature.hasCoordinate) {
         values.latitude = feature.latitude;
         values.longitude = feature.longitude;
       }
+
+      // record values
+      if (record.status) {
+        values.record_status = record.status;
+      }
+
+      if (record._projectRowID) {
+        values.record_project_id = record._projectRowID;
+        values.record_project_resource_id = record.projectID;
+      }
+
+      if (record._assignedToRowID) {
+        values.record_assigned_to_id = record._assignedToRowID;
+        values.record_assigned_to_resource_id = record.assignedToID;
+      }
+
+      // linked fields
+      if (feature.createdBy) {
+        values.created_by_id = feature.createdBy.rowID;
+        values.created_by_resource_id = feature.createdByID;
+      }
+
+      if (feature.updatedBy) {
+        values.updated_by_id = feature.updatedBy.rowID;
+        values.updated_by_resource_id = feature.updatedByID;
+      }
+
+      if (feature.changeset) {
+        values.changeset_id = feature.changeset.rowID;
+        values.changeset_resource_id = feature.changesetID;
+      } else if (record._changesetRowID) {
+        values.changeset_id = record._changesetRowID;
+        values.changeset_resource_id = record.changesetID;
+      }
     }
 
-    // TODO(zhm) bring these back
-    if (feature.createdAt) {
-      values.created_at = feature.createdAt.timeIntervalSince1970;
-    }
+    values.title = feature.displayValue;
 
-    if (feature.updatedAt) {
-      values.updated_at = feature.updatedAt.timeIntervalSince1970;
-    }
+    const searchableValue = feature.searchableValue;
 
-    values.created_at = feature.createdAt;
-    values.updated_at = feature.updatedAt;
+    values.form_values = JSON.stringify(feature.formValues.toJSON());
+    values.record_index_text = searchableValue;
+    // values.record_index = {raw: `to_tsvector(${ pgformat('%L', searchableValue) })`};
+
+    // if (feature.hasCoordinate) {
+    //   const wkt = pgformat('POINT(%s %s)', feature.longitude, feature.latitude);
+
+    //   values.geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
+    // } else {
+    //   values.geometry = null;
+    // }
+
+    values.created_at = feature.clientCreatedAt || feature.createdAt;
+    values.updated_at = feature.clientUpdatedAt || feature.updatedAt;
     values.version = feature.version;
 
-    // TODO(zhm) bring this back
-    values.created_by_id = -1;
-    values.updated_by_id = -1;
+    if (values.created_by_id == null) {
+      values.created_by_id = -1;
+    }
+
+    if (values.updated_by_id == null) {
+      values.updated_by_id = -1;
+    }
+
     values.server_created_at = feature.createdAt;
     values.server_updated_at = feature.updatedAt;
+
+    values.created_duration = feature.createdDuration;
+    values.updated_duration = feature.updatedDuration;
+    values.edited_duration = feature.editedDuration;
+
+    values.created_latitude = feature.createdLatitude;
+    values.created_longitude = feature.createdLongitude;
+    values.created_altitude = feature.createdAltitude;
+    values.created_horizontal_accuracy = feature.createdAccuracy;
+
+    // if (feature.hasCreatedCoordinate) {
+    //   const wkt = pgformat('POINT(%s %s)', feature.createdLongitude, feature.createdLatitude);
+
+    //   values.created_geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
+    // }
+
+    values.updated_latitude = feature.updatedLatitude;
+    values.updated_longitude = feature.updatedLongitude;
+    values.updated_altitude = feature.updatedAltitude;
+    values.updated_horizontal_accuracy = feature.updatedAccuracy;
+
+    // if (feature.hasUpdatedCoordinate) {
+    //   const wkt = pgformat('POINT(%s %s)', feature.updatedLongitude, feature.updatedLatitude);
+
+    //   values.updated_geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
+    // }
 
     return values;
   }
 
-  static async deleteForAccount(account) {
-    // TODO(zhm) implement this
-    // [account.formsSortedByNameIncludingDeleted enumerateObjectsUsingBlock:^(FCMForm *form, NSUInteger idx, BOOL *stop) {
-    //     [self deleteRowsForForm:form];
-    // }];
+  static deleteRowsForRecordStatement(db, record, tableName) {
+    return db.deleteStatement(tableName, {record_resource_id: record.id});
   }
 
-  // static async deleteRowsForForm(form) {
-  //   leArray *tableNames = [NSMutableArray new];
+  static deleteRowsStatement(db, tableName) {
+    return db.deleteStatement(tableName, {});
+  }
 
-  //   [tableNames addObject:[self tableNameWithForm:form repeatable:nil]];
-
-  //   NSArray *repeatables = [form.rootSection elementsOfType:kFCMElementTypeRepeatable];
-
-  //   [repeatables enumerateObjectsUsingBlock:^(FCMRepeatableElement *repeatable, NSUInteger idx, BOOL *stop) {
-  //       [tableNames addObject:[self tableNameWithForm:form repeatable:repeatable]];
-  //   }];
-
-  //   [tableNames addObject:[self multipleValueTableNameWithForm:form]];
-
-  //   [[FCMPersistentStore queue] inDatabase:^(FMDatabase *db) {
-  //       [tableNames enumerateObjectsUsingBlock:^(NSString *tableName, NSUInteger idx, BOOL *stop) {
-  //           NSString *query = @"DELETE FROM %@ WHERE record_id IN (SELECT id FROM records WHERE account_id = ? AND form_id = ? AND has_local_changes = 0 AND id NOT IN (SELECT record_id FROM attachments WHERE has_local_changes = 1 AND record_id IS NOT NULL))";
-
-  //           query = [NSString stringWithFormat:query, tableName];
-
-  //           BOOL result = [db executeUpdate:query withArgumentsInArray:@[ @(form.account.rowID), @(form.rowID) ]];
-
-  //           if (!result) {
-  //               FCMLogError(db.lastError);
-  //           }
-  //       }];
-  //   }];
-
-  static async deleteForRecord(record) {
-    const {db} = record;
-    const form = await record.getForm();
-
+  static deleteForRecordStatements(db, record, form) {
     const repeatables = form.elementsOfType('Repeatable');
+
+    const statements = [];
 
     let tableName = this.tableNameWithForm(form, null);
 
-    await this.deleteRowsForRecord(db, record, tableName);
+    statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
 
     for (const repeatable of repeatables) {
       tableName = this.tableNameWithForm(form, repeatable);
 
-      await this.deleteRowsForRecord(db, record, tableName);
+      statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
     }
 
     tableName = this.multipleValueTableNameWithForm(form);
 
-    await this.deleteRowsForRecord(db, record, tableName);
+    statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
+
+    return statements;
   }
 
-  static async deleteRowsForRecord(db, record, tableName) {
-    // TODO(zhm) this needs to use an indexed column, but which is it?
-    await db.execute(format("DELETE FROM %s WHERE record_resource_id = '%s'", tableName, record.id));
-  }
+  static deleteForFormStatements(db, form) {
+    const repeatables = form.elementsOfType('Repeatable');
 
-  static async updateForAccount(account, progressCallback) {
-    // [[FCMPersistentStore queue] inDatabase:^(FMDatabase *db) {
-    //     NSString *tableNameParameter = [NSString stringWithFormat:@"account_%llu_%%", account.rowID];
+    const statements = [];
 
-    //     NSString *query = @"SELECT name FROM sqlite_master WHERE type='table' AND name LIKE ? ORDER BY name";
+    let tableName = this.tableNameWithForm(form, null);
 
-    //     FMResultSet *resultSet = [db executeQuery:query withArgumentsInArray:@[ tableNameParameter ]];
+    statements.push(this.deleteRowsStatement(db, tableName));
 
-    //     NSMutableArray *tablesToDrop = [NSMutableArray new];
+    for (const repeatable of repeatables) {
+      tableName = this.tableNameWithForm(form, repeatable);
 
-    //     while ([resultSet next]) {
-    //         NSString *tableName = [resultSet stringForColumnIndex:0];
+      statements.push(this.deleteRowsStatement(db, tableName));
+    }
 
-    //         [tablesToDrop addObject:tableName];
-    //     }
+    tableName = this.multipleValueTableNameWithForm(form);
 
-    //     [resultSet close];
+    statements.push(this.deleteRowsStatement(db, tableName));
 
-    //     [tablesToDrop enumerateObjectsUsingBlock:^(NSString *tableName, NSUInteger idx, BOOL *stop) {
-    //         NSString *drop = [NSString stringWithFormat:@"DROP TABLE %@", tableName];
-
-    //         BOOL result = [db executeUpdate:drop];
-
-    //         if (!result) {
-    //             FCMLogError(db.lastError);
-    //         }
-    //     }];
-    // }];
-
-    // FCMFormSchema *schema = [FCMFormSchema new];
-
-    // [account.formsSortedByNameIncludingDeleted enumerateObjectsUsingBlock:^(FCMForm *form, NSUInteger idx, BOOL *stop) {
-    //     progress(form, [NSString stringWithFormat:FCMStringMigrationIndexingForm, form.name]);
-
-    //     [FCMPersistentStore beginTransaction];
-
-    //     [schema updateSchemaWithOldForm:nil newForm:form inAccount:account];
-
-    //     [FCMPersistentStore commitTransaction];
-
-    //     [FCMPersistentStore beginTransaction];
-
-    //     [self updateForForm:form progress:progress];
-
-    //     [FCMPersistentStore commitTransaction];
-    // }];
-  }
-
-  static async updateForForm(form, progressCallback) {
-    // __block int count = 0;
-
-    // [FCMRecord selectBachesWithPredicate:@"form_id = ?"
-    //                               values:@[ @(form.rowID) ]
-    //                              orderBy:@"id ASC"
-    //                            batchSize:500
-    //                             callback:^(NSArray *records) {
-    //                                 @autoreleasepool {
-    //                                     [records enumerateObjectsUsingBlock:^(FCMRecord *record, NSUInteger idx, BOOL *stop) {
-    //                                         // set the form and account explicitly so each one doesn't have to fetch its own
-    //                                         // copy lazily in the getter.
-
-    //                                         record.form = form;
-    //                                         record.account = form.account;
-
-    //                                         [self updateForRecord:record];
-
-    //                                         ++count;
-
-    //                                         if (count % 50 == 0) {
-    //                                             progress(form, [NSString stringWithFormat:FCMStringMigrationIndexingFormProgress, form.name, count]);
-    //                                         }
-    //                                     }];
-    //                                 }
-    //                             }];
-
+    return statements;
   }
 
   static multipleValueTableNameWithForm(form) {
     return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
+    // return format('form_%s_values', form.rowID);
   }
 
   static tableNameWithForm(form, repeatable) {
@@ -322,5 +360,22 @@ export default class RecordValues {
     }
 
     return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+    // if (repeatable == null) {
+    //   return format('form_%s', form.rowID);
+    // }
+
+    // return format('form_%s_%s', form.rowID, repeatable.key);
   }
+
+  // static multipleValueTableNameWithForm(form) {
+  //   return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
+  // }
+
+  // static tableNameWithForm(form, repeatable) {
+  //   if (repeatable == null) {
+  //     return format('account_%s_form_%s', form._accountRowID, form.rowID);
+  //   }
+
+  //   return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+  // }
 }

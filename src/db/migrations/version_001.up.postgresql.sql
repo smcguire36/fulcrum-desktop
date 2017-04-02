@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS forms (
   title_field_keys TEXT,
   status_field TEXT,
   elements TEXT,
+  last_sync double precision,
   CONSTRAINT forms_pkey PRIMARY KEY (id)
 );
 

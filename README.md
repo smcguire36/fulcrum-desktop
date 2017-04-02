@@ -33,6 +33,12 @@ npm install
 
 ### Setup
 
+```sh
+./run setup # follow instructions, choose SQLite
+
+./run sync --org 'Fulcrum Labs'
+```
+
 PostgreSQL:
 
 ```
