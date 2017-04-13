@@ -4,7 +4,7 @@ var _command = require('./command');
 
 var _command2 = _interopRequireDefault(_command);
 
-var _synchronizer = require('../synchronizer');
+var _synchronizer = require('../sync/synchronizer');
 
 var _synchronizer2 = _interopRequireDefault(_synchronizer);
 
@@ -20,9 +20,28 @@ class Sync extends _command2.default {
       const accounts = yield _this.fetchAccount(_this.args.org);
 
       for (const account of accounts) {
-        const dataSource = yield _this.createDataSource(account);
+        yield _this.syncLoop(account);
+        // await Synchronizer.instance.run(account, this.args.form, dataSource);
+      }
+    })();
+  }
 
-        yield _synchronizer2.default.instance.run(account, _this.args.form, dataSource);
+  syncLoop(account) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      const sync = true;
+
+      const dataSource = yield _this2.createDataSource(account);
+
+      while (sync) {
+        const synchronizer = new _synchronizer2.default();
+
+        yield synchronizer.run(account, _this2.args.form, dataSource);
+
+        yield new Promise(function (resolve) {
+          return setTimeout(resolve, 10000);
+        });
       }
     })();
   }

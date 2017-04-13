@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/plugin.js"],"names":["Plugin"],"mappings":";;;;;AAAe,MAAMA,MAAN,CAAa;kBAAPA,M","file":"plugin.js","sourcesContent":["export default class Plugin {\n}\n"]}

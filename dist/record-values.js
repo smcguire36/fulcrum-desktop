@@ -18,10 +18,6 @@ var _pgFormat2 = _interopRequireDefault(_pgFormat);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import {format} from 'util';
-// import _ from 'lodash';
-// import {Record, RepeatableItemValue} from 'fulcrum-core';
-
 class RecordValues {
   static updateForRecordStatements(db, record) {
     const statements = [];
@@ -365,7 +361,6 @@ class RecordValues {
 
   static multipleValueTableNameWithForm(form) {
     return (0, _util.format)('account_%s_form_%s_values', form._accountRowID, form.rowID);
-    // return format('form_%s_values', form.rowID);
   }
 
   static tableNameWithForm(form, repeatable) {
@@ -374,24 +369,7 @@ class RecordValues {
     }
 
     return (0, _util.format)('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
-    // if (repeatable == null) {
-    //   return format('form_%s', form.rowID);
-    // }
-
-    // return format('form_%s_%s', form.rowID, repeatable.key);
   }
-
-  // static multipleValueTableNameWithForm(form) {
-  //   return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
-  // }
-
-  // static tableNameWithForm(form, repeatable) {
-  //   if (repeatable == null) {
-  //     return format('account_%s_form_%s', form._accountRowID, form.rowID);
-  //   }
-
-  //   return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
-  // }
 }
 exports.default = RecordValues;
 //# sourceMappingURL=record-values.js.map
