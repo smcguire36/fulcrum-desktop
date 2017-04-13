@@ -13,8 +13,8 @@ const defaultOptions = {
   }
 };
 
-// const baseURL = 'http://localhost:3000/api/v2/';
-const baseURL = 'https://api.fulcrumapp.com/api/v2/';
+const baseURL = 'http://localhost:3000';
+// const baseURL = 'https://api.fulcrumapp.com/api/v2/';
 // const baseURL = 'https://edge.fulcrumapp.com/api/v2/';
 
 class Client {
@@ -31,7 +31,7 @@ class Client {
   async authenticate(userName, password) {
     const options = {
       method: 'GET',
-      uri: this.urlForResource('users'),
+      uri: this.urlForResource('/api/v2/users.json'),
       auth: {
         username: userName,
         password: password,
@@ -51,9 +51,17 @@ class Client {
     });
   }
 
+  async getSync(account) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/_private/sync.json')
+    });
+
+    return await req(options);
+  }
+
   async getForms(account) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('forms')
+      url: this.urlForResource('/api/v2/forms.json')
     });
 
     return await req(options);
@@ -61,7 +69,7 @@ class Client {
 
   async getChoiceLists(account) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('choice_lists')
+      url: this.urlForResource('/api/v2/choice_lists.json')
     });
 
     return await req(options);
@@ -69,7 +77,7 @@ class Client {
 
   async getClassificationSets(account) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('classification_sets')
+      url: this.urlForResource('/api/v2/classification_sets.json')
     });
 
     return await req(options);
@@ -77,7 +85,7 @@ class Client {
 
   async getProjects(account) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('projects')
+      url: this.urlForResource('/api/v2/projects.json')
     });
 
     try {
@@ -92,7 +100,7 @@ class Client {
 
   async getPhotos(account, form, page) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('photos')
+      url: this.urlForResource('/api/v2/photos.json')
     });
 
     options.qs = {
@@ -110,7 +118,7 @@ class Client {
 
   async getVideos(account, form, page) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('videos')
+      url: this.urlForResource('/api/v2/videos.json')
     });
 
     options.qs = {
@@ -137,7 +145,7 @@ class Client {
   async getRecords(account, form, page) {
     const options = this.optionsForRequest(account, {
       // url: this.urlForResource('records/history')
-      url: this.urlForResource('records')
+      url: this.urlForResource('/api/v2/records.json')
     });
 
     options.qs = {
@@ -151,7 +159,7 @@ class Client {
 
   async getRecordsHistory(account, form, page, lastSync) {
     const options = this.optionsForRequest(account, {
-      url: this.urlForResource('records/history')
+      url: this.urlForResource('/api/v2/records/history.json')
     });
 
     options.qs = {

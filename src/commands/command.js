@@ -8,6 +8,7 @@ import path from 'path';
 import { DataSource } from 'fulcrum-core';
 import LocalDatabaseDataSource from '../local-database-data-source';
 import { Postgres } from 'minidb';
+import app from '../app';
 
 Promise.longStackTraces();
 
@@ -15,6 +16,7 @@ const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json')).toSt
 
 export default class Command {
   async setup() {
+    app.initialize();
     this._db = await database(this.config);
   }
 

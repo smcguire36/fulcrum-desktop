@@ -1,38 +1,50 @@
---SELECT InitSpatialMetaData();
-
 CREATE TABLE IF NOT EXISTS accounts (
   id bigserial NOT NULL,
-  user_resource_id TEXT,
-  organization_resource_id TEXT,
-  organization_name TEXT,
-  email TEXT,
-  first_name TEXT,
-  last_name TEXT,
-  description TEXT,
-  token TEXT,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  user_resource_id text,
+  organization_resource_id text,
+  organization_name text,
+  email text,
+  first_name text,
+  last_name text,
+  description text,
+  token text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT accounts_pkey PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX idx_accounts_user_organization
 ON accounts (user_resource_id ASC, organization_resource_id ASC);
 
+CREATE TABLE IF NOT EXISTS sync_state (
+  id bigserial NOT NULL,
+  account_id bigint NOT NULL,
+  resource varchar(36) NOT NULL,
+  scope text,
+  hash text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
+  CONSTRAINT records_pkey PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX idx_sync_state_account_resource_scope
+ON sync_state (account_id ASC, resource ASC, scope ASC);
+
 CREATE TABLE IF NOT EXISTS records (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36),
-  form_values TEXT,
-  client_created_at timestamp without time zone,
-  client_updated_at timestamp without time zone,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
-  status TEXT,
+  resource_id varchar(36),
+  form_values text,
+  client_created_at timestamp with time zone,
+  client_updated_at timestamp with time zone,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
+  status text,
   form_id bigint,
   project_id bigint,
   version bigint,
   has_changes boolean,
-  index_text TEXT,
+  index_text text,
   CONSTRAINT records_pkey PRIMARY KEY (id)
 );
 
@@ -48,8 +60,8 @@ CREATE TABLE IF NOT EXISTS memberships (
   account_id bigint NOT NULL,
   user_id bigint NOT NULL,
   organization_id bigint NOT NULL,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT memberships_pkey PRIMARY KEY (id)
 );
 
@@ -59,12 +71,12 @@ ON memberships (account_id, user_id, organization_id);
 CREATE TABLE IF NOT EXISTS choice_lists (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  choices TEXT,
-  name TEXT,
-  description TEXT,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  resource_id varchar(36) NOT NULL,
+  choices text,
+  name text,
+  description text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT choice_lists_pkey PRIMARY KEY (id)
 );
 
@@ -74,12 +86,12 @@ ON choice_lists (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS classification_sets (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  items TEXT,
-  name TEXT,
-  description TEXT,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  resource_id varchar(36) NOT NULL,
+  items text,
+  name text,
+  description text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT classification_sets_pkey PRIMARY KEY (id)
 );
 
@@ -89,11 +101,12 @@ ON classification_sets (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS projects (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  name TEXT,
-  description TEXT,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  resource_id varchar(36) NOT NULL,
+  name text,
+  description text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
+  deleted_at timestamp with time zone,
   CONSTRAINT projects_pkey PRIMARY KEY (id)
 );
 
@@ -103,15 +116,17 @@ ON projects (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS forms (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  name TEXT,
-  description TEXT,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
-  title_field_keys TEXT,
-  status_field TEXT,
-  elements TEXT,
+  resource_id varchar(36) NOT NULL,
+  version bigint NOT NULL,
+  name text,
+  description text,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
+  title_field_keys text,
+  status_field text,
+  elements text,
   last_sync double precision,
+  deleted_at timestamp with time zone,
   CONSTRAINT forms_pkey PRIMARY KEY (id)
 );
 
@@ -121,12 +136,12 @@ ON forms (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS photos (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  file_path TEXT,
-  exif TEXT,
+  resource_id varchar(36) NOT NULL,
+  file_path text,
+  exif text,
   is_downloaded boolean NOT NULL DEFAULT false,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT photos_pkey PRIMARY KEY (id)
 );
 
@@ -136,12 +151,12 @@ ON photos (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS videos (
   id bigserial NOT NULL,
   account_id bigint NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
-  file_path TEXT,
-  metadata TEXT,
+  resource_id varchar(36) NOT NULL,
+  file_path text,
+  metadata text,
   is_downloaded boolean NOT NULL DEFAULT false,
-  created_at timestamp without time zone,
-  updated_at timestamp without time zone,
+  created_at timestamp with time zone,
+  updated_at timestamp with time zone,
   CONSTRAINT videos_pkey PRIMARY KEY (id)
 );
 

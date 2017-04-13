@@ -1,6 +1,7 @@
 import { PersistentObject } from 'minidb';
 import Project from './project';
 import Form from './form';
+import SyncState from './sync-state';
 
 export default class Account {
   static get tableName() {
@@ -53,11 +54,19 @@ export default class Account {
   }
 
   findForms(where) {
-    return Form.findAll(this.db, Object.assign({}, where, {account_id: this.id}), 'name ASC');
+    return Form.findAll(this.db, {...where, account_id: this.rowID}, 'name ASC');
+  }
+
+  findActiveForms(where) {
+    return Form.findAll(this.db, {...where, account_id: this.rowID, deleted_at: null}, 'name ASC');
   }
 
   projectByResourceID(projectId) {
-    return Project.findFirst(this.db, {account_id: this.id});
+    return Project.findFirst(this.db, {account_id: this.rowID});
+  }
+
+  findSyncState(where) {
+    return SyncState.findOrCreate(this.db, {...where, account_id: this.rowID});
   }
 }
 

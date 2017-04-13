@@ -17,10 +17,23 @@ CREATE TABLE IF NOT EXISTS accounts (
 CREATE UNIQUE INDEX idx_accounts_user_organization
 ON accounts (user_resource_id ASC, organization_resource_id ASC);
 
+CREATE TABLE IF NOT EXISTS sync_state (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id INTEGER NOT NULL,
+  resource TEXT NOT NULL,
+  scope TEXT,
+  hash TEXT,
+  created_at INTEGER,
+  updated_at INTEGER
+);
+
+CREATE UNIQUE INDEX idx_sync_state_account_resource_scope
+ON sync_state (account_id ASC, resource ASC, COALESCE(scope, '') ASC);
+
 CREATE TABLE IF NOT EXISTS records (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36),
+  resource_id TEXT NOT NULL,
   form_values TEXT,
   client_created_at INTEGER,
   client_updated_at INTEGER,
@@ -88,7 +101,7 @@ ON choice_lists (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS classification_sets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
+  resource_id TEXT NOT NULL,
   items TEXT,
   name TEXT,
   description TEXT,
@@ -102,11 +115,12 @@ ON classification_sets (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
+  resource_id TEXT NOT NULL,
   name TEXT,
   description TEXT,
   created_at INTEGER,
-  updated_at INTEGER
+  updated_at INTEGER,
+  deleted_at INTEGER
 );
 
 CREATE UNIQUE INDEX idx_projects_account_resource_id
@@ -115,7 +129,8 @@ ON projects (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS forms (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
+  resource_id TEXT NOT NULL,
+  version INTEGER NOT NULL,
   name TEXT,
   description TEXT,
   created_at INTEGER,
@@ -123,7 +138,8 @@ CREATE TABLE IF NOT EXISTS forms (
   title_field_keys TEXT,
   status_field TEXT,
   elements TEXT,
-  last_sync REAL
+  last_sync INTEGER,
+  deleted_at INTEGER
 );
 
 CREATE UNIQUE INDEX idx_forms_account_resource_id
@@ -132,7 +148,7 @@ ON forms (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS photos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
+  resource_id TEXT NOT NULL,
   file_path TEXT,
   exif TEXT,
   is_downloaded INTEGER NOT NULL DEFAULT 0,
@@ -146,7 +162,7 @@ ON photos (account_id, resource_id);
 CREATE TABLE IF NOT EXISTS videos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER NOT NULL,
-  resource_id VARCHAR(36) NOT NULL,
+  resource_id TEXT NOT NULL,
   file_path TEXT,
   metadata TEXT,
   is_downloaded INTEGER NOT NULL DEFAULT 0,

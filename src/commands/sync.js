@@ -6,9 +6,22 @@ class Sync extends Command {
     const accounts = await this.fetchAccount(this.args.org);
 
     for (const account of accounts) {
-      const dataSource = await this.createDataSource(account);
+      await this.syncLoop(account);
+      // await Synchronizer.instance.run(account, this.args.form, dataSource);
+    }
+  }
 
-      await Synchronizer.instance.run(account, this.args.form, dataSource);
+  async syncLoop(account) {
+    const sync = true;
+
+    const dataSource = await this.createDataSource(account);
+
+    while (sync) {
+      const synchronizer = new Synchronizer();
+
+      await synchronizer.run(account, this.args.form, dataSource);
+
+      await new Promise((resolve) => setTimeout(resolve, 10000));
     }
   }
 }

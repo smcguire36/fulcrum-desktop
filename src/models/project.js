@@ -11,7 +11,8 @@ export default class Project extends ProjectBase {
       { name: 'accountRowID', column: 'account_id', type: 'integer', null: false },
       { name: 'id', column: 'resource_id', type: 'string', null: false },
       { name: 'name', column: 'name', type: 'string', null: false },
-      { name: 'description', column: 'description', type: 'string' }
+      { name: 'description', column: 'description', type: 'string' },
+      { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }
 }
