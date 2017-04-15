@@ -14,8 +14,8 @@ const defaultOptions = {
 };
 
 // const baseURL = 'http://localhost:3000';
-// const baseURL = 'https://api.fulcrumapp.com/api/v2/';
-const baseURL = 'https://edge.fulcrumapp.com';
+const baseURL = 'https://api.fulcrumapp.com';
+// const baseURL = 'https://edge.fulcrumapp.com';
 
 class Client {
   urlForResource(resource) {
