@@ -81,7 +81,7 @@ class Synchronizer {
     return this._tasks.shift();
   }
 
-  run(account, formName, dataSource) {
+  run(account, formName, dataSource, { fullSync }) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
@@ -89,7 +89,7 @@ class Synchronizer {
 
       const response = yield _Client2.default.getSync(account);
 
-      _this.syncState = JSON.parse(response.body).resources;
+      _this.syncState = fullSync ? [] : JSON.parse(response.body).resources;
       _this.taskParams = { synchronizer: _this, syncState: _this.syncState };
 
       _this.addTask(new _downloadChoiceLists2.default(_this.taskParams));

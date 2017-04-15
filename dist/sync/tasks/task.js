@@ -49,9 +49,11 @@ class Task {
 
       const update = (() => {
         var _ref = _asyncToGenerator(function* () {
-          oldState.hash = newState.hash;
+          if (oldState && newState) {
+            oldState.hash = newState.hash;
 
-          yield oldState.save();
+            yield oldState.save();
+          }
         });
 
         return function update() {
@@ -78,7 +80,7 @@ class Task {
   }
 
   trigger(name, args) {
-    _app2.default.emit(name, args);
+    return _app2.default.emit(name, args);
   }
 
   get downloading() {

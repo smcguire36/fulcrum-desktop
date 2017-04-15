@@ -22,43 +22,74 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 let app = null;
 
-class App extends _events2.default {
+class App {
   static get instance() {
     return app;
   }
 
   constructor() {
-    super();
-
     this._plugins = [];
+    this._listeners = {};
   }
 
-  initialize() {
+  on(name, func) {
+    if (!this._listeners[name]) {
+      this._listeners[name] = [];
+    }
+
+    this._listeners[name].push(func);
+  }
+
+  off(name, func) {
+    if (this._listeners[name]) {
+      const index = this._listeners.indexOf(func);
+
+      if (index > -1) {
+        this._listeners.splice(index, 1);
+      }
+    }
+  }
+
+  emit(name, ...args) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      yield _this.initializePlugins();
+      if (_this._listeners[name]) {
+        for (const listener of _this._listeners[name]) {
+          yield listener(...args);
+        }
+      }
+    })();
+  }
+
+  initialize() {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      yield _this2.initializePlugins();
     })();
   }
 
   initializePlugins() {
-    var _this2 = this;
+    var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      const pluginPaths = _glob2.default.sync(_path2.default.join('.', 'plugins', '*.js'));
+      const pluginPaths = _glob2.default.sync(_path2.default.join('.', 'plugins', '*', 'plugin.js'));
 
       for (const pluginPath of pluginPaths) {
         const fullPath = _path2.default.resolve(pluginPath);
-
-        console.log('Loading plugin', fullPath);
 
         const PluginClass = require(fullPath).default;
 
         const plugin = new PluginClass();
 
-        yield plugin.initialize({ app: _this2 });
+        if (plugin.enabled) {
+          console.log('Loading plugin', fullPath);
 
-        _this2._plugins.push(plugin);
+          yield plugin.initialize({ app: _this3 });
+
+          _this3._plugins.push(plugin);
+        }
       }
     })();
   }

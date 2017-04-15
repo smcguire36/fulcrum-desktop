@@ -111,7 +111,7 @@ class DownloadForms extends _task2.default {
         yield account.db.execute((0, _util.format)('CREATE VIEW %s AS SELECT * FROM %s_view_full', account.db.ident(object.name), _recordValues2.default.tableNameWithForm(object)));
 
         if (isChanged) {
-          _this.trigger('form:save', { form: object, statements });
+          yield _this.trigger('form:save', { form: object, account, statements, oldForm, newForm });
         }
 
         _this.progress({ message: _this.processing + ' forms', count: index + 1, total: objects.length });

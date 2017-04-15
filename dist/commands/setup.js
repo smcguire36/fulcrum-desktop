@@ -7,11 +7,11 @@ let setup = (() => {
     while (!exit) {
       const answers = yield prompt(questions);
 
-      const config = { type: answers.database };
+      const config = { type: 'SQLite' };
 
       _fs2.default.writeFileSync(_path2.default.join('data', 'config.json'), JSON.stringify(config, null, 2));
 
-      db = yield (0, _database2.default)({ type: answers.database });
+      db = yield (0, _database2.default)({ type: 'SQLite' });
 
       const results = yield _client2.default.authenticate(answers.email, answers.password);
       const response = results;
@@ -107,13 +107,15 @@ const questions = [{
   type: 'password',
   message: 'Enter your Fulcrum password',
   name: 'password'
-}, {
-  type: 'list',
-  message: 'Select database type',
-  choices: ['SQLite', 'PostgreSQL'],
-  default: 'SQLite',
-  name: 'database'
-}];
+}
+// , {
+//   type: 'list',
+//   message: 'Select database type',
+//   choices: ['SQLite', 'PostgreSQL'],
+//   default: 'SQLite',
+//   name: 'database'
+// }
+];
 
 const againQuestion = {
   type: 'confirm',

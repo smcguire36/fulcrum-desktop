@@ -89,7 +89,7 @@ class DownloadRecords extends _task2.default {
 
                 yield object.delete();
 
-                _this2.trigger('record:delete', { record: object });
+                yield _this2.trigger('record:delete', { record: object });
               }
             } else {
               const isChanged = !object.isPersisted || attributes.version !== object.version;
@@ -111,7 +111,7 @@ class DownloadRecords extends _task2.default {
               yield object.save();
 
               if (isChanged) {
-                _this2.trigger('record:save', { record: object });
+                yield _this2.trigger('record:save', { record: object });
               }
             }
 

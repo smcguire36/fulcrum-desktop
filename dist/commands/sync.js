@@ -20,13 +20,13 @@ class Sync extends _command2.default {
       const accounts = yield _this.fetchAccount(_this.args.org);
 
       for (const account of accounts) {
-        yield _this.syncLoop(account);
+        yield _this.syncLoop(account, _this.args.full);
         // await Synchronizer.instance.run(account, this.args.form, dataSource);
       }
     })();
   }
 
-  syncLoop(account) {
+  syncLoop(account, fullSync) {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
@@ -37,7 +37,9 @@ class Sync extends _command2.default {
       while (sync) {
         const synchronizer = new _synchronizer2.default();
 
-        yield synchronizer.run(account, _this2.args.form, dataSource);
+        yield synchronizer.run(account, _this2.args.form, dataSource, { fullSync });
+
+        fullSync = false;
 
         yield new Promise(function (resolve) {
           return setTimeout(resolve, 10000);
