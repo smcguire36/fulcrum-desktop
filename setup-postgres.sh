@@ -1,3 +1,3 @@
-echo 'DROP DATABASE fulcrumapp;' | psql -U postgres
-echo 'CREATE DATABASE fulcrumapp;' | psql -U postgres
-echo 'CREATE EXTENSION postgis;' | psql -U postgres fulcrumapp
+echo 'DROP DATABASE fulcrumapp;' | psql fulcrum_development
+echo 'CREATE DATABASE fulcrumapp;' | psql fulcrum_development
+echo 'CREATE EXTENSION postgis;' | psql fulcrumapp

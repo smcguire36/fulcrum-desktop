@@ -58,7 +58,7 @@ export default class DownloadRecords extends Task {
 
             await object.delete();
 
-            this.trigger('record:delete', {record: object});
+            await this.trigger('record:delete', {record: object});
           }
         } else {
           const isChanged = !object.isPersisted || attributes.version !== object.version;
@@ -80,7 +80,7 @@ export default class DownloadRecords extends Task {
           await object.save();
 
           if (isChanged) {
-            this.trigger('record:save', {record: object});
+            await this.trigger('record:save', {record: object});
           }
         }
 

@@ -1,6 +1,10 @@
-import Plugin from '../src/plugin';
+import Plugin from '../../src/plugin';
 
 export default class Hello extends Plugin {
+  get enabled() {
+    return false;
+  }
+
   initialize({app}) {
     app.on('choice_list:save', this.onChoiceListSave);
     app.on('classification_set:save', this.onClassificationSetSave);

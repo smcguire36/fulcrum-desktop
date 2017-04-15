@@ -4,15 +4,40 @@ import path from 'path';
 
 let app = null;
 
-class App extends EventEmitter {
+class App {
   static get instance() {
     return app;
   }
 
   constructor() {
-    super();
-
     this._plugins = [];
+    this._listeners = {};
+  }
+
+  on(name, func) {
+    if (!this._listeners[name]) {
+      this._listeners[name] = [];
+    }
+
+    this._listeners[name].push(func);
+  }
+
+  off(name, func) {
+    if (this._listeners[name]) {
+      const index = this._listeners.indexOf(func);
+
+      if (index > -1) {
+        this._listeners.splice(index, 1);
+      }
+    }
+  }
+
+  async emit(name, ...args) {
+    if (this._listeners[name]) {
+      for (const listener of this._listeners[name]) {
+        await listener(...args);
+      }
+    }
   }
 
   async initialize() {
@@ -20,20 +45,22 @@ class App extends EventEmitter {
   }
 
   async initializePlugins() {
-    const pluginPaths = glob.sync(path.join('.', 'plugins', '*.js'));
+    const pluginPaths = glob.sync(path.join('.', 'plugins', '*', 'plugin.js'));
 
     for (const pluginPath of pluginPaths) {
       const fullPath = path.resolve(pluginPath);
-
-      console.log('Loading plugin', fullPath);
 
       const PluginClass = require(fullPath).default;
 
       const plugin = new PluginClass();
 
-      await plugin.initialize({app: this});
+      if (plugin.enabled) {
+        console.log('Loading plugin', fullPath);
 
-      this._plugins.push(plugin);
+        await plugin.initialize({app: this});
+
+        this._plugins.push(plugin);
+      }
     }
   }
 

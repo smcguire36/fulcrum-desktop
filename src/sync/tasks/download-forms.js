@@ -81,7 +81,7 @@ export default class DownloadForms extends Task {
                                       RecordValues.tableNameWithForm(object)));
 
       if (isChanged) {
-        this.trigger('form:save', {form: object, statements});
+        await this.trigger('form:save', {form: object, account, statements, oldForm, newForm});
       }
 
       this.progress({message: this.processing + ' forms', count: index + 1, total: objects.length});

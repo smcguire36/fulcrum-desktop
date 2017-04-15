@@ -16,7 +16,7 @@ const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json')).toSt
 
 export default class Command {
   async setup() {
-    app.initialize();
+    await app.initialize();
     this._db = await database(this.config);
   }
 

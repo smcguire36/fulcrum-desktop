@@ -29,9 +29,11 @@ export default class Task {
     }
 
     const update = async () => {
-      oldState.hash = newState.hash;
+      if (oldState && newState) {
+        oldState.hash = newState.hash;
 
-      await oldState.save();
+        await oldState.save();
+      }
     };
 
     return { needsUpdate, state: oldState, update };
@@ -48,7 +50,7 @@ export default class Task {
   }
 
   trigger(name, args) {
-    app.emit(name, args);
+    return app.emit(name, args);
   }
 
   get downloading() {

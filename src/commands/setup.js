@@ -24,13 +24,14 @@ const questions = [
     type: 'password',
     message: 'Enter your Fulcrum password',
     name: 'password'
-  }, {
-    type: 'list',
-    message: 'Select database type',
-    choices: ['SQLite', 'PostgreSQL'],
-    default: 'SQLite',
-    name: 'database'
   }
+  // , {
+  //   type: 'list',
+  //   message: 'Select database type',
+  //   choices: ['SQLite', 'PostgreSQL'],
+  //   default: 'SQLite',
+  //   name: 'database'
+  // }
 ];
 
 const againQuestion = {
@@ -48,11 +49,11 @@ async function setup() {
   while (!exit) {
     const answers = await prompt(questions);
 
-    const config = {type: answers.database};
+    const config = {type: 'SQLite'};
 
     fs.writeFileSync(path.join('data', 'config.json'), JSON.stringify(config, null, 2));
 
-    db = await database({type: answers.database});
+    db = await database({type: 'SQLite'});
 
     const results = await Client.authenticate(answers.email, answers.password);
     const response = results;

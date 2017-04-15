@@ -44,12 +44,12 @@ export default class Synchronizer {
     return this._tasks.shift();
   }
 
-  async run(account, formName, dataSource) {
+  async run(account, formName, dataSource, {fullSync}) {
     const start = new Date().getTime();
 
     const response = await Client.getSync(account);
 
-    this.syncState = JSON.parse(response.body).resources;
+    this.syncState = fullSync ? [] : JSON.parse(response.body).resources;
     this.taskParams = { synchronizer: this, syncState: this.syncState };
 
     this.addTask(new DownloadChoiceLists(this.taskParams));
