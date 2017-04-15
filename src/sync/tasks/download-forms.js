@@ -2,7 +2,7 @@ import Task from './task';
 import Client from '../../api/Client';
 import Form from '../../models/form';
 import {format} from 'util';
-import RecordValues from '../../record-values';
+import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
 
 import Schema from 'fulcrum-schema/dist/schema';
 import sqldiff from 'sqldiff';
@@ -78,7 +78,7 @@ export default class DownloadForms extends Task {
 
       await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
                                       account.db.ident(object.name),
-                                      RecordValues.tableNameWithForm(object)));
+                                      SQLiteRecordValues.tableNameWithForm(object)));
 
       if (isChanged) {
         await this.trigger('form:save', {form: object, account, statements, oldForm, newForm});

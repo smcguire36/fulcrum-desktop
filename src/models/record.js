@@ -1,6 +1,6 @@
 import { PersistentObject } from 'minidb';
 import { Record as RecordBase } from 'fulcrum-core';
-import RecordValues from '../record-values';
+import SQLiteRecordValues from './record-values/sqlite-record-values';
 import Form from './form';
 
 export default class Record extends RecordBase {
@@ -25,7 +25,7 @@ export default class Record extends RecordBase {
   }
 
   async afterSave(options) {
-    const statements = RecordValues.updateForRecordStatements(this.db, this);
+    const statements = SQLiteRecordValues.updateForRecordStatements(this.db, this);
 
     await this.db.execute(statements.map(o => o.sql).join('\n'));
   }
@@ -35,7 +35,7 @@ export default class Record extends RecordBase {
   }
 
   async beforeDelete(options) {
-    const statements = RecordValues.deleteForRecordStatements(this.db, this, this.form);
+    const statements = SQLiteRecordValues.deleteForRecordStatements(this.db, this, this.form);
 
     await this.db.execute(statements.map(o => o.sql).join('\n'));
   }

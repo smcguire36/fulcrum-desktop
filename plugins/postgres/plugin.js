@@ -3,7 +3,7 @@ import pg from 'pg';
 import { Postgres as PostgresMiniDB } from 'minidb';
 import {format} from 'util';
 import PostgresSchema from './schema';
-import RecordValues from './record-values';
+import PostgresRecordValues from '../../src/models/record-values/postgres-record-values';
 
 const POSTGRES_CONFIG = {
   database: 'fulcrumapp',
@@ -28,6 +28,10 @@ export default class PostgresPlugin extends Plugin {
     app.on('record:save', this.onRecordSave);
     app.on('record:delete', this.onRecordDelete);
 
+    // Fetch all the existing tables on startup. This allows us to special case the
+    // creation of new tables even when the form isn't version 1. If the table doesn't
+    // exist, we can pretend the form is version 1 so it creates all new tables instead
+    // of applying a schema diff.
     const rows = await this.run("SELECT table_name AS name FROM information_schema.tables WHERE table_schema='public'");
 
     this.tableNames = rows.map(o => o.name);
@@ -59,7 +63,7 @@ export default class PostgresPlugin extends Plugin {
   }
 
   onFormSave = async ({form, account, oldForm, newForm}) => {
-    const rootTableName = this.tableName(account, 'form_' + form.rowID);
+    const rootTableName = PostgresRecordValues.tableNameWithForm(form);
 
     if (this.tableNames.indexOf(rootTableName) === -1) {
       oldForm = null;
@@ -73,27 +77,27 @@ export default class PostgresPlugin extends Plugin {
 
     await this.run(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
                           this.pgdb.ident(form.name),
-                          RecordValues.tableNameWithForm(form)));
+                          PostgresRecordValues.tableNameWithForm(form)));
   }
 
   onRecordSave = async ({record}) => {
-    const statements = RecordValues.updateForRecordStatements(this.pgdb, record);
+    const statements = PostgresRecordValues.updateForRecordStatements(this.pgdb, record);
 
     await this.run(statements.map(o => o.sql).join('\n'));
   }
 
   onRecordDelete = async ({record}) => {
-    const statements = RecordValues.deleteForRecordStatements(this.pgdb, record, record.form);
+    const statements = PostgresRecordValues.deleteForRecordStatements(this.pgdb, record, record.form);
 
     await this.run(statements.map(o => o.sql).join('\n'));
   }
 
-  onChoiceListSave = ({object}) => {
+  onChoiceListSave = async ({object}) => {
   }
 
-  onClassificationSetSave = ({object}) => {
+  onClassificationSetSave = async ({object}) => {
   }
 
-  onProjectSave = ({object}) => {
+  onProjectSave = async ({object}) => {
   }
 }

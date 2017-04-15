@@ -3,7 +3,7 @@ import request from 'request';
 import Promise from 'bluebird';
 // import qs from 'qs';
 
-import RecordValues from '../../src/record-values';
+// import PostgresRecordValues from '../../src/record-values/postgres-record-values';
 
 import Schema from 'fulcrum-schema/dist/schema';
 import sqldiff from 'sqldiff';
