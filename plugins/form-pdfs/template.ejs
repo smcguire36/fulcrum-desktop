@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+  <head>
+    <title>Report</title>
+    <style>
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1050px;
+        font-size: 16px;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+      }
+
+      .field {
+        padding: 4px 0;
+        border-bottom: 1px solid #cbcbcb;
+        page-break-inside: avoid;
+      }
+
+      .field-label {
+        font-weight: normal;
+        float: left;
+        width: 380px;
+        padding-right: 20px;
+        text-align: left;
+        font-size: 16px;
+      }
+
+      .field-label-full {
+        font-weight: normal;
+        float: left;
+        width: 1050px;
+        text-align: left;
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .field-value {
+        float: left;
+        width: 650px;
+        font-size: 16px;
+      }
+
+      .field-section {
+        float: left;
+        width: 1050px;
+        font-weight: bold;
+        font-size: 22px;
+        border-bottom: 1px solid #cbcbcb;
+        margin-top: 20px;
+      }
+
+      .field-section.metadata {
+        margin-top: 0;
+      }
+
+      .field-clear {
+        height: 0;
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='root'>
+      <h1 class='field-section metadata'><%= form.name %></h1>
+      <div class='field-clear'></div>
+
+      <% renderElements(form, function(element) { %>
+        <% if (element.isSectionElement) { %>
+          <h1 class="field-section"><%= element.label %></h1>
+          <div class='field-clear'></div>
+        <% } else if (element.isRepeatableElement) { %>
+          <h1 class="field-section"><%= element.label %></h1>
+          <div class='field-clear'></div>
+        <% } else { %>
+          <div class="field">
+            <h2 class="field-label"><%= element.type %> <%= element.label %></h2>
+            <div class="field-value"><%= element.description %></div>
+            <div class='field-clear'></div>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+  </body>
+</html>

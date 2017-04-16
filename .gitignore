@@ -1,5 +1,5 @@
 node_modules/
 data/
 npm-debug.log
-reports
-form-pdfs
+reports/*
+form-pdfs/*
