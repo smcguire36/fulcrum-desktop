@@ -57,4 +57,27 @@ export default class Generator {
       }
     }
   }
+
+  static async generate({reportName, template, header, footer, cover, data, directory, ejsOptions}) {
+    const bodyContent = ejs.render(template, data, ejsOptions);
+    const headerContent = header ? ejs.render(header, data, ejsOptions) : null;
+    const footerContent = footer ? ejs.render(footer, data, ejsOptions) : null;
+    const coverContent = cover ? ejs.render(cover, data, ejsOptions) : null;
+
+    const topdf = new HtmlToPdf(bodyContent, headerContent, footerContent, coverContent);
+
+    const result = await topdf.run();
+
+    let outputPath = null;
+
+    if (result) {
+      outputPath = path.join(directory, sanitize(reportName) + '.pdf');
+
+      await move(result.file, outputPath);
+    }
+
+    await topdf.cleanup();
+
+    return {file: outputPath, size: result.size};
+  }
 }
