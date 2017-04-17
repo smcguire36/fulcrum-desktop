@@ -93,6 +93,30 @@ class Generator {
     })();
   }
 
+  static generate({ reportName, template, header, footer, cover, data, directory, ejsOptions }) {
+    return _asyncToGenerator(function* () {
+      const bodyContent = _ejs2.default.render(template, data, ejsOptions);
+      const headerContent = header ? _ejs2.default.render(header, data, ejsOptions) : null;
+      const footerContent = footer ? _ejs2.default.render(footer, data, ejsOptions) : null;
+      const coverContent = cover ? _ejs2.default.render(cover, data, ejsOptions) : null;
+
+      const topdf = new _htmlToPdf2.default(bodyContent, headerContent, footerContent, coverContent);
+
+      const result = yield topdf.run();
+
+      let outputPath = null;
+
+      if (result) {
+        outputPath = _path2.default.join(directory, (0, _sanitizeFilename2.default)(reportName) + '.pdf');
+
+        yield move(result.file, outputPath);
+      }
+
+      yield topdf.cleanup();
+
+      return { file: outputPath, size: result.size };
+    })();
+  }
 }
 exports.default = Generator;
 //# sourceMappingURL=generator.js.map

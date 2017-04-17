@@ -162,26 +162,41 @@ class RecordValues {
     if (feature instanceof _fulcrumCore.Record) {
       if (record._projectRowID) {
         values.project_id = record._projectRowID;
+      }
+
+      if (record.projectID) {
         values.project_resource_id = record.projectID;
       }
 
       if (record._assignedToRowID) {
         values.assigned_to_id = record._assignedToRowID;
+      }
+
+      if (record.assignedToID) {
         values.assigned_to_resource_id = record.assignedToID;
       }
 
       if (record._createdByRowID) {
         values.created_by_id = record._createdByRowID;
+      }
+
+      if (record.createdByID) {
         values.created_by_resource_id = record.createdByID;
       }
 
       if (record._updatedByRowID) {
         values.updated_by_id = record._updatedByRowID;
+      }
+
+      if (record.updatedByID) {
         values.updated_by_resource_id = record.updatedByID;
       }
 
       if (record._changesetRowID) {
         values.changeset_id = record._changesetRowID;
+      }
+
+      if (record.changesetID) {
         values.changeset_resource_id = record.changesetID;
       }
 
@@ -189,11 +204,11 @@ class RecordValues {
         values.status = record.status;
       }
 
-      if (record.latitude) {
+      if (record.latitude != null) {
         values.latitude = record.latitude;
       }
 
-      if (record.longitude) {
+      if (record.longitude != null) {
         values.longitude = record.longitude;
       }
 
@@ -219,22 +234,34 @@ class RecordValues {
 
       if (record._projectRowID) {
         values.record_project_id = record._projectRowID;
+      }
+
+      if (record.projectID) {
         values.record_project_resource_id = record.projectID;
       }
 
       if (record._assignedToRowID) {
         values.record_assigned_to_id = record._assignedToRowID;
+      }
+
+      if (record.assignedToID) {
         values.record_assigned_to_resource_id = record.assignedToID;
       }
 
       // linked fields
       if (feature.createdBy) {
         values.created_by_id = feature.createdBy.rowID;
+      }
+
+      if (feature.createdByID) {
         values.created_by_resource_id = feature.createdByID;
       }
 
       if (feature.updatedBy) {
         values.updated_by_id = feature.updatedBy.rowID;
+      }
+
+      if (feature.updatedByID) {
         values.updated_by_resource_id = feature.updatedByID;
       }
 
@@ -249,19 +276,15 @@ class RecordValues {
 
     values.title = feature.displayValue;
 
-    const searchableValue = feature.searchableValue;
-
     values.form_values = JSON.stringify(feature.formValues.toJSON());
-    values.record_index_text = searchableValue;
-    // values.record_index = {raw: `to_tsvector(${ pgformat('%L', searchableValue) })`};
 
-    // if (feature.hasCoordinate) {
-    //   const wkt = pgformat('POINT(%s %s)', feature.longitude, feature.latitude);
+    this.setupSearch(values, feature);
 
-    //   values.geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
-    // } else {
-    //   values.geometry = null;
-    // }
+    if (feature.hasCoordinate) {
+      values.geometry = this.setupPoint(values, feature.latitude, feature.longitude);
+    } else {
+      values.geometry = null;
+    }
 
     values.created_at = feature.clientCreatedAt || feature.createdAt;
     values.updated_at = feature.clientUpdatedAt || feature.updatedAt;
@@ -287,22 +310,18 @@ class RecordValues {
     values.created_altitude = feature.createdAltitude;
     values.created_horizontal_accuracy = feature.createdAccuracy;
 
-    // if (feature.hasCreatedCoordinate) {
-    //   const wkt = pgformat('POINT(%s %s)', feature.createdLongitude, feature.createdLatitude);
-
-    //   values.created_geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
-    // }
+    if (feature.hasCreatedCoordinate) {
+      values.created_geometry = this.setupPoint(values, feature.createdLatitude, feature.createdLongitude);
+    }
 
     values.updated_latitude = feature.updatedLatitude;
     values.updated_longitude = feature.updatedLongitude;
     values.updated_altitude = feature.updatedAltitude;
     values.updated_horizontal_accuracy = feature.updatedAccuracy;
 
-    // if (feature.hasUpdatedCoordinate) {
-    //   const wkt = pgformat('POINT(%s %s)', feature.updatedLongitude, feature.updatedLatitude);
-
-    //   values.updated_geometry = {raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${ wkt }'), 4326))`};
-    // }
+    if (feature.hasUpdatedCoordinate) {
+      values.updated_geometry = this.setupPoint(values, feature.updatedLatitude, feature.updatedLongitude);
+    }
 
     return values;
   }
@@ -369,6 +388,21 @@ class RecordValues {
     }
 
     return (0, _util.format)('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+  }
+
+  static setupSearch(values, feature) {
+    const searchableValue = feature.searchableValue;
+
+    values.record_index_text = searchableValue;
+    values.record_index = { raw: `to_tsvector(${(0, _pgFormat2.default)('%L', searchableValue)})` };
+
+    return values;
+  }
+
+  static setupPoint(values, latitude, longitude) {
+    const wkt = (0, _pgFormat2.default)('POINT(%s %s)', longitude, latitude);
+
+    return { raw: `ST_Force2D(ST_SetSRID(ST_GeomFromText('${wkt}'), 4326))` };
   }
 }
 exports.default = RecordValues;

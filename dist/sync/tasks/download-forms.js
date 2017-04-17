@@ -18,9 +18,9 @@ var _form2 = _interopRequireDefault(_form);
 
 var _util = require('util');
 
-var _recordValues = require('../../record-values');
+var _sqliteRecordValues = require('../../models/record-values/sqlite-record-values');
 
-var _recordValues2 = _interopRequireDefault(_recordValues);
+var _sqliteRecordValues2 = _interopRequireDefault(_sqliteRecordValues);
 
 var _schema = require('fulcrum-schema/dist/schema');
 
@@ -108,7 +108,7 @@ class DownloadForms extends _task2.default {
 
         const statements = yield _this.updateFormTables(account, oldForm, newForm);
 
-        yield account.db.execute((0, _util.format)('CREATE VIEW %s AS SELECT * FROM %s_view_full', account.db.ident(object.name), _recordValues2.default.tableNameWithForm(object)));
+        yield account.db.execute((0, _util.format)('CREATE VIEW %s AS SELECT * FROM %s_view_full', account.db.ident(object.name), _sqliteRecordValues2.default.tableNameWithForm(object)));
 
         if (isChanged) {
           yield _this.trigger('form:save', { form: object, account, statements, oldForm, newForm });

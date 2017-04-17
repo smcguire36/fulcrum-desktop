@@ -55,8 +55,11 @@ class Command {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      yield _app2.default.initialize();
+      _this.app = _app2.default;
+
       _this._db = yield (0, _database2.default)(_this.config);
+
+      yield _this.app.initialize({ db: _this.db });
     })();
   }
 
@@ -72,6 +75,10 @@ class Command {
 
   get db() {
     return this._db;
+  }
+
+  get yargs() {
+    return _yargs2.default;
   }
 
   get args() {

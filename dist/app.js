@@ -16,6 +16,10 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _yargs = require('yargs');
+
+var _yargs2 = _interopRequireDefault(_yargs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -29,6 +33,7 @@ class App {
 
   constructor() {
     this._plugins = [];
+    this._pluginsByName = [];
     this._listeners = {};
   }
 
@@ -62,16 +67,32 @@ class App {
     })();
   }
 
-  initialize() {
+  initialize({ db }) {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this2.initializePlugins();
+      yield _this2.initializePlugins({ db });
     })();
   }
 
-  initializePlugins() {
+  runTask(command) {
     var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      const name = command.args._[1];
+
+      const plugin = _this3._pluginsByName[name];
+
+      if (plugin && plugin.runTask) {
+        yield plugin.runTask({ app: _this3, yargs: _yargs2.default });
+      } else {
+        console.error('Plugin named', name, 'not found');
+      }
+    })();
+  }
+
+  initializePlugins({ db }) {
+    var _this4 = this;
 
     return _asyncToGenerator(function* () {
       const pluginPaths = _glob2.default.sync(_path2.default.join('.', 'plugins', '*', 'plugin.js'));
@@ -81,15 +102,19 @@ class App {
 
         const PluginClass = require(fullPath).default;
 
-        const plugin = new PluginClass();
+        const plugin = new PluginClass({ db });
 
-        if (plugin.enabled) {
-          console.log('Loading plugin', fullPath);
+        const nameParts = _path2.default.dirname(fullPath).split(_path2.default.sep);
+        const name = nameParts[nameParts.length - 1];
 
-          yield plugin.initialize({ app: _this3 });
+        _this4._pluginsByName[name] = plugin;
+        _this4._plugins.push(plugin);
 
-          _this3._plugins.push(plugin);
-        }
+        // if (plugin.enabled) {
+        console.log('Loading plugin', fullPath);
+
+        yield plugin.initialize({ app: _this4 });
+        // }
       }
     })();
   }

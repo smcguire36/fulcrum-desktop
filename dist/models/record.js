@@ -8,9 +8,9 @@ var _minidb = require('minidb');
 
 var _fulcrumCore = require('fulcrum-core');
 
-var _recordValues = require('../record-values');
+var _sqliteRecordValues = require('./record-values/sqlite-record-values');
 
-var _recordValues2 = _interopRequireDefault(_recordValues);
+var _sqliteRecordValues2 = _interopRequireDefault(_sqliteRecordValues);
 
 var _form = require('./form');
 
@@ -33,7 +33,7 @@ class Record extends _fulcrumCore.Record {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const statements = _recordValues2.default.updateForRecordStatements(_this.db, _this);
+      const statements = _sqliteRecordValues2.default.updateForRecordStatements(_this.db, _this);
 
       yield _this.db.execute(statements.map(function (o) {
         return o.sql;
@@ -53,7 +53,7 @@ class Record extends _fulcrumCore.Record {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      const statements = _recordValues2.default.deleteForRecordStatements(_this3.db, _this3, _this3.form);
+      const statements = _sqliteRecordValues2.default.deleteForRecordStatements(_this3.db, _this3, _this3.form);
 
       yield _this3.db.execute(statements.map(function (o) {
         return o.sql;
