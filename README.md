@@ -21,45 +21,21 @@ This is very very very alpha at the moment.
 
 ### Requirements
 
-* Not sure, but probably Node 5+
+* Latest Node.js
+* Yarn
 
 ### Install
 
 ```sh
 git clone git@github.com:fulcrumapp/fulcrum-sync.git
 cd fulcrum-sync
-npm install
+yarn
 ```
 
 ### Setup
 
 ```sh
-./run setup # follow instructions, choose SQLite
+./run setup # follow login instructions
 
 ./run sync --org 'Fulcrum Labs'
 ```
-
-PostgreSQL:
-
-```
-./setup-postgres.sh
-```
-
-```sh
-# authenticate your account
-./run setup
-```
-
-### Sync
-
-```sh
-# sync a specific account
-./run sync --org 'Fulcrum Labs'
-
-# sync a specific account and form
-./run sync --org 'Fulcrum Labs' --form 'GeoFood'
-```
-
-### Media
-
-The app currently syncs media to `$HOME/Documents/fulcrum-media`. One day the media location will be configurable.
