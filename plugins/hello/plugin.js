@@ -6,12 +6,12 @@ export default class Hello extends Plugin {
   }
 
   initialize({app}) {
-    app.on('choice_list:save', this.onChoiceListSave);
-    app.on('classification_set:save', this.onClassificationSetSave);
-    app.on('project:save', this.onProjectSave);
-    app.on('form:save', this.onFormSave);
-    app.on('record:save', this.onRecordSave);
-    app.on('record:delete', this.onRecordDelete);
+    // app.on('choice_list:save', this.onChoiceListSave);
+    // app.on('classification_set:save', this.onClassificationSetSave);
+    // app.on('project:save', this.onProjectSave);
+    // app.on('form:save', this.onFormSave);
+    // app.on('record:save', this.onRecordSave);
+    // app.on('record:delete', this.onRecordDelete);
   }
 
   log = (...args) => {

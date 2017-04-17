@@ -16,8 +16,11 @@ const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json')).toSt
 
 export default class Command {
   async setup() {
-    await app.initialize();
+    this.app = app;
+
     this._db = await database(this.config);
+
+    await this.app.initialize({db: this.db});
   }
 
   async destroy() {
@@ -28,6 +31,10 @@ export default class Command {
 
   get db() {
     return this._db;
+  }
+
+  get yargs() {
+    return yargs;
   }
 
   get args() {

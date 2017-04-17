@@ -6,10 +6,35 @@ import fs from 'fs';
 
 const PDF_PATH = path.join('.', 'form-pdfs');
 
-export default class ReportPlugin extends Plugin {
+export default class FormPDFPlugin extends Plugin {
   // return true to enable this plugin
   get enabled() {
     return false;
+  }
+
+  async runTask({app, yargs}) {
+    this.args = yargs.usage('Usage: form-pdfs --org [org]')
+      .demandOption([ 'org' ])
+      .argv;
+
+    const account = await this.fetchAccount(this.args.org);
+
+    if (account) {
+      const dataSource = await this.createDataSource(account);
+
+      const forms = await account.findForms();
+
+      for (const form of forms) {
+        console.log('Generating report', form.name);
+
+        // load all of the form dependencies
+        await form.load(dataSource);
+
+        await this.generateReport(form);
+      }
+    } else {
+      console.error('Unable to find account', this.args.org);
+    }
   }
 
   async initialize({app}) {
@@ -17,10 +42,14 @@ export default class ReportPlugin extends Plugin {
 
     this.template = fs.readFileSync(path.join(__dirname, 'template.ejs')).toString();
 
-    app.on('form:save', this.onFormSave);
+    // app.on('form:save', this.onFormSave);
   }
 
   onFormSave = async ({form}) => {
+    await this.generateReport(form);
+  }
+
+  async generateReport(form) {
     const params = {
       reportName: form.name,
       directory: PDF_PATH,

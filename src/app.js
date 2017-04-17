@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import glob from 'glob';
 import path from 'path';
+import yargs from 'yargs';
 
 let app = null;
 
@@ -11,6 +12,7 @@ class App {
 
   constructor() {
     this._plugins = [];
+    this._pluginsByName = [];
     this._listeners = {};
   }
 
@@ -40,11 +42,23 @@ class App {
     }
   }
 
-  async initialize() {
-    await this.initializePlugins();
+  async initialize({db}) {
+    await this.initializePlugins({db});
   }
 
-  async initializePlugins() {
+  async runTask(command) {
+    const name = command.args._[1];
+
+    const plugin = this._pluginsByName[name];
+
+    if (plugin && plugin.runTask) {
+      await plugin.runTask({app: this, yargs});
+    } else {
+      console.error('Plugin named', name, 'not found');
+    }
+  }
+
+  async initializePlugins({db}) {
     const pluginPaths = glob.sync(path.join('.', 'plugins', '*', 'plugin.js'));
 
     for (const pluginPath of pluginPaths) {
@@ -52,15 +66,19 @@ class App {
 
       const PluginClass = require(fullPath).default;
 
-      const plugin = new PluginClass();
+      const plugin = new PluginClass({db});
 
-      if (plugin.enabled) {
+      const nameParts = path.dirname(fullPath).split(path.sep);
+      const name = nameParts[nameParts.length - 1];
+
+      this._pluginsByName[name] = plugin;
+      this._plugins.push(plugin);
+
+      // if (plugin.enabled) {
         console.log('Loading plugin', fullPath);
 
         await plugin.initialize({app: this});
-
-        this._plugins.push(plugin);
-      }
+      // }
     }
   }
 

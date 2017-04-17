@@ -14,7 +14,7 @@ export default class ReportPlugin extends Plugin {
   async initialize({app}) {
     mkdirp.sync(REPORT_PATH);
 
-    app.on('record:save', this.onRecordSave);
+    // app.on('record:save', this.onRecordSave);
   }
 
   onRecordSave = async ({record}) => {
