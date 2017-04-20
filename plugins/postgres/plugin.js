@@ -40,6 +40,10 @@ export default class PostgresPlugin extends Plugin {
     this.pgdb = new PostgresMiniDB({});
   }
 
+  async dispose() {
+    await this.pool.end();
+  }
+
   run = (sql) => {
     sql = sql.replace(/\0/g, '');
 
