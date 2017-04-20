@@ -31,6 +31,7 @@ export default class Task {
     const update = async () => {
       if (oldState && newState) {
         oldState.hash = newState.hash;
+        oldState.scope = oldState.scope || '';
 
         await oldState.save();
       }

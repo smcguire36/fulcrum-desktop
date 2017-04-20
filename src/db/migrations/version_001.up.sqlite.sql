@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS sync_state (
 );
 
 CREATE UNIQUE INDEX idx_sync_state_account_resource_scope
-ON sync_state (account_id ASC, resource ASC, COALESCE(scope, '') ASC);
+ON sync_state (account_id ASC, resource ASC, scope ASC);
 
 CREATE TABLE IF NOT EXISTS records (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
