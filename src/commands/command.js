@@ -24,6 +24,8 @@ export default class Command {
   }
 
   async destroy() {
+    await this.app.dispose({db: this.db});
+
     await this._db.close();
 
     Postgres.shutdown();

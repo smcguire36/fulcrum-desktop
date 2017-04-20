@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+// import EventEmitter from 'events';
 import glob from 'glob';
 import path from 'path';
 import yargs from 'yargs';
@@ -46,6 +46,14 @@ class App {
     await this.initializePlugins({db});
   }
 
+  async dispose({db}) {
+    for (const plugin of this._plugins) {
+      if (plugin.dispose) {
+        await plugin.dispose();
+      }
+    }
+  }
+
   async runTask(command) {
     const name = command.args._[1];
 
@@ -74,11 +82,9 @@ class App {
       this._pluginsByName[name] = plugin;
       this._plugins.push(plugin);
 
-      // if (plugin.enabled) {
-        console.log('Loading plugin', fullPath);
+      console.log('Loading plugin', fullPath);
 
-        await plugin.initialize({app: this});
-      // }
+      await plugin.initialize({app: this});
     }
   }
 
