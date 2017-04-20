@@ -3,6 +3,8 @@ import Client from '../../api/Client';
 import Record from '../../models/record';
 import {format} from 'util';
 
+const PAGE_SIZE = 1000;
+
 export default class DownloadRecords extends Task {
   constructor({form, ...args}) {
     super(args);
@@ -27,8 +29,8 @@ export default class DownloadRecords extends Task {
 
     this.progress({message: this.downloading + ' ' + this.form.name.blue});
 
-    const results = lastSync == null ? (await Client.getRecords(account, form, sequence))
-                                     : (await Client.getRecordsHistory(account, form, sequence));
+    const results = lastSync == null ? (await Client.getRecords(account, form, sequence, PAGE_SIZE))
+                                     : (await Client.getRecordsHistory(account, form, sequence, PAGE_SIZE));
 
     const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
 

@@ -142,14 +142,14 @@ class Client {
     });
   }
 
-  async getRecords(account, form, sequence) {
+  async getRecords(account, form, sequence, pageSize) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/records.json')
     });
 
     options.qs = {
       form_id: form.id,
-      per_page: 1000,
+      per_page: pageSize,
       extents: 0,
       sequence: sequence || 0
     };
@@ -157,14 +157,14 @@ class Client {
     return await req(options);
   }
 
-  async getRecordsHistory(account, form, sequence) {
+  async getRecordsHistory(account, form, sequence, pageSize) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/records/history.json')
     });
 
     options.qs = {
       form_id: form.id,
-      per_page: 1000,
+      per_page: pageSize,
       extents: 0,
       sequence: sequence || 0
     };
