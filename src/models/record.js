@@ -51,6 +51,46 @@ export default class Record extends RecordBase {
   set form(form) {
     this.setOne('form', form);
   }
+
+  static queryRowToAttributes(row) {
+    const attributes = {
+      id: row._record_id,
+      project_id: row._project_id,
+      assigned_to_id: row._assigned_to_id,
+      status: row._status,
+      latitude: row._latitude,
+      longitude: row._longitude,
+      client_created_at: new Date(row._created_at),
+      client_updated_at: new Date(row._updated_at),
+      version: row._version,
+      created_by_id: row._created_by_id,
+      updated_by_id: row._updated_by_id,
+      created_at: new Date(row._server_created_at),
+      updated_at: new Date(row._server_updated_at),
+      altitude: row._altitude,
+      speed: row._speed,
+      course: row._course,
+      horizontal_accuracy: row._horizontal_accuracy,
+      vertical_accuracy: row._vertical_accuracy,
+      form_values: JSON.parse(row._form_values),
+      changeset_id: row._changeset_id,
+      created_latitude: row._created_latitude,
+      created_longitude: row._created_longitude,
+      created_geometry: row._created_geometry,
+      created_altitude: row._created_altitude,
+      created_horizontal_accuracy: row._created_horizontal_accuracy,
+      updated_latitude: row._updated_latitude,
+      updated_longitude: row._updated_longitude,
+      updated_geometry: row._updated_geometry,
+      updated_altitude: row._updated_altitude,
+      updated_horizontal_accuracy: row._updated_horizontal_accuracy,
+      created_duration: row._created_duration,
+      updated_duration: row._updated_duration,
+      edited_duration: row._edited_duration
+    };
+
+    return attributes;
+  }
 }
 
 PersistentObject.register(Record);

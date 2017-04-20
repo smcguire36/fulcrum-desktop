@@ -1,5 +1,6 @@
 import { PersistentObject } from 'minidb';
 import { Form as FormBase } from 'fulcrum-core';
+import Record from './record';
 
 export default class Form extends FormBase {
   static get tableName() {
@@ -19,6 +20,26 @@ export default class Form extends FormBase {
       { name: 'lastSync', column: 'last_sync', type: 'datetime' },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
+  }
+
+  async findRecordsBySQL(sql, values) {
+    const tableName = `account_${this._accountRowID}_form_${this.rowID}_view_full`;
+
+    sql = 'SELECT * FROM ' + tableName + (sql ? ' WHERE ' + sql : '');
+
+    const rows = await this.db.all(sql, values);
+
+    const records = [];
+
+    for (const row of rows) {
+      const attributes = Record.queryRowToAttributes(row);
+
+      const record = new Record(attributes, this);
+
+      records.push(record);
+    }
+
+    return records;
   }
 }
 

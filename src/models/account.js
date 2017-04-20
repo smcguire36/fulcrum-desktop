@@ -1,6 +1,7 @@
 import { PersistentObject } from 'minidb';
 import Project from './project';
 import Form from './form';
+import Record from './record';
 import SyncState from './sync-state';
 
 export default class Account {
@@ -55,6 +56,26 @@ export default class Account {
 
   findForms(where) {
     return Form.findAll(this.db, {...where, account_id: this.rowID}, 'name ASC');
+  }
+
+  findFirstForm(where) {
+    return Form.findFirst(this.db, {...where, account_id: this.rowID}, 'name ASC');
+  }
+
+  findFirstRecord(where) {
+    return Record.findFirst(this.db, {...where, account_id: this.rowID});
+  }
+
+  findEachRecord(where, callback) {
+    return Record.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachBySQL(sql, values, callback) {
+    return this.db.each(sql, values, callback);
+  }
+
+  findBySQL(sql, values, callback) {
+    return this.db.all(sql, values, callback);
   }
 
   findActiveForms(where) {
