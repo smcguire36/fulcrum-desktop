@@ -11,22 +11,24 @@ export default class DownloadRecords extends Task {
   }
 
   async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'records', this.form.id);
+    const state = await this.checkSyncState(account, 'records', this.form.id);
 
-    if (!sync.needsUpdate) {
+    if (!state.needsUpdate) {
       return;
     }
 
-    await this.downloadRecordPage(account, this.form, 1, null, this.form._lastSync, sync);
+    const sequence = this.form._lastSync ? this.form._lastSync.getTime() : null;
+
+    await this.downloadRecords(account, this.form, this.form._lastSync, sequence, state);
   }
 
-  async downloadRecordPage(account, form, page, total, lastSync, sync) {
+  async downloadRecords(account, form, lastSync, sequence, state) {
     const beginFetchTime = new Date();
 
-    this.progress({message: this.downloading + ' ' + this.form.name.blue + ' ' + format('page %s', page).yellow});
+    this.progress({message: this.downloading + ' ' + this.form.name.blue});
 
-    const results = lastSync == null ? (await Client.getRecords(account, form, page))
-                                     : (await Client.getRecordsHistory(account, form, page, lastSync));
+    const results = lastSync == null ? (await Client.getRecords(account, form, sequence))
+                                     : (await Client.getRecordsHistory(account, form, sequence));
 
     const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
 
@@ -43,7 +45,7 @@ export default class DownloadRecords extends Task {
 
     let now = new Date();
 
-    this.progress({message: this.processing + ' ' + this.form.name.blue + ' ' + format('page %s/%s', page, data.total_pages || 1).yellow, count: 0, total: objects.length});
+    this.progress({message: this.processing + ' ' + this.form.name.blue, count: 0, total: objects.length});
 
     await db.transaction(async (database) => {
       for (let index = 0; index < objects.length; ++index) {
@@ -84,7 +86,7 @@ export default class DownloadRecords extends Task {
           }
         }
 
-        this.progress({message: this.processing + ' ' + this.form.name.blue + ' ' + format('page %s/%s', page, data.total_pages || 1).yellow, count: index + 1, total: objects.length});
+        this.progress({message: this.processing + ' ' + this.form.name.blue, count: index + 1, total: objects.length});
       }
     });
 
@@ -93,18 +95,17 @@ export default class DownloadRecords extends Task {
     // update the lastSync date
     await form.save();
 
-    const message = format(this.finished + ' %s | %s | %s | %s',
+    const message = format(this.finished + ' %s | %s | %s',
                            form.name.blue,
-                           format('%s/%s', page, data.total_pages || 1).yellow,
                            (totalFetchTime + 'ms').cyan,
                            (totalTime + 'ms').red);
 
     this.progress({message, count: objects.length, total: objects.length});
 
-    if (data.total_pages > page) {
-      await this.downloadRecordPage(account, form, page + 1, data.total_pages, lastSync, sync);
+    if (data.next_sequence) {
+      await this.downloadRecords(account, form, lastSync, data.next_sequence, state);
     } else {
-      await sync.update();
+      await state.update();
     }
   }
 }

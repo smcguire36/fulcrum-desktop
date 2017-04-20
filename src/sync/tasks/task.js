@@ -14,13 +14,13 @@ export default class Task {
 
   getSyncState(resource, scope = null) {
     return this._syncState.find((object) => {
-      return object.resource === resource && ((object.scope == null && scope == null) || object.scope === scope);
+      return object.resource === resource && ((object.scope == null && scope === '') || object.scope === scope);
     });
   }
 
   async checkSyncState(account, resource, scope = null) {
-    const oldState = await account.findSyncState({resource, scope});
-    const newState = this.getSyncState(resource, scope);
+    const oldState = await account.findSyncState({resource, scope: scope || ''});
+    const newState = this.getSyncState(resource, scope || '');
 
     let needsUpdate = true;
 

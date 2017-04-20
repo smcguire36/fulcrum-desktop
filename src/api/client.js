@@ -142,22 +142,22 @@ class Client {
     });
   }
 
-  async getRecords(account, form, page) {
+  async getRecords(account, form, sequence) {
     const options = this.optionsForRequest(account, {
-      // url: this.urlForResource('records/history')
       url: this.urlForResource('/api/v2/records.json')
     });
 
     options.qs = {
       form_id: form.id,
       per_page: 1000,
-      page: page
+      extents: 0,
+      sequence: sequence || 0
     };
 
     return await req(options);
   }
 
-  async getRecordsHistory(account, form, page, lastSync) {
+  async getRecordsHistory(account, form, sequence) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/records/history.json')
     });
@@ -165,8 +165,8 @@ class Client {
     options.qs = {
       form_id: form.id,
       per_page: 1000,
-      page: page,
-      updated_since: lastSync ? lastSync.getTime() / 1000 : 0
+      extents: 0,
+      sequence: sequence || 0
     };
 
     return await req(options);
