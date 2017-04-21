@@ -39,3 +39,15 @@ yarn
 
 ./run sync --org 'Fulcrum Labs'
 ```
+
+### Postgres Build
+
+```sh
+# first, sync the local database
+
+# run this once, it sets up the postgres database
+./setup-postgres.sh
+
+# run this to fully rebuild the postgres tables from the SQLite database
+./run task postgres --org 'Fulcrum Labs'
+```
