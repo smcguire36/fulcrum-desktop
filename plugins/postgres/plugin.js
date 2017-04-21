@@ -18,6 +18,38 @@ export default class PostgresPlugin extends Plugin {
     return false;
   }
 
+  async runTask({app, yargs}) {
+    this.args = yargs.usage('Usage: postgres --org [org]')
+      .demandOption([ 'org' ])
+      .argv;
+
+    const account = await this.fetchAccount(this.args.org);
+
+    if (account) {
+      const forms = await account.findActiveForms({});
+
+      for (const form of forms) {
+        try {
+          await this.updateForm(form, account, this.formVersion(form), null);
+        } catch (ex) {
+          // ignore errors
+        }
+
+        await this.updateForm(form, account, null, this.formVersion(form));
+
+        await form.findEachRecord({}, async (record) => {
+          await record.getForm();
+
+          process.stdout.write('.');
+
+          await this.updateRecord(record);
+        });
+      }
+    } else {
+      console.error('Unable to find account', this.args.org);
+    }
+  }
+
   async initialize({app}) {
     this.pool = new pg.Pool(POSTGRES_CONFIG);
 
@@ -67,6 +99,35 @@ export default class PostgresPlugin extends Plugin {
   }
 
   onFormSave = async ({form, account, oldForm, newForm}) => {
+    await this.updateForm(form, account, oldForm, newForm);
+  }
+
+  onRecordSave = async ({record}) => {
+    await this.updateRecord(record);
+  }
+
+  onRecordDelete = async ({record}) => {
+    const statements = PostgresRecordValues.deleteForRecordStatements(this.pgdb, record, record.form);
+
+    await this.run(statements.map(o => o.sql).join('\n'));
+  }
+
+  onChoiceListSave = async ({object}) => {
+  }
+
+  onClassificationSetSave = async ({object}) => {
+  }
+
+  onProjectSave = async ({object}) => {
+  }
+
+  updateRecord = async (record) => {
+    const statements = PostgresRecordValues.updateForRecordStatements(this.pgdb, record);
+
+    await this.run(statements.map(o => o.sql).join('\n'));
+  }
+
+  updateForm = async (form, account, oldForm, newForm) => {
     const rootTableName = PostgresRecordValues.tableNameWithForm(form);
 
     if (this.tableNames.indexOf(rootTableName) === -1) {
@@ -84,24 +145,16 @@ export default class PostgresPlugin extends Plugin {
                           PostgresRecordValues.tableNameWithForm(form)));
   }
 
-  onRecordSave = async ({record}) => {
-    const statements = PostgresRecordValues.updateForRecordStatements(this.pgdb, record);
+  formVersion = (form) => {
+    if (form == null) {
+      return null;
+    }
 
-    await this.run(statements.map(o => o.sql).join('\n'));
-  }
-
-  onRecordDelete = async ({record}) => {
-    const statements = PostgresRecordValues.deleteForRecordStatements(this.pgdb, record, record.form);
-
-    await this.run(statements.map(o => o.sql).join('\n'));
-  }
-
-  onChoiceListSave = async ({object}) => {
-  }
-
-  onClassificationSetSave = async ({object}) => {
-  }
-
-  onProjectSave = async ({object}) => {
+    return {
+      id: form._id,
+      row_id: form.rowID,
+      name: form._name,
+      elements: form._elementsJSON
+    };
   }
 }

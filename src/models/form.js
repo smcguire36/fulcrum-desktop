@@ -22,6 +22,10 @@ export default class Form extends FormBase {
     ];
   }
 
+  findEachRecord(where, callback) {
+    return Record.findEach(this.db, {where: {...where, form_id: this.rowID}}, callback);
+  }
+
   async findRecordsBySQL(sql, values) {
     const tableName = `account_${this._accountRowID}_form_${this.rowID}_view_full`;
 
