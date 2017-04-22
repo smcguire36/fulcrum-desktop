@@ -2,37 +2,25 @@ import 'colors';
 import yargs from 'yargs';
 import Promise from 'bluebird';
 import Account from '../models/account';
-import database from '../db/database';
-import fs from 'fs';
-import path from 'path';
 import { DataSource } from 'fulcrum-core';
 import LocalDatabaseDataSource from '../local-database-data-source';
-import { Postgres } from 'minidb';
 import app from '../app';
 
 Promise.longStackTraces();
-
-const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json')).toString());
 
 export default class Command {
   async setup() {
     this.app = app;
 
-    this._db = await database(this.config);
-
-    await this.app.initialize({db: this.db});
+    await this.app.initialize();
   }
 
   async destroy() {
-    await this.app.dispose({db: this.db});
-
-    await this._db.close();
-
-    Postgres.shutdown();
+    await this.app.dispose();
   }
 
   get db() {
-    return this._db;
+    return this.app.db;
   }
 
   get yargs() {
@@ -41,10 +29,6 @@ export default class Command {
 
   get args() {
     return yargs.argv;
-  }
-
-  get config() {
-    return config;
   }
 
   async fetchAccount(name) {

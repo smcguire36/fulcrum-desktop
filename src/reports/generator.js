@@ -9,7 +9,7 @@ import sanitize from 'sanitize-filename';
 
 const move = Promise.promisify(mv);
 
-export default class Generator {
+export default class ReportGenerator {
   constructor(record) {
     this.record = record;
   }

@@ -1,7 +1,12 @@
-// import EventEmitter from 'events';
 import glob from 'glob';
 import path from 'path';
 import yargs from 'yargs';
+import mkdirp from 'mkdirp';
+import os from 'os';
+import database from './db/database';
+import api from './api';
+
+import Account from './models/account';
 
 let app = null;
 
@@ -14,6 +19,31 @@ class App {
     this._plugins = [];
     this._pluginsByName = [];
     this._listeners = {};
+    this._api = api;
+
+    // TODO(zhm) this needs to be adjusted for Windows and Linux
+    this._rootDirectory = path.join(os.homedir(), 'Documents', 'fulcrum-sync');
+
+    this.mkdirp('data');
+    this.mkdirp('plugins');
+    this.mkdirp('media');
+    this.mkdirp('reports');
+  }
+
+  get api() {
+    return this._api;
+  }
+
+  dir(dir) {
+    return path.join(this._rootDirectory, dir);
+  }
+
+  mkdirp(name) {
+    mkdirp.sync(this.dir(name));
+  }
+
+  get db() {
+    return this._db;
   }
 
   on(name, func) {
@@ -42,16 +72,22 @@ class App {
     }
   }
 
-  async initialize({db}) {
-    await this.initializePlugins({db});
+  async initialize() {
+    const file = path.join(this.dir('data'), 'fulcrum.db');
+
+    this._db = await database({file});
+
+    await this.initializePlugins();
   }
 
-  async dispose({db}) {
+  async dispose() {
     for (const plugin of this._plugins) {
       if (plugin.dispose) {
         await plugin.dispose();
       }
     }
+
+    await this._db.close();
   }
 
   async runTask(command) {
@@ -66,15 +102,15 @@ class App {
     }
   }
 
-  async initializePlugins({db}) {
-    const pluginPaths = glob.sync(path.join('.', 'plugins', '*', 'plugin.js'));
+  async initializePlugins() {
+    const pluginPaths = glob.sync(path.join(this.dir('plugins'), '*', 'plugin.js'));
 
     for (const pluginPath of pluginPaths) {
       const fullPath = path.resolve(pluginPath);
 
       const PluginClass = require(fullPath).default;
 
-      const plugin = new PluginClass({db});
+      const plugin = new PluginClass({db: this.db, app: this});
 
       const nameParts = path.dirname(fullPath).split(path.sep);
       const name = nameParts[nameParts.length - 1];
@@ -88,9 +124,17 @@ class App {
     }
   }
 
-  // emit(name, ...args) {
-  //   this.emit(name, {app: this, ...args[0]});
-  // }
+  async fetchAccount(name) {
+    const where = {};
+
+    if (name) {
+      where.organization_name = name;
+    }
+
+    const accounts = await Account.findAll(this.db, where);
+
+    return accounts[0];
+  }
 }
 
 app = new App();

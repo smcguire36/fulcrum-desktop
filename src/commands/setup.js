@@ -1,15 +1,8 @@
+import Command from './command';
 import 'colors';
 import inquirer from 'inquirer';
 import Account from '../models/account';
-import database from '../db/database';
-import fs from 'fs';
-import path from 'path';
-
 import Client from '../api/client';
-
-import Promise from 'bluebird';
-
-Promise.longStackTraces();
 
 function prompt(questions) {
   return inquirer.prompt(questions);
@@ -25,13 +18,6 @@ const questions = [
     message: 'Enter your Fulcrum password',
     name: 'password'
   }
-  // , {
-  //   type: 'list',
-  //   message: 'Select database type',
-  //   choices: ['SQLite', 'PostgreSQL'],
-  //   default: 'SQLite',
-  //   name: 'database'
-  // }
 ];
 
 const againQuestion = {
@@ -41,75 +27,54 @@ const againQuestion = {
   'default': true
 };
 
-let db = null;
+class Setup extends Command {
+  async run() {
+    let exit = false;
 
-async function setup() {
-  let exit = false;
+    while (!exit) {
+      const answers = await prompt(questions);
 
-  while (!exit) {
-    const answers = await prompt(questions);
+      const results = await Client.authenticate(answers.email, answers.password);
+      const response = results;
+      const body = results.body;
 
-    const config = {type: 'SQLite'};
+      if (response.statusCode === 200) {
+        console.log(('Successfully authenticated with ' + answers.email).green);
+        const user = JSON.parse(body).user;
 
-    fs.writeFileSync(path.join('data', 'config.json'), JSON.stringify(config, null, 2));
+        for (let context of user.contexts) {
+          const contextAttributes = {
+            user_resource_id: user.id,
+            organization_resource_id: context.id
+          };
 
-    db = await database({type: 'SQLite'});
+          const db = this.db;
 
-    const results = await Client.authenticate(answers.email, answers.password);
-    const response = results;
-    const body = results.body;
+          const account = await Account.findOrCreate(db, contextAttributes);
 
-    if (response.statusCode === 200) {
-      console.log(('Successfully authenticated with ' + answers.email).green);
-      const user = JSON.parse(body).user;
+          account._organizationName = context.name;
+          account._firstName = user.first_name;
+          account._lastName = user.last_name;
+          account._email = user.email;
+          account._token = context.api_token;
 
-      for (let context of user.contexts) {
-        const contextAttributes = {
-          user_resource_id: user.id,
-          organization_resource_id: context.id
-        };
+          await account.save();
 
-        const account = await Account.findOrCreate(db, contextAttributes);
+          console.log('✓'.green, context.name);
 
-        account._organizationName = context.name;
-        account._firstName = user.first_name;
-        account._lastName = user.last_name;
-        account._email = user.email;
-        account._token = context.api_token;
+          exit = true;
+        }
+      } else {
+        console.log('Username or password incorrect'.red);
 
-        await account.save();
+        let retry = await prompt(againQuestion);
 
-        console.log('✓'.green, context.name);
-      }
-      return user;
-    } else {
-      console.log('Username or password incorrect'.red);
-
-      let retry = await prompt(againQuestion);
-
-      if (!retry.again) {
-        exit = true;
+        if (!retry.again) {
+          exit = true;
+        }
       }
     }
   }
-
-  return null;
 }
 
-function onerror(err) {
-  console.log('ERROR!', err);
-
-  if (db) {
-    db.close();
-  }
-
-  console.error(err.stack);
-
-  throw err;
-}
-
-setup().then(function(result) {
-  if (db) {
-    db.close();
-  }
-}).catch(onerror);
+new Setup().start();

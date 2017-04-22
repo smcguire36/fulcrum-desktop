@@ -7,7 +7,6 @@ class Sync extends Command {
 
     for (const account of accounts) {
       await this.syncLoop(account, this.args.full);
-      // await Synchronizer.instance.run(account, this.args.form, dataSource);
     }
   }
 

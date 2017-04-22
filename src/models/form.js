@@ -42,6 +42,8 @@ export default class Form extends FormBase {
 
       const record = new Record(attributes, this);
 
+      record._db = this.db;
+
       records.push(record);
     }
 
