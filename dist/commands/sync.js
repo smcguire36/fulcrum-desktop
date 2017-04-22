@@ -21,7 +21,6 @@ class Sync extends _command2.default {
 
       for (const account of accounts) {
         yield _this.syncLoop(account, _this.args.full);
-        // await Synchronizer.instance.run(account, this.args.form, dataSource);
       }
     })();
   }

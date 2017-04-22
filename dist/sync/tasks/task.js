@@ -30,7 +30,7 @@ class Task {
 
   getSyncState(resource, scope = null) {
     return this._syncState.find(object => {
-      return object.resource === resource && (object.scope == null && scope == null || object.scope === scope);
+      return object.resource === resource && (object.scope == null && scope === '' || object.scope === scope);
     });
   }
 
@@ -38,8 +38,8 @@ class Task {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const oldState = yield account.findSyncState({ resource, scope });
-      const newState = _this.getSyncState(resource, scope);
+      const oldState = yield account.findSyncState({ resource, scope: scope || '' });
+      const newState = _this.getSyncState(resource, scope || '');
 
       let needsUpdate = true;
 
@@ -51,6 +51,7 @@ class Task {
         var _ref = _asyncToGenerator(function* () {
           if (oldState && newState) {
             oldState.hash = newState.hash;
+            oldState.scope = oldState.scope || '';
 
             yield oldState.save();
           }
@@ -130,6 +131,27 @@ class Task {
       this.bar.curr = count;
       this.bar.render();
     }
+  }
+
+  markDeletedObjects(localObjects, newObjects) {
+    return _asyncToGenerator(function* () {
+      // delete all objects that don't exist on the server anymore
+      for (const object of localObjects) {
+        let objectExistsOnServer = false;
+
+        for (const attributes of newObjects) {
+          if (attributes.id === object.id) {
+            objectExistsOnServer = true;
+            break;
+          }
+        }
+
+        if (!objectExistsOnServer) {
+          object._deletedAt = object._deletedAt ? object._deletedAt : new Date();
+          yield object.save();
+        }
+      }
+    })();
   }
 }
 exports.default = Task;

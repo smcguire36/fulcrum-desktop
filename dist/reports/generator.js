@@ -40,7 +40,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const move = _bluebird2.default.promisify(_mv2.default);
 
-class Generator {
+class ReportGenerator {
   constructor(record) {
     this.renderValues = (feature, renderFunction) => {
       for (const element of feature.formValues.container.elements) {
@@ -118,5 +118,5 @@ class Generator {
     })();
   }
 }
-exports.default = Generator;
+exports.default = ReportGenerator;
 //# sourceMappingURL=generator.js.map

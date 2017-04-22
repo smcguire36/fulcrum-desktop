@@ -22,6 +22,14 @@ class SyncState {
   set hash(hash) {
     this._hash = hash;
   }
+
+  get scope() {
+    return this._scope;
+  }
+
+  set scope(scope) {
+    this._scope = scope;
+  }
 }
 
 exports.default = SyncState;

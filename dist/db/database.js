@@ -4,19 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _minidb = require('minidb');
 
 var _migrations = require('./migrations');
 
 var _migrations2 = _interopRequireDefault(_migrations);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _mkdirp = require('mkdirp');
-
-var _mkdirp2 = _interopRequireDefault(_mkdirp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,25 +18,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 let instance = null;
 
-const dir = _path2.default.join('.', 'data');
-
-_mkdirp2.default.sync(dir);
-
-const sqliteOptions = {
-  file: _path2.default.join(dir, 'fulcrumapp.db'),
+const defaultDatabaseOptions = {
   wal: true,
   autoVacuum: true,
   synchronous: 'off'
 };
-
-const postgresOptions = {
-  db: 'dbname = fulcrumapp'
-};
-
-_minidb.Postgres.setNoticeProcessor(message => {
-  // TODO(zhm) handle warnings on the connection
-  // console.warn(message);
-});
 
 exports.default = (() => {
   var _ref = _asyncToGenerator(function* (options) {
@@ -50,13 +30,7 @@ exports.default = (() => {
       return instance;
     }
 
-    if (options.type === 'SQLite') {
-      instance = yield _minidb.SQLite.open(sqliteOptions);
-    } else if (options.type === 'PostgreSQL') {
-      instance = new _minidb.Postgres(postgresOptions);
-    } else {
-      throw new Error('unsupported database type: ' + options.type);
-    }
+    instance = yield _minidb.SQLite.open(_extends({}, defaultDatabaseOptions, options));
 
     const migrations = new _migrations2.default(instance);
 

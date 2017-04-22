@@ -59,24 +59,9 @@ class DownloadForms extends _task2.default {
 
       _this.progress({ message: _this.processing + ' forms', count: 0, total: objects.length });
 
-      const localForms = yield account.findForms({});
+      const localObjects = yield account.findForms();
 
-      // delete all forms that don't exist on the server anymore
-      for (const form of localForms) {
-        let formExistsOnServer = false;
-
-        for (const attributes of objects) {
-          if (attributes.id === form.id) {
-            formExistsOnServer = true;
-            break;
-          }
-        }
-
-        if (!formExistsOnServer) {
-          form._deletedAt = form._deletedAt ? form._deletedAt : new Date();
-          yield form.save();
-        }
-      }
+      _this.markDeletedObjects(localObjects, objects);
 
       for (let index = 0; index < objects.length; ++index) {
         const attributes = objects[index];
@@ -97,6 +82,7 @@ class DownloadForms extends _task2.default {
         const isChanged = !object.isPersisted || attributes.version !== object.version;
 
         object.updateFromAPIAttributes(attributes);
+        object._deletedAt = null;
 
         yield object.save();
 

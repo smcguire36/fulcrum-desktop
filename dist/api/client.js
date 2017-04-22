@@ -90,12 +90,36 @@ class Client {
     })();
   }
 
-  getForms(account) {
+  getRoles(account) {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
       const options = _this3.optionsForRequest(account, {
-        url: _this3.urlForResource('/api/v2/forms.json')
+        url: _this3.urlForResource('/api/v2/roles.json')
+      });
+
+      return yield req(options);
+    })();
+  }
+
+  getMemberships(account) {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      const options = _this4.optionsForRequest(account, {
+        url: _this4.urlForResource('/api/v2/memberships.json')
+      });
+
+      return yield req(options);
+    })();
+  }
+
+  getForms(account) {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      const options = _this5.optionsForRequest(account, {
+        url: _this5.urlForResource('/api/v2/forms.json')
       });
 
       return yield req(options);
@@ -103,11 +127,11 @@ class Client {
   }
 
   getChoiceLists(account) {
-    var _this4 = this;
+    var _this6 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this4.optionsForRequest(account, {
-        url: _this4.urlForResource('/api/v2/choice_lists.json')
+      const options = _this6.optionsForRequest(account, {
+        url: _this6.urlForResource('/api/v2/choice_lists.json')
       });
 
       return yield req(options);
@@ -115,11 +139,11 @@ class Client {
   }
 
   getClassificationSets(account) {
-    var _this5 = this;
+    var _this7 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this5.optionsForRequest(account, {
-        url: _this5.urlForResource('/api/v2/classification_sets.json')
+      const options = _this7.optionsForRequest(account, {
+        url: _this7.urlForResource('/api/v2/classification_sets.json')
       });
 
       return yield req(options);
@@ -127,11 +151,11 @@ class Client {
   }
 
   getProjects(account) {
-    var _this6 = this;
+    var _this8 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this6.optionsForRequest(account, {
-        url: _this6.urlForResource('/api/v2/projects.json')
+      const options = _this8.optionsForRequest(account, {
+        url: _this8.urlForResource('/api/v2/projects.json')
       });
 
       try {
@@ -146,11 +170,11 @@ class Client {
   }
 
   getPhotos(account, form, page) {
-    var _this7 = this;
+    var _this9 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this7.optionsForRequest(account, {
-        url: _this7.urlForResource('/api/v2/photos.json')
+      const options = _this9.optionsForRequest(account, {
+        url: _this9.urlForResource('/api/v2/photos.json')
       });
 
       options.qs = {
@@ -168,11 +192,11 @@ class Client {
   }
 
   getVideos(account, form, page) {
-    var _this8 = this;
+    var _this10 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this8.optionsForRequest(account, {
-        url: _this8.urlForResource('/api/v2/videos.json')
+      const options = _this10.optionsForRequest(account, {
+        url: _this10.urlForResource('/api/v2/videos.json')
       });
 
       options.qs = {
@@ -197,38 +221,38 @@ class Client {
     });
   }
 
-  getRecords(account, form, page) {
-    var _this9 = this;
+  getRecords(account, form, sequence, pageSize) {
+    var _this11 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this9.optionsForRequest(account, {
-        // url: this.urlForResource('records/history')
-        url: _this9.urlForResource('/api/v2/records.json')
+      const options = _this11.optionsForRequest(account, {
+        url: _this11.urlForResource('/api/v2/records.json')
       });
 
       options.qs = {
         form_id: form.id,
-        per_page: 1000,
-        page: page
+        per_page: pageSize,
+        extents: 0,
+        sequence: sequence || 0
       };
 
       return yield req(options);
     })();
   }
 
-  getRecordsHistory(account, form, page, lastSync) {
-    var _this10 = this;
+  getRecordsHistory(account, form, sequence, pageSize) {
+    var _this12 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this10.optionsForRequest(account, {
-        url: _this10.urlForResource('/api/v2/records/history.json')
+      const options = _this12.optionsForRequest(account, {
+        url: _this12.urlForResource('/api/v2/records/history.json')
       });
 
       options.qs = {
         form_id: form.id,
-        per_page: 1000,
-        page: page,
-        updated_since: lastSync ? lastSync.getTime() / 1000 : 0
+        per_page: pageSize,
+        extents: 0,
+        sequence: sequence || 0
       };
 
       return yield req(options);

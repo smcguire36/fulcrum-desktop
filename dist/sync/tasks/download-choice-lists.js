@@ -39,12 +39,18 @@ class DownloadChoiceLists extends _task2.default {
 
       _this.progress({ message: _this.processing + ' choice lists', count: 0, total: objects.length });
 
+      const localObjects = yield account.findChoiceLists();
+
+      _this.markDeletedObjects(localObjects, objects);
+
       for (let index = 0; index < objects.length; ++index) {
         const attributes = objects[index];
 
         const object = yield _choiceList2.default.findOrCreate(account.db, { resource_id: attributes.id, account_id: account.rowID });
 
         object.updateFromAPIAttributes(attributes);
+
+        object._deletedAt = null;
 
         yield object.save();
 

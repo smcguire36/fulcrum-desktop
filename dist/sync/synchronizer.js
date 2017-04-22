@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _downloadRoles = require('./tasks/download-roles');
+
+var _downloadRoles2 = _interopRequireDefault(_downloadRoles);
+
+var _downloadMemberships = require('./tasks/download-memberships');
+
+var _downloadMemberships2 = _interopRequireDefault(_downloadMemberships);
+
 var _downloadChoiceLists = require('./tasks/download-choice-lists');
 
 var _downloadChoiceLists2 = _interopRequireDefault(_downloadChoiceLists);
@@ -92,6 +100,8 @@ class Synchronizer {
       _this.syncState = fullSync ? [] : JSON.parse(response.body).resources;
       _this.taskParams = { synchronizer: _this, syncState: _this.syncState };
 
+      _this.addTask(new _downloadRoles2.default(_this.taskParams));
+      _this.addTask(new _downloadMemberships2.default(_this.taskParams));
       _this.addTask(new _downloadChoiceLists2.default(_this.taskParams));
       _this.addTask(new _downloadClassificationSets2.default(_this.taskParams));
       _this.addTask(new _downloadProjects2.default(_this.taskParams));

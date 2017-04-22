@@ -12,9 +12,29 @@ var _project = require('./project');
 
 var _project2 = _interopRequireDefault(_project);
 
+var _choiceList = require('./choice-list');
+
+var _choiceList2 = _interopRequireDefault(_choiceList);
+
+var _classificationSet = require('./classification-set');
+
+var _classificationSet2 = _interopRequireDefault(_classificationSet);
+
 var _form = require('./form');
 
 var _form2 = _interopRequireDefault(_form);
+
+var _record = require('./record');
+
+var _record2 = _interopRequireDefault(_record);
+
+var _role = require('./role');
+
+var _role2 = _interopRequireDefault(_role);
+
+var _membership = require('./membership');
+
+var _membership2 = _interopRequireDefault(_membership);
 
 var _syncState = require('./sync-state');
 
@@ -66,6 +86,46 @@ class Account {
 
   findForms(where) {
     return _form2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findProjects(where) {
+    return _project2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findChoiceLists(where) {
+    return _choiceList2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findClassificationSets(where) {
+    return _classificationSet2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findRoles(where) {
+    return _role2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findMemberships(where) {
+    return _membership2.default.findAll(this.db, _extends({}, where, { account_id: this.rowID }), 'email ASC');
+  }
+
+  findFirstForm(where) {
+    return _form2.default.findFirst(this.db, _extends({}, where, { account_id: this.rowID }), 'name ASC');
+  }
+
+  findFirstRecord(where) {
+    return _record2.default.findFirst(this.db, _extends({}, where, { account_id: this.rowID }));
+  }
+
+  findEachRecord(where, callback) {
+    return _record2.default.findEach(this.db, { where: _extends({}, where, { account_id: this.rowID }) }, callback);
+  }
+
+  findEachBySQL(sql, values, callback) {
+    return this.db.each(sql, values, callback);
+  }
+
+  findBySQL(sql, values, callback) {
+    return this.db.all(sql, values, callback);
   }
 
   findActiveForms(where) {

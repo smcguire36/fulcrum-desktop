@@ -24,6 +24,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+const PAGE_SIZE = 1000;
+
 class DownloadRecords extends _task2.default {
   constructor(_ref) {
     let { form } = _ref,
@@ -38,25 +40,29 @@ class DownloadRecords extends _task2.default {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const sync = yield _this.checkSyncState(account, 'records', _this.form.id);
+      const state = yield _this.checkSyncState(account, 'records', _this.form.id);
 
-      if (!sync.needsUpdate) {
+      if (!state.needsUpdate) {
         return;
       }
 
-      yield _this.downloadRecordPage(account, _this.form, 1, null, _this.form._lastSync, sync);
+      const sequence = _this.form._lastSync ? _this.form._lastSync.getTime() : null;
+
+      _this.dataSource = dataSource;
+
+      yield _this.downloadRecords(account, _this.form, _this.form._lastSync, sequence, state);
     })();
   }
 
-  downloadRecordPage(account, form, page, total, lastSync, sync) {
+  downloadRecords(account, form, lastSync, sequence, state) {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
       const beginFetchTime = new Date();
 
-      _this2.progress({ message: _this2.downloading + ' ' + _this2.form.name.blue + ' ' + (0, _util.format)('page %s', page).yellow });
+      _this2.progress({ message: _this2.downloading + ' ' + _this2.form.name.blue });
 
-      const results = lastSync == null ? yield _Client2.default.getRecords(account, form, page) : yield _Client2.default.getRecordsHistory(account, form, page, lastSync);
+      const results = lastSync == null ? yield _Client2.default.getRecords(account, form, sequence, PAGE_SIZE) : yield _Client2.default.getRecordsHistory(account, form, sequence, PAGE_SIZE);
 
       const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
 
@@ -73,7 +79,7 @@ class DownloadRecords extends _task2.default {
 
       let now = new Date();
 
-      _this2.progress({ message: _this2.processing + ' ' + _this2.form.name.blue + ' ' + (0, _util.format)('page %s/%s', page, data.total_pages || 1).yellow, count: 0, total: objects.length });
+      _this2.progress({ message: _this2.processing + ' ' + _this2.form.name.blue, count: 0, total: objects.length });
 
       yield db.transaction((() => {
         var _ref2 = _asyncToGenerator(function* (database) {
@@ -100,13 +106,10 @@ class DownloadRecords extends _task2.default {
 
               form._lastSync = object.updatedAt;
 
-              if (attributes.project_id) {
-                const project = yield account.projectByResourceID(attributes.project_id);
-
-                if (project) {
-                  object._projectRowID = project.rowID;
-                }
-              }
+              yield _this2.lookup(object, attributes.project_id, '_projectRowID', 'getProject');
+              yield _this2.lookup(object, attributes.assigned_to_id, '_assignedToRowID', 'getUser');
+              yield _this2.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
+              yield _this2.lookup(object, attributes.updated_by_id, '_updatedByRowID', 'getUser');
 
               yield object.save();
 
@@ -115,7 +118,7 @@ class DownloadRecords extends _task2.default {
               }
             }
 
-            _this2.progress({ message: _this2.processing + ' ' + _this2.form.name.blue + ' ' + (0, _util.format)('page %s/%s', page, data.total_pages || 1).yellow, count: index + 1, total: objects.length });
+            _this2.progress({ message: _this2.processing + ' ' + _this2.form.name.blue, count: index + 1, total: objects.length });
           }
         });
 
@@ -129,14 +132,32 @@ class DownloadRecords extends _task2.default {
       // update the lastSync date
       yield form.save();
 
-      const message = (0, _util.format)(_this2.finished + ' %s | %s | %s | %s', form.name.blue, (0, _util.format)('%s/%s', page, data.total_pages || 1).yellow, (totalFetchTime + 'ms').cyan, (totalTime + 'ms').red);
+      const message = (0, _util.format)(_this2.finished + ' %s | %s | %s', form.name.blue, (totalFetchTime + 'ms').cyan, (totalTime + 'ms').red);
 
       _this2.progress({ message, count: objects.length, total: objects.length });
 
-      if (data.total_pages > page) {
-        yield _this2.downloadRecordPage(account, form, page + 1, data.total_pages, lastSync, sync);
+      if (data.next_sequence) {
+        yield _this2.downloadRecords(account, form, lastSync, data.next_sequence, state);
       } else {
-        yield sync.update();
+        yield state.update();
+      }
+    })();
+  }
+
+  lookup(record, resourceID, propName, getter) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      if (resourceID) {
+        const object = yield new Promise(function (resolve) {
+          _this3.dataSource[getter](resourceID, function (err, object) {
+            return resolve(object);
+          });
+        });
+
+        if (object) {
+          record[propName] = object.rowID;
+        }
       }
     })();
   }
