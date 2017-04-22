@@ -51,3 +51,18 @@ yarn
 # run this to fully rebuild the postgres tables from the SQLite database
 ./run task postgres --org 'Fulcrum Labs'
 ```
+
+### Plugins
+
+To create a new plugin:
+
+```sh
+./run new-plugin --name my-plugin
+```
+
+To install a plugin:
+
+```sh
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-reports
+```
+
