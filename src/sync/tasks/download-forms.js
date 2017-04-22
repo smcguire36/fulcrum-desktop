@@ -26,24 +26,9 @@ export default class DownloadForms extends Task {
 
     this.progress({message: this.processing + ' forms', count: 0, total: objects.length});
 
-    const localForms = await account.findForms({});
+    const localObjects = await account.findForms();
 
-    // delete all forms that don't exist on the server anymore
-    for (const form of localForms) {
-      let formExistsOnServer = false;
-
-      for (const attributes of objects) {
-        if (attributes.id === form.id) {
-          formExistsOnServer = true;
-          break;
-        }
-      }
-
-      if (!formExistsOnServer) {
-        form._deletedAt = form._deletedAt ? form._deletedAt : new Date();
-        await form.save();
-      }
-    }
+    this.markDeletedObjects(localObjects, objects);
 
     for (let index = 0; index < objects.length; ++index) {
       const attributes = objects[index];
@@ -64,6 +49,7 @@ export default class DownloadForms extends Task {
       const isChanged = !object.isPersisted || attributes.version !== object.version;
 
       object.updateFromAPIAttributes(attributes);
+      object._deletedAt = null;
 
       await object.save();
 

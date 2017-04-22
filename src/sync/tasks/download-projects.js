@@ -18,12 +18,18 @@ export default class DownloadProjects extends Task {
 
     this.progress({message: this.processing + ' projects', count: 0, total: objects.length});
 
+    const localObjects = await account.findProjects();
+
+    this.markDeletedObjects(localObjects, objects);
+
     for (let index = 0; index < objects.length; ++index) {
       const attributes = objects[index];
 
       const object = await Project.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
 
       object.updateFromAPIAttributes(attributes);
+
+      object._deletedAt = null;
 
       await object.save();
 

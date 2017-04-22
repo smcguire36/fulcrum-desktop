@@ -1,3 +1,5 @@
+import DownloadRoles from './tasks/download-roles';
+import DownloadMemberships from './tasks/download-memberships';
 import DownloadChoiceLists from './tasks/download-choice-lists';
 import DownloadClassificationSets from './tasks/download-classification-sets';
 import DownloadProjects from './tasks/download-projects';
@@ -52,6 +54,8 @@ export default class Synchronizer {
     this.syncState = fullSync ? [] : JSON.parse(response.body).resources;
     this.taskParams = { synchronizer: this, syncState: this.syncState };
 
+    this.addTask(new DownloadRoles(this.taskParams));
+    this.addTask(new DownloadMemberships(this.taskParams));
     this.addTask(new DownloadChoiceLists(this.taskParams));
     this.addTask(new DownloadClassificationSets(this.taskParams));
     this.addTask(new DownloadProjects(this.taskParams));

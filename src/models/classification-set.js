@@ -12,7 +12,10 @@ export default class ClassificationSet extends ClassificationSetBase {
       { name: 'id', column: 'resource_id', type: 'string', null: false },
       { name: 'name', column: 'name', type: 'string', null: false },
       { name: 'description', column: 'description', type: 'string' },
-      { name: 'itemsJSON', column: 'items', type: 'json', null: false }
+      { name: 'itemsJSON', column: 'items', type: 'json', null: false },
+      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
+      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
+      { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }
 }

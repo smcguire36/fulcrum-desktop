@@ -59,6 +59,22 @@ class Client {
     return await req(options);
   }
 
+  async getRoles(account) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/roles.json')
+    });
+
+    return await req(options);
+  }
+
+  async getMemberships(account) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/memberships.json')
+    });
+
+    return await req(options);
+  }
+
   async getForms(account) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/forms.json')

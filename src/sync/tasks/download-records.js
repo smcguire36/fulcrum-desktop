@@ -21,6 +21,8 @@ export default class DownloadRecords extends Task {
 
     const sequence = this.form._lastSync ? this.form._lastSync.getTime() : null;
 
+    this.dataSource = dataSource;
+
     await this.downloadRecords(account, this.form, this.form._lastSync, sequence, state);
   }
 
@@ -73,13 +75,10 @@ export default class DownloadRecords extends Task {
 
           form._lastSync = object.updatedAt;
 
-          if (attributes.project_id) {
-            const project = await account.projectByResourceID(attributes.project_id);
-
-            if (project) {
-              object._projectRowID = project.rowID;
-            }
-          }
+          await this.lookup(object, attributes.project_id, '_projectRowID', 'getProject');
+          await this.lookup(object, attributes.assigned_to_id, '_assignedToRowID', 'getUser');
+          await this.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
+          await this.lookup(object, attributes.updated_by_id, '_updatedByRowID', 'getUser');
 
           await object.save();
 
@@ -108,6 +107,18 @@ export default class DownloadRecords extends Task {
       await this.downloadRecords(account, form, lastSync, data.next_sequence, state);
     } else {
       await state.update();
+    }
+  }
+
+  async lookup(record, resourceID, propName, getter) {
+    if (resourceID) {
+      const object = await new Promise((resolve) => {
+        this.dataSource[getter](resourceID, (err, object) => resolve(object));
+      });
+
+      if (object) {
+        record[propName] = object.rowID;
+      }
     }
   }
 }

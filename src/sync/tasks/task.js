@@ -103,4 +103,23 @@ export default class Task {
       this.bar.render();
     }
   }
+
+  async markDeletedObjects(localObjects, newObjects) {
+    // delete all objects that don't exist on the server anymore
+    for (const object of localObjects) {
+      let objectExistsOnServer = false;
+
+      for (const attributes of newObjects) {
+        if (attributes.id === object.id) {
+          objectExistsOnServer = true;
+          break;
+        }
+      }
+
+      if (!objectExistsOnServer) {
+        object._deletedAt = object._deletedAt ? object._deletedAt : new Date();
+        await object.save();
+      }
+    }
+  }
 }

@@ -18,6 +18,8 @@ export default class Form extends FormBase {
       { name: 'titleFieldKeysJSON', column: 'title_field_keys', type: 'json' },
       { name: 'statusFieldJSON', column: 'status_field', type: 'json' },
       { name: 'lastSync', column: 'last_sync', type: 'datetime' },
+      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
+      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }

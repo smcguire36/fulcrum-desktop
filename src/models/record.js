@@ -16,12 +16,52 @@ export default class Record extends RecordBase {
       { name: 'clientCreatedAt', column: 'client_created_at', type: 'datetime' },
       { name: 'clientUpdatedAt', column: 'client_updated_at', type: 'datetime' },
       { name: 'status', column: 'status', type: 'string' },
+      { name: 'latitude', column: 'latitude', type: 'double' },
+      { name: 'longitude', column: 'longitude', type: 'double' },
+      { name: 'altitude', column: 'altitude', type: 'double' },
+      { name: 'speed', column: 'speed', type: 'double' },
+      { name: 'course', column: 'course', type: 'double' },
+      { name: 'horizontalAccuracy', column: 'horizontal_accuracy', type: 'double' },
+      { name: 'verticalAccuracy', column: 'vertical_accuracy', type: 'double' },
       { name: 'formRowID', column: 'form_id', type: 'integer' },
       { name: 'projectRowID', column: 'project_id', type: 'integer' },
+      { name: 'projectID', column: 'project_resource_id', type: 'string' },
+      { name: 'assignedToRowID', column: 'assigned_to_id', type: 'integer' },
+      { name: 'assignedToID', column: 'assigned_to_resource_id', type: 'string' },
+      { name: 'updatedByRowID', column: 'updated_by_id', type: 'integer' },
+      { name: 'updatedByID', column: 'updated_by_resource_id', type: 'string' },
+      { name: 'createdByRowID', column: 'created_by_id', type: 'integer' },
+      { name: 'createdByID', column: 'created_by_resource_id', type: 'string' },
+      { name: 'changesetRowID', column: 'changeset_id', type: 'integer' },
+      { name: 'changesetID', column: 'changeset_resource_id', type: 'string' },
       { name: 'version', column: 'version', type: 'integer', null: false },
       { name: 'hasChanges', column: 'has_changes', type: 'boolean' },
-      { name: 'indexText', column: 'index_text', type: 'string' }
+      { name: 'indexText', column: 'index_text', type: 'string' },
+      { name: 'title', column: 'title', type: 'string' },
+      { name: 'createdDuration', column: 'created_duration', type: 'integer' },
+      { name: 'updatedDuration', column: 'updated_duration', type: 'integer' },
+      { name: 'editedDuration', column: 'edited_duration', type: 'integer' },
+      { name: 'updatedLatitude', column: 'updated_latitude', type: 'double' },
+      { name: 'updatedLongitude', column: 'updated_longitude', type: 'double' },
+      { name: 'updatedAltitude', column: 'updated_altitude', type: 'double' },
+      { name: 'updatedAccuracy', column: 'updated_accuracy', type: 'double' },
+      { name: 'createdLatitude', column: 'created_latitude', type: 'double' },
+      { name: 'createdLongitude', column: 'created_longitude', type: 'double' },
+      { name: 'createdAltitude', column: 'created_altitude', type: 'double' },
+      { name: 'createdAccuracy', column: 'created_accuracy', type: 'double' }
     ];
+  }
+
+  databaseValues(db) {
+    const values = PersistentObject.prototype.databaseValues.call(this);
+
+    if (values.has_changes == null) {
+      values.has_changes = false;
+    }
+
+    values.title = this.displayValue;
+
+    return values;
   }
 
   async afterSave(options) {
@@ -31,7 +71,7 @@ export default class Record extends RecordBase {
   }
 
   async beforeSave(options) {
-    this.indexText = this.formValues.searchableValue;
+    this._indexText = this.formValues.searchableValue;
   }
 
   async beforeDelete(options) {
