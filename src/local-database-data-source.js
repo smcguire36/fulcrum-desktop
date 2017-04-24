@@ -13,6 +13,7 @@ export default class LocalDatabaseDataSource {
     this.classificationSets = {};
     this.forms = {};
     this.memberships = {};
+    this.projects = {};
     this.roles = {};
   }
 
