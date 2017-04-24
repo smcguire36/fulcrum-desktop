@@ -1,5 +1,5 @@
 import Task from './task';
-import Client from '../../api/Client';
+import Client from '../../api/client';
 import ClassificationSet from '../../models/classification-set';
 
 export default class DownloadClassificationSets extends Task {
@@ -37,6 +37,8 @@ export default class DownloadClassificationSets extends Task {
     }
 
     await sync.update();
+
+    dataSource.source.invalidate('classificationSets');
 
     this.progress({message: this.finished + ' classification sets', count: objects.length, total: objects.length});
   }

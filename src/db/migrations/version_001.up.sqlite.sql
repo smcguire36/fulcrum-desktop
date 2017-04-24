@@ -8,6 +8,11 @@ CREATE TABLE IF NOT EXISTS accounts (
   last_name TEXT,
   description TEXT,
   token TEXT,
+  last_sync_photos INTEGER,
+  last_sync_videos INTEGER,
+  last_sync_audio INTEGER,
+  last_sync_signatures INTEGER,
+  last_sync_changesets INTEGER,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
   deleted_at INTEGER
@@ -224,6 +229,8 @@ CREATE TABLE IF NOT EXISTS photos (
   resource_id TEXT NOT NULL,
   file_path TEXT,
   exif TEXT,
+  form_id INTEGER,
+  record_id INTEGER,
   is_downloaded INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL

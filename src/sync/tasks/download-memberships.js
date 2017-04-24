@@ -1,5 +1,5 @@
 import Task from './task';
-import Client from '../../api/Client';
+import Client from '../../api/client';
 import Membership from '../../models/membership';
 
 export default class DownloadMemberships extends Task {
@@ -39,6 +39,8 @@ export default class DownloadMemberships extends Task {
     }
 
     await sync.update();
+
+    dataSource.source.invalidate('memberships');
 
     this.progress({message: this.finished + ' memberships', count: objects.length, total: objects.length});
   }

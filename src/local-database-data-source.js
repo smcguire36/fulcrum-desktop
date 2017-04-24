@@ -1,7 +1,7 @@
 import Form from './models/form';
 import ChoiceList from './models/choice-list';
 import ClassificationSet from './models/classification-set';
-import Memberships from './models/membership';
+import Membership from './models/membership';
 import Role from './models/role';
 import Project from './models/project';
 
@@ -9,23 +9,15 @@ export default class LocalDatabaseDataSource {
   constructor(account) {
     this.account = account;
     this.db = account.db;
-    this.choiceLists = {};
-    this.classificationSets = {};
-    this.forms = {};
-    this.memberships = {};
-    this.projects = {};
-    this.roles = {};
+    this.choiceLists = null;
+    this.classificationSets = null;
+    this.forms = null;
+    this.memberships = null;
+    this.projects = null;
+    this.roles = null;
   }
 
   async load(db) {
-    this.choiceLists = await this.loadObjects(db, ChoiceList);
-    this.classificationSets = await this.loadObjects(db, ClassificationSet);
-    this.forms = await this.loadObjects(db, Form);
-    this.role = await this.loadObjects(db, Role);
-    this.projects = await this.loadObjects(db, Project);
-    this.memberships = await this.loadObjects(db, Memberships, (map, object) => {
-      map[object._userID] = object;
-    });
   }
 
   async loadObjects(db, type, handler) {
@@ -44,28 +36,47 @@ export default class LocalDatabaseDataSource {
     return map;
   }
 
+  invalidate(collection) {
+    this[collection] = null;
+  }
+
+  lazyLoad(collection, id, type, handler, callback) {
+    if (this[collection] == null) {
+      this.loadObjects(this.db, type, handler).then((objects) => {
+        this[collection] = objects;
+        callback(null, this[collection][id]);
+      });
+
+      return;
+    }
+
+    callback(null, this[collection][id]);
+  }
+
   getProject(id, callback) {
-    return callback(null, this.projects[id]);
+    return this.lazyLoad('projects', id, Project, null, callback);
   }
 
   getChoiceList(id, callback) {
-    return callback(null, this.choiceLists[id]);
+    return this.lazyLoad('choiceLists', id, ChoiceList, null, callback);
   }
 
   getClassificationSet(id, callback) {
-    return callback(null, this.classificationSets[id]);
+    return this.lazyLoad('classificationSets', id, ClassificationSet, null, callback);
   }
 
   getForm(id, callback) {
-    return callback(null, this.forms[id]);
+    return this.lazyLoad('forms', id, Form, null, callback);
   }
 
   getUser(id, callback) {
-    return callback(null, this.memberships[id]);
+    return this.lazyLoad('memberships', id, Membership, (map, object) => {
+      map[object._userID] = object;
+    }, callback);
   }
 
   getRole(id, callback) {
-    return callback(null, this.roles[id]);
+    return this.lazyLoad('roles', id, Role, null, callback);
   }
 }
 

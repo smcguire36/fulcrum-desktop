@@ -1,84 +1,89 @@
-import Task from './task';
-import Client from '../../api/Client';
+import DownloadSequence from './download-sequence';
+import Client from '../../api/client';
 import Photo from '../../models/photo';
-import {format} from 'util';
 
-export default class DownloadPhotos extends Task {
-  constructor({form, ...args}) {
-    super(args);
-
-    this.form = form;
+export default class DownloadPhotos extends DownloadSequence {
+  get syncResourceName() {
+    return 'photos';
   }
 
-  async run({account, dataSource}) {
-    await this.downloadPhotosPage(account, this.form, 1, null, this.form._lastSync);
+  get syncLabel() {
+    return 'photos';
   }
 
-  async downloadPhotosPage(account, form, page, total, lastSync) {
-    const beginFetchTime = new Date();
-    const {db} = account;
+  get resourceName() {
+    return 'photos';
+  }
 
-    this.progress({message: this.downloading + ' photos ' + this.form.name.blue + ' ' + format('page %s', page).yellow});
+  get lastSync() {
+    return this.account._lastSyncPhotos;
+  }
 
-    const results = await Client.getPhotos(account, form, page, lastSync);
+  async fetchObjects(account, lastSync, sequence) {
+    return Client.getPhotos(account, sequence, this.pageSize);
+  }
 
-    const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
+  findOrCreate(database, account, attributes) {
+    return Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
+  }
 
-    const data = JSON.parse(results.body);
+  async process(object, attributes) {
+    object.updateFromAPIAttributes(attributes);
 
-    const objects = data.photos;
+    if (attributes.processed) {
+      if (!object.isDownloaded) {
+        // queue.push(attributes, function(err) {
+        //   if (err) {
+        //     console.log('ERROR DOWNLOADING', err);
+        //     throw err;
+        //   }
 
-    let now = new Date();
-
-    this.progress({message: this.processing + ' photos ' + this.form.name.blue + ' ' + format('page %s/%s', page, data.total_pages || 1).yellow, count: 0, total: objects.length});
-
-    await db.transaction(async (database) => {
-      for (let index = 0; index < objects.length; ++index) {
-        const attributes = objects[index];
-
-        const object = await Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
-
-        object.updateFromAPIAttributes(attributes);
-
-        if (attributes.processed) {
-          if (!object.isDownloaded) {
-            // queue.push(attributes, function(err) {
-            //   if (err) {
-            //     console.log('ERROR DOWNLOADING', err);
-            //     throw err;
-            //   }
-
-            //   object.isDownloaded = true;
-            //   // do we need to await this somehow?
-            //   object.save();
-            // });
-          }
-        } else {
-          object.isDownloaded = false;
-        }
-
-        if (object.isDownloaded == null) {
-          object.isDownloaded = false;
-        }
-
-        await object.save();
-
-        this.progress({message: this.processing + ' photos ' + this.form.name.blue + ' ' + format('page %s/%s', page, data.total_pages || 1).yellow, count: index + 1, total: objects.length});
+        //   object.isDownloaded = true;
+        //   // do we need to await this somehow?
+        //   object.save();
+        // });
       }
-    });
+    } else {
+      object.isDownloaded = false;
+    }
 
-    const totalTime = new Date().getTime() - now.getTime();
+    if (object.isDownloaded == null) {
+      object.isDownloaded = false;
+    }
 
-    const message = format(this.finished + ' photos %s | %s | %s | %s',
-                           form.name.blue,
-                           format('%s/%s', page, data.total_pages || 1).yellow,
-                           (totalFetchTime + 'ms').cyan,
-                           (totalTime + 'ms').red);
+    await this.lookup(object, attributes.form_id, '_formRowID', 'getForm');
 
-    this.progress({message, count: objects.length, total: objects.length});
+    if (object._formRowID) {
+      const record = await this.account.findFirstRecord({resource_id: attributes.record_id});
 
-    if (data.total_pages > page) {
-      await this.downloadPhotosPage(account, form, page + 1, data.total_pages, lastSync);
+      if (record) {
+        object._recordRowID = record.rowID;
+      }
+    }
+
+    this.account._lastSyncPhotos = object._updatedAt;
+
+    await object.save();
+  }
+
+  async finish() {
+    // update the lastSync date
+    await this.account.save();
+  }
+
+  fail(account, results) {
+    console.log(account.organizationName.green, 'failed'.red);
+  }
+
+  async lookup(record, resourceID, propName, getter) {
+    if (resourceID) {
+      const object = await new Promise((resolve) => {
+        this.dataSource[getter](resourceID, (err, object) => resolve(object));
+      });
+
+      if (object) {
+        record[propName] = object.rowID;
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 import Task from './task';
-import Client from '../../api/Client';
+import Client from '../../api/client';
 import Form from '../../models/form';
 import {format} from 'util';
 import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
@@ -74,6 +74,8 @@ export default class DownloadForms extends Task {
     }
 
     await sync.update();
+
+    dataSource.source.invalidate('forms');
 
     this.progress({message: this.finished + ' forms', count: objects.length, total: objects.length});
   }

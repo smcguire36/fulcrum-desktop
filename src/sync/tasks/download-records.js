@@ -1,113 +1,82 @@
-import Task from './task';
-import Client from '../../api/Client';
+import DownloadSequence from './download-sequence';
+import Client from '../../api/client';
 import Record from '../../models/record';
-import {format} from 'util';
 
-const PAGE_SIZE = 1000;
-
-export default class DownloadRecords extends Task {
+export default class DownloadRecords extends DownloadSequence {
   constructor({form, ...args}) {
     super(args);
 
     this.form = form;
   }
 
-  async run({account, dataSource}) {
-    const state = await this.checkSyncState(account, 'records', this.form.id);
-
-    if (!state.needsUpdate) {
-      return;
-    }
-
-    const sequence = this.form._lastSync ? this.form._lastSync.getTime() : null;
-
-    this.dataSource = dataSource;
-
-    await this.downloadRecords(account, this.form, this.form._lastSync, sequence, state);
+  get syncResourceName() {
+    return 'records';
   }
 
-  async downloadRecords(account, form, lastSync, sequence, state) {
-    const beginFetchTime = new Date();
+  get syncResourceScope() {
+    return this.form.id;
+  }
 
-    this.progress({message: this.downloading + ' ' + this.form.name.blue});
+  get syncLabel() {
+    return this.form.name;
+  }
 
-    const results = lastSync == null ? (await Client.getRecords(account, form, sequence, PAGE_SIZE))
-                                     : (await Client.getRecordsHistory(account, form, sequence, PAGE_SIZE));
+  get resourceName() {
+    return 'records';
+  }
 
-    const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
+  get lastSync() {
+    return this.form._lastSync;
+  }
 
-    if (results.statusCode !== 200) {
-      console.log(account.organizationName.green, 'failed'.red, 'to download records in', form.name.blue);
-      return;
-    }
+  async fetchObjects(account, lastSync, sequence) {
+    return lastSync == null ? (await Client.getRecords(account, this.form, sequence, this.pageSize))
+                            : (await Client.getRecordsHistory(account, this.form, sequence, this.pageSize));
+  }
 
-    const data = JSON.parse(results.body);
+  findOrCreate(database, account, attributes) {
+    return Record.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
+  }
 
-    const objects = data.records;
+  async process(object, attributes) {
+    if (attributes.history_change_type === 'd') {
+      if (object) {
+        object._form = this.form;
+        object._formRowID = this.form.rowID;
 
-    const db = account.db;
+        await object.delete();
 
-    let now = new Date();
-
-    this.progress({message: this.processing + ' ' + this.form.name.blue, count: 0, total: objects.length});
-
-    await db.transaction(async (database) => {
-      for (let index = 0; index < objects.length; ++index) {
-        const attributes = objects[index];
-
-        const object = await Record.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
-
-        if (attributes.history_change_type === 'd') {
-          if (object) {
-            object._form = form;
-            object._formRowID = form.rowID;
-
-            await object.delete();
-
-            await this.trigger('record:delete', {record: object});
-          }
-        } else {
-          const isChanged = !object.isPersisted || attributes.version !== object.version;
-
-          object.updateFromAPIAttributes(attributes);
-          object._form = form;
-          object._formRowID = form.rowID;
-
-          form._lastSync = object.updatedAt;
-
-          await this.lookup(object, attributes.project_id, '_projectRowID', 'getProject');
-          await this.lookup(object, attributes.assigned_to_id, '_assignedToRowID', 'getUser');
-          await this.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
-          await this.lookup(object, attributes.updated_by_id, '_updatedByRowID', 'getUser');
-
-          await object.save();
-
-          if (isChanged) {
-            await this.trigger('record:save', {record: object});
-          }
-        }
-
-        this.progress({message: this.processing + ' ' + this.form.name.blue, count: index + 1, total: objects.length});
+        await this.trigger('record:delete', {record: object});
       }
-    });
-
-    const totalTime = new Date().getTime() - now.getTime();
-
-    // update the lastSync date
-    await form.save();
-
-    const message = format(this.finished + ' %s | %s | %s',
-                           form.name.blue,
-                           (totalFetchTime + 'ms').cyan,
-                           (totalTime + 'ms').red);
-
-    this.progress({message, count: objects.length, total: objects.length});
-
-    if (data.next_sequence) {
-      await this.downloadRecords(account, form, lastSync, data.next_sequence, state);
     } else {
-      await state.update();
+      const isChanged = !object.isPersisted || attributes.version !== object.version;
+
+      object.updateFromAPIAttributes(attributes);
+      object._form = this.form;
+      object._formRowID = this.form.rowID;
+
+      this.form._lastSync = object.updatedAt;
+
+      await this.lookup(object, attributes.project_id, '_projectRowID', 'getProject');
+      await this.lookup(object, attributes.assigned_to_id, '_assignedToRowID', 'getUser');
+      await this.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
+      await this.lookup(object, attributes.updated_by_id, '_updatedByRowID', 'getUser');
+
+      await object.save();
+
+      if (isChanged) {
+        await this.trigger('record:save', {record: object});
+      }
     }
+  }
+
+  async finish() {
+    // update the lastSync date
+    await this.form.save();
+  }
+
+  fail(account, results) {
+    console.log(account.organizationName.green, 'failed'.red);
   }
 
   async lookup(record, resourceID, propName, getter) {

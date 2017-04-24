@@ -114,38 +114,58 @@ class Client {
     }
   }
 
-  async getPhotos(account, form, page) {
+  async getPhotos(account, sequence, perPage) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/photos.json')
     });
 
     options.qs = {
-      per_page: 1000,
-      page: page,
+      per_page: perPage,
+      sequence: sequence || 0,
       full: '1'
     };
-
-    if (form) {
-      options.qs.form_id = form.id;
-    }
 
     return await req(options);
   }
 
-  async getVideos(account, form, page) {
+  async getVideos(account, sequence, perPage) {
     const options = this.optionsForRequest(account, {
       url: this.urlForResource('/api/v2/videos.json')
     });
 
     options.qs = {
-      per_page: 1000,
-      page: page,
+      per_page: perPage,
+      sequence: sequence || 0,
       full: '1'
     };
 
-    if (form) {
-      options.qs.form_id = form.id;
-    }
+    return await req(options);
+  }
+
+  async getAudio(account, sequence, perPage) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/audio.json')
+    });
+
+    options.qs = {
+      per_page: perPage,
+      sequence: sequence || 0,
+      full: '1'
+    };
+
+    return await req(options);
+  }
+
+  async getSignatures(account, sequence, perPage) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/signatures.json')
+    });
+
+    options.qs = {
+      per_page: perPage,
+      sequence: sequence || 0,
+      full: '1'
+    };
 
     return await req(options);
   }
@@ -166,7 +186,6 @@ class Client {
     options.qs = {
       form_id: form.id,
       per_page: pageSize,
-      extents: 0,
       sequence: sequence || 0
     };
 

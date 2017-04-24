@@ -21,6 +21,11 @@ export default class Account {
       { name: 'email', column: 'email', type: 'string', null: false },
       { name: 'firstName', column: 'first_name', type: 'string' },
       { name: 'lastName', column: 'last_name', type: 'string' },
+      { name: 'lastSyncPhotos', column: 'last_sync_photos', type: 'datetime' },
+      { name: 'lastSyncVideos', column: 'last_sync_videos', type: 'datetime' },
+      { name: 'lastSyncAudio', column: 'last_sync_audio', type: 'datetime' },
+      { name: 'lastSyncSignatures', column: 'last_sync_signatures', type: 'datetime' },
+      { name: 'lastSyncChangesets', column: 'last_sync_changesets', type: 'datetime' },
       { name: 'token', column: 'token', type: 'string' }
     ];
   }

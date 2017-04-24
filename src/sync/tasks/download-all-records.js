@@ -1,5 +1,6 @@
 import Task from './task';
 import DownloadRecords from './download-records';
+import DownloadPhotos from './download-photos';
 // import DownloadPhotos from './download-photos';
 
 export default class DownloadAllRecords extends Task {
@@ -12,9 +13,9 @@ export default class DownloadAllRecords extends Task {
       });
 
       this.synchronizer.addTask(new DownloadRecords({form: form, ...this.synchronizer.taskParams}));
-      // this.synchronizer.addTask(new DownloadPhotos({form: form, ...this.synchronizer.taskParams}));
     }
 
-    // this.progress({message: this.finished + ' looking for records'});
+    // download media here to make sure the tasks are ordered after the records
+    this.synchronizer.addTask(new DownloadPhotos(this.synchronizer.taskParams));
   }
 }

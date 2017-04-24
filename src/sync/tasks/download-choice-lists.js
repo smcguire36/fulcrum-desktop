@@ -1,5 +1,5 @@
 import Task from './task';
-import Client from '../../api/Client';
+import Client from '../../api/client';
 import ChoiceList from '../../models/choice-list';
 
 export default class DownloadChoiceLists extends Task {
@@ -37,6 +37,8 @@ export default class DownloadChoiceLists extends Task {
     }
 
     await sync.update();
+
+    dataSource.source.invalidate('choiceLists');
 
     this.progress({message: this.finished + ' choice lists', count: objects.length, total: objects.length});
   }

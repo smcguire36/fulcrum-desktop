@@ -1,5 +1,5 @@
 import Task from './task';
-import Client from '../../api/Client';
+import Client from '../../api/client';
 import Role from '../../models/role';
 
 export default class DownloadRoles extends Task {

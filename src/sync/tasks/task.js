@@ -41,6 +41,8 @@ export default class Task {
   }
 
   async execute({account, dataSource}) {
+    this.account = account;
+
     const result = await this.run({account, dataSource});
 
     if (this.bar) {

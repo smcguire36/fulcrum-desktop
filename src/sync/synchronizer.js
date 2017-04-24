@@ -6,32 +6,13 @@ import DownloadProjects from './tasks/download-projects';
 import DownloadForms from './tasks/download-forms';
 import DownloadAllRecords from './tasks/download-all-records';
 
-import Client from '../api/Client';
-import path from 'path';
-import mkdirp from 'mkdirp';
+import Client from '../api/client';
 
-// import exif from 'exif';
-// import Generator from '../reports/generator';
 import humanizeDuration from 'humanize-duration';
-// import { Database } from 'minidb';
 
 // Database.debug = true;
 
 require('colors');
-
-function getUserHome() {
-  return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
-}
-
-const mediaPath = path.join(getUserHome(), 'Documents', 'fulcrum-media');
-
-mkdirp.sync(mediaPath);
-mkdirp.sync(path.join(mediaPath, 'videos'));
-mkdirp.sync(path.join(mediaPath, 'photos'));
-mkdirp.sync(path.join(mediaPath, 'audio'));
-mkdirp.sync(path.join(mediaPath, 'reports'));
-
-// const scrub = (string) => string.replace(/\0/g, '');
 
 export default class Synchronizer {
   constructor() {
