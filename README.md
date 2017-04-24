@@ -64,5 +64,7 @@ To install a plugin:
 
 ```sh
 ./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-reports
+
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-postgres
 ```
 
