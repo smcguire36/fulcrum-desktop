@@ -113,12 +113,14 @@ class App {
       const plugin = new PluginClass({db: this.db, app: this});
 
       const nameParts = path.dirname(fullPath).split(path.sep);
-      const name = nameParts[nameParts.length - 1];
+      const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
 
       this._pluginsByName[name] = plugin;
       this._plugins.push(plugin);
 
       console.log('Loading plugin', fullPath);
+
+      plugin.app = this;
 
       await plugin.initialize({app: this});
     }
