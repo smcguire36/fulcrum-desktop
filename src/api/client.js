@@ -170,6 +170,20 @@ class Client {
     return await req(options);
   }
 
+  async getChangesets(account, sequence, perPage) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/changesets.json')
+    });
+
+    options.qs = {
+      per_page: perPage,
+      sequence: sequence || 0,
+      counts: '0'
+    };
+
+    return await req(options);
+  }
+
   download(url, to) {
     return new Promise((resolve, reject) => {
       const rq = request(url).pipe(fs.createWriteStream(to));

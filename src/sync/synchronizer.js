@@ -4,6 +4,7 @@ import DownloadChoiceLists from './tasks/download-choice-lists';
 import DownloadClassificationSets from './tasks/download-classification-sets';
 import DownloadProjects from './tasks/download-projects';
 import DownloadForms from './tasks/download-forms';
+import DownloadChangesets from './tasks/download-changesets';
 import DownloadAllRecords from './tasks/download-all-records';
 
 import Client from '../api/client';
@@ -41,6 +42,7 @@ export default class Synchronizer {
     this.addTask(new DownloadClassificationSets(this.taskParams));
     this.addTask(new DownloadProjects(this.taskParams));
     this.addTask(new DownloadForms(this.taskParams));
+    this.addTask(new DownloadChangesets(this.taskParams));
     this.addTask(new DownloadAllRecords(this.taskParams));
 
     await dataSource.source.load(account.db);

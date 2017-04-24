@@ -283,3 +283,44 @@ CREATE TABLE IF NOT EXISTS signatures (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_signatures_account_resource_id ON signatures (account_id, resource_id);
+
+CREATE TABLE IF NOT EXISTS changesets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id INTEGER NOT NULL,
+  resource_id TEXT NOT NULL,
+  form_id INTEGER,
+  metadata TEXT,
+  metadata_index_text TEXT,
+  closed_at INTEGER,
+  closed_by_id INTEGER,
+  closed_by_resource_id TEXT,
+  created_by_id INTEGER,
+  created_by_resource_id TEXT,
+  number_of_changes INTEGER NOT NULL DEFAULT 0,
+  min_lat REAL,
+  max_lat REAL,
+  min_lon REAL,
+  max_lon REAL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_changesets_account_resource_id ON changesets (account_id, resource_id);
+
+CREATE VIRTUAL TABLE changesets_index USING fts4(content='changesets', metadata_index_text, form_id, prefix="1,2,3");
+
+CREATE TRIGGER changesets_before_update BEFORE UPDATE ON changesets BEGIN
+  DELETE FROM changesets_index WHERE docid=old.rowid;
+END;
+
+CREATE TRIGGER changesets_before_delete BEFORE DELETE ON changesets BEGIN
+  DELETE FROM changesets_index WHERE docid=old.rowid;
+END;
+
+CREATE TRIGGER changesets_after_update AFTER UPDATE ON changesets BEGIN
+  INSERT INTO changesets_index (docid, metadata_index_text, form_id) VALUES (new.rowid, new.metadata_index_text, new.form_id);
+END;
+
+CREATE TRIGGER changesets_after_insert AFTER INSERT ON changesets BEGIN
+  INSERT INTO changesets_index (docid, metadata_index_text, form_id) VALUES (new.rowid, new.metadata_index_text, new.form_id);
+END;
