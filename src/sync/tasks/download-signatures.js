@@ -1,30 +1,30 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
-import Photo from '../../models/photo';
+import Signature from '../../models/signature';
 
-export default class DownloadPhotos extends DownloadSequence {
+export default class DownloadSignatures extends DownloadSequence {
   get syncResourceName() {
-    return 'photos';
+    return 'signatures';
   }
 
   get syncLabel() {
-    return 'photos';
+    return 'signatures';
   }
 
   get resourceName() {
-    return 'photos';
+    return 'signatures';
   }
 
   get lastSync() {
-    return this.account._lastSyncPhotos;
+    return this.account._lastSyncSignatures;
   }
 
   async fetchObjects(account, lastSync, sequence) {
-    return Client.getPhotos(account, sequence, this.pageSize);
+    return Client.getSignatures(account, sequence, this.pageSize);
   }
 
   findOrCreate(database, account, attributes) {
-    return Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
+    return Signature.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
   }
 
   async process(object, attributes) {
@@ -61,7 +61,7 @@ export default class DownloadPhotos extends DownloadSequence {
       }
     }
 
-    this.account._lastSyncPhotos = object._updatedAt;
+    this.account._lastSyncSignatures = object._updatedAt;
 
     await object.save();
   }

@@ -1,16 +1,15 @@
 import { PersistentObject } from 'minidb';
 import { DateUtils } from 'fulcrum-core';
 
-export default class Video {
+export default class Signature {
   static get tableName() {
-    return 'videos';
+    return 'signatures';
   }
 
   static get columns() {
     return [
       { name: 'accountRowID', column: 'account_id', type: 'integer', null: false },
       { name: 'id', column: 'resource_id', type: 'string', null: false },
-      { name: 'metadata', column: 'metadata', type: 'json' },
       { name: 'filePath', column: 'file_path', type: 'string' },
       { name: 'isDownloaded', column: 'is_downloaded', type: 'boolean', null: false },
       { name: 'formRowID', column: 'form_id', type: 'integer' },
@@ -20,7 +19,6 @@ export default class Video {
 
   updateFromAPIAttributes(attributes) {
     this._id = attributes.access_key;
-    this._metadata = attributes.metadata;
     this._createdAt = DateUtils.parseISOTimestamp(attributes.created_at);
     this._updatedAt = DateUtils.parseISOTimestamp(attributes.updated_at);
   }
@@ -34,4 +32,4 @@ export default class Video {
   }
 }
 
-PersistentObject.register(Video);
+PersistentObject.register(Signature);

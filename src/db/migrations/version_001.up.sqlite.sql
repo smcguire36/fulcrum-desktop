@@ -231,6 +231,8 @@ CREATE TABLE IF NOT EXISTS photos (
   exif TEXT,
   form_id INTEGER,
   record_id INTEGER,
+  latitude REAL,
+  longitude REAL,
   is_downloaded INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
@@ -244,6 +246,8 @@ CREATE TABLE IF NOT EXISTS videos (
   resource_id TEXT NOT NULL,
   file_path TEXT,
   metadata TEXT,
+  form_id INTEGER,
+  record_id INTEGER,
   is_downloaded INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
@@ -257,9 +261,25 @@ CREATE TABLE IF NOT EXISTS audio (
   resource_id TEXT NOT NULL,
   file_path TEXT,
   metadata TEXT,
+  form_id INTEGER,
+  record_id INTEGER,
   is_downloaded INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_audio_account_resource_id ON audio (account_id, resource_id);
+
+CREATE TABLE IF NOT EXISTS signatures (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id INTEGER NOT NULL,
+  resource_id TEXT NOT NULL,
+  file_path TEXT,
+  form_id INTEGER,
+  record_id INTEGER,
+  is_downloaded INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_signatures_account_resource_id ON signatures (account_id, resource_id);

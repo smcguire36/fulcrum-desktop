@@ -124,4 +124,16 @@ export default class Task {
       }
     }
   }
+
+  async lookup(record, resourceID, propName, getter) {
+    if (resourceID) {
+      const object = await new Promise((resolve) => {
+        this.dataSource[getter](resourceID, (err, object) => resolve(object));
+      });
+
+      if (object) {
+        record[propName] = object.rowID;
+      }
+    }
+  }
 }

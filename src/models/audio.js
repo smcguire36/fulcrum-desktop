@@ -1,9 +1,9 @@
 import { PersistentObject } from 'minidb';
 import { DateUtils } from 'fulcrum-core';
 
-export default class Video {
+export default class Audio {
   static get tableName() {
-    return 'videos';
+    return 'audio';
   }
 
   static get columns() {
@@ -34,4 +34,4 @@ export default class Video {
   }
 }
 
-PersistentObject.register(Video);
+PersistentObject.register(Audio);

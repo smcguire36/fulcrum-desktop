@@ -13,6 +13,8 @@ export default class Photo {
       { name: 'exif', column: 'exif', type: 'json' },
       { name: 'filePath', column: 'file_path', type: 'string' },
       { name: 'isDownloaded', column: 'is_downloaded', type: 'boolean', null: false },
+      { name: 'latitude', column: 'latitude', type: 'double' },
+      { name: 'longitude', column: 'longitude', type: 'double' },
       { name: 'formRowID', column: 'form_id', type: 'integer' },
       { name: 'recordRowID', column: 'record_id', type: 'integer' }
     ];

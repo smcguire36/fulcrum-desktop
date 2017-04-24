@@ -1,30 +1,30 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
-import Photo from '../../models/photo';
+import Video from '../../models/video';
 
-export default class DownloadPhotos extends DownloadSequence {
+export default class DownloadVideos extends DownloadSequence {
   get syncResourceName() {
-    return 'photos';
+    return 'videos';
   }
 
   get syncLabel() {
-    return 'photos';
+    return 'videos';
   }
 
   get resourceName() {
-    return 'photos';
+    return 'videos';
   }
 
   get lastSync() {
-    return this.account._lastSyncPhotos;
+    return this.account._lastSyncVideos;
   }
 
   async fetchObjects(account, lastSync, sequence) {
-    return Client.getPhotos(account, sequence, this.pageSize);
+    return Client.getVideos(account, sequence, this.pageSize);
   }
 
   findOrCreate(database, account, attributes) {
-    return Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
+    return Video.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
   }
 
   async process(object, attributes) {
@@ -61,7 +61,7 @@ export default class DownloadPhotos extends DownloadSequence {
       }
     }
 
-    this.account._lastSyncPhotos = object._updatedAt;
+    this.account._lastSyncVideos = object._updatedAt;
 
     await object.save();
   }
@@ -73,5 +73,17 @@ export default class DownloadPhotos extends DownloadSequence {
 
   fail(account, results) {
     console.log(account.organizationName.green, 'failed'.red);
+  }
+
+  async lookup(record, resourceID, propName, getter) {
+    if (resourceID) {
+      const object = await new Promise((resolve) => {
+        this.dataSource[getter](resourceID, (err, object) => resolve(object));
+      });
+
+      if (object) {
+        record[propName] = object.rowID;
+      }
+    }
   }
 }

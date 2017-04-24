@@ -1,30 +1,30 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
-import Photo from '../../models/photo';
+import Audio from '../../models/audio';
 
-export default class DownloadPhotos extends DownloadSequence {
+export default class DownloadAudio extends DownloadSequence {
   get syncResourceName() {
-    return 'photos';
+    return 'audio';
   }
 
   get syncLabel() {
-    return 'photos';
+    return 'audio';
   }
 
   get resourceName() {
-    return 'photos';
+    return 'audio';
   }
 
   get lastSync() {
-    return this.account._lastSyncPhotos;
+    return this.account._lastSyncAudio;
   }
 
   async fetchObjects(account, lastSync, sequence) {
-    return Client.getPhotos(account, sequence, this.pageSize);
+    return Client.getAudio(account, sequence, this.pageSize);
   }
 
   findOrCreate(database, account, attributes) {
-    return Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
+    return Audio.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
   }
 
   async process(object, attributes) {
@@ -61,7 +61,7 @@ export default class DownloadPhotos extends DownloadSequence {
       }
     }
 
-    this.account._lastSyncPhotos = object._updatedAt;
+    this.account._lastSyncAudio = object._updatedAt;
 
     await object.save();
   }

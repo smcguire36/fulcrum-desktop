@@ -78,16 +78,4 @@ export default class DownloadRecords extends DownloadSequence {
   fail(account, results) {
     console.log(account.organizationName.green, 'failed'.red);
   }
-
-  async lookup(record, resourceID, propName, getter) {
-    if (resourceID) {
-      const object = await new Promise((resolve) => {
-        this.dataSource[getter](resourceID, (err, object) => resolve(object));
-      });
-
-      if (object) {
-        record[propName] = object.rowID;
-      }
-    }
-  }
 }
