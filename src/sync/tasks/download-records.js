@@ -46,6 +46,8 @@ export default class DownloadRecords extends DownloadSequence {
 
         await object.delete();
 
+        this._hasChanges = true;
+
         await this.trigger('record:delete', {record: object});
       }
     } else {
@@ -65,6 +67,7 @@ export default class DownloadRecords extends DownloadSequence {
       await object.save();
 
       if (isChanged) {
+        this._hasChanges = true;
         await this.trigger('record:save', {record: object});
       }
     }
@@ -73,6 +76,10 @@ export default class DownloadRecords extends DownloadSequence {
   async finish() {
     // update the lastSync date
     await this.form.save();
+
+    if (this._hasChanges) {
+      await this.trigger('records:finish', {form: this.form});
+    }
   }
 
   fail(account, results) {
