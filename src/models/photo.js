@@ -20,6 +20,10 @@ export default class Photo {
     ];
   }
 
+  get id() {
+    return this._id;
+  }
+
   updateFromAPIAttributes(attributes) {
     this._id = attributes.access_key;
     this._exif = attributes.exif;

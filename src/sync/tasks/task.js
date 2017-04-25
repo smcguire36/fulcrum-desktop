@@ -53,7 +53,7 @@ export default class Task {
   }
 
   trigger(name, args) {
-    return app.emit(name, args);
+    return app.emit(name, {account: this.account, ...args});
   }
 
   get downloading() {

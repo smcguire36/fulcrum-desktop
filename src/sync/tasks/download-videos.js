@@ -1,6 +1,7 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
 import Video from '../../models/video';
+import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadVideos extends DownloadSequence {
   get syncResourceName() {
@@ -29,6 +30,9 @@ export default class DownloadVideos extends DownloadSequence {
 
   async process(object, attributes) {
     object.updateFromAPIAttributes(attributes);
+
+    const isChanged = !object.isPersisted ||
+                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
 
     if (attributes.processed) {
       if (!object.isDownloaded) {
@@ -64,6 +68,10 @@ export default class DownloadVideos extends DownloadSequence {
     this.account._lastSyncVideos = object._updatedAt;
 
     await object.save();
+
+    if (isChanged) {
+      await this.trigger('video:save', {video: object});
+    }
   }
 
   async finish() {
@@ -73,17 +81,5 @@ export default class DownloadVideos extends DownloadSequence {
 
   fail(account, results) {
     console.log(account.organizationName.green, 'failed'.red);
-  }
-
-  async lookup(record, resourceID, propName, getter) {
-    if (resourceID) {
-      const object = await new Promise((resolve) => {
-        this.dataSource[getter](resourceID, (err, object) => resolve(object));
-      });
-
-      if (object) {
-        record[propName] = object.rowID;
-      }
-    }
   }
 }

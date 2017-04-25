@@ -4,6 +4,7 @@ import RecordValues from './models/record-values/record-values';
 import SQLiteRecordValues from './models/record-values/sqlite-record-values';
 import PostgresRecordValues from './models/record-values/postgres-record-values';
 import { Postgres, SQLite, PersistentObject } from 'minidb';
+import Client from './api/client';
 
 const api = {
   core: core,
@@ -13,7 +14,8 @@ const api = {
   PostgresRecordValues,
   Postgres,
   SQLite,
-  PersistentObject
+  PersistentObject,
+  Client
 };
 
 export default api;

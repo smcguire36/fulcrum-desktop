@@ -1,6 +1,7 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
 import Audio from '../../models/audio';
+import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadAudio extends DownloadSequence {
   get syncResourceName() {
@@ -29,6 +30,9 @@ export default class DownloadAudio extends DownloadSequence {
 
   async process(object, attributes) {
     object.updateFromAPIAttributes(attributes);
+
+    const isChanged = !object.isPersisted ||
+                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
 
     if (attributes.processed) {
       if (!object.isDownloaded) {
@@ -64,6 +68,10 @@ export default class DownloadAudio extends DownloadSequence {
     this.account._lastSyncAudio = object._updatedAt;
 
     await object.save();
+
+    if (isChanged) {
+      await this.trigger('audio:save', {audio: object});
+    }
   }
 
   async finish() {

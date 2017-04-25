@@ -184,6 +184,22 @@ class Client {
     return await req(options);
   }
 
+  getPhotoURL(account, media) {
+    return this.urlForResource(`/api/v2/photos/${ media.id }?token=${account.token}`);
+  }
+
+  getVideoURL(account, media) {
+    return this.urlForResource(`/api/v2/videos/${ media.id }?token=${account.token}`);
+  }
+
+  getAudioURL(account, media) {
+    return this.urlForResource(`/api/v2/audio/${ media.id }?token=${account.token}`);
+  }
+
+  getSignatureURL(account, media) {
+    return this.urlForResource(`/api/v2/signatures/${ media.id }?token=${account.token}`);
+  }
+
   download(url, to) {
     return new Promise((resolve, reject) => {
       const rq = request(url).pipe(fs.createWriteStream(to));

@@ -1,6 +1,7 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
 import Signature from '../../models/signature';
+import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadSignatures extends DownloadSequence {
   get syncResourceName() {
@@ -29,6 +30,9 @@ export default class DownloadSignatures extends DownloadSequence {
 
   async process(object, attributes) {
     object.updateFromAPIAttributes(attributes);
+
+    const isChanged = !object.isPersisted ||
+                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
 
     if (attributes.processed) {
       if (!object.isDownloaded) {
@@ -64,6 +68,10 @@ export default class DownloadSignatures extends DownloadSequence {
     this.account._lastSyncSignatures = object._updatedAt;
 
     await object.save();
+
+    if (isChanged) {
+      await this.trigger('signature:save', {signature: object});
+    }
   }
 
   async finish() {

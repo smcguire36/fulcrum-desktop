@@ -1,6 +1,7 @@
 import DownloadSequence from './download-sequence';
 import Client from '../../api/client';
 import Changeset from '../../models/changeset';
+import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadChangesets extends DownloadSequence {
   get syncResourceName() {
@@ -30,6 +31,9 @@ export default class DownloadChangesets extends DownloadSequence {
   async process(object, attributes) {
     object.updateFromAPIAttributes(attributes);
 
+    const isChanged = !object.isPersisted ||
+                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
+
     await this.lookup(object, attributes.form_id, '_formRowID', 'getForm');
     await this.lookup(object, attributes.closed_by_id, '_closedByRowID', 'getUser');
     await this.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
@@ -37,6 +41,10 @@ export default class DownloadChangesets extends DownloadSequence {
     this.account._lastSyncChangesets = object._updatedAt;
 
     await object.save();
+
+    if (isChanged) {
+      await this.trigger('changeset:save', {changeset: object});
+    }
   }
 
   async finish() {
