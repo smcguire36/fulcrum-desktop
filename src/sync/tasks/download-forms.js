@@ -62,9 +62,9 @@ export default class DownloadForms extends Task {
 
       const statements = await this.updateFormTables(account, oldForm, newForm);
 
-      await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
-                                      account.db.ident(object.name),
-                                      SQLiteRecordValues.tableNameWithForm(object)));
+      // await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
+      //                                 account.db.ident(object.name),
+      //                                 SQLiteRecordValues.tableNameWithForm(object)));
 
       if (isChanged) {
         await this.trigger('form:save', {form: object, account, statements, oldForm, newForm});
