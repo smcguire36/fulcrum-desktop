@@ -34,6 +34,14 @@ class App {
     return this._api;
   }
 
+  get yargs() {
+    return yargs;
+  }
+
+  get args() {
+    return this.yargs.argv;
+  }
+
   dir(dir) {
     return path.join(this._rootDirectory, dir);
   }
