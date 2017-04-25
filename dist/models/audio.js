@@ -8,9 +8,9 @@ var _minidb = require('minidb');
 
 var _fulcrumCore = require('fulcrum-core');
 
-class Video {
+class Audio {
   static get tableName() {
-    return 'videos';
+    return 'audio';
   }
 
   static get columns() {
@@ -37,6 +37,6 @@ class Video {
   }
 }
 
-exports.default = Video;
-_minidb.PersistentObject.register(Video);
-//# sourceMappingURL=video.js.map
+exports.default = Audio;
+_minidb.PersistentObject.register(Audio);
+//# sourceMappingURL=audio.js.map

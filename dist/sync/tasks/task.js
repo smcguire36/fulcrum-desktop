@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _progress = require('progress');
 
 var _progress2 = _interopRequireDefault(_progress);
@@ -70,6 +72,8 @@ class Task {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
+      _this2.account = account;
+
       const result = yield _this2.run({ account, dataSource });
 
       if (_this2.bar) {
@@ -81,7 +85,7 @@ class Task {
   }
 
   trigger(name, args) {
-    return _app2.default.emit(name, args);
+    return _app2.default.emit(name, _extends({ account: this.account }, args));
   }
 
   get downloading() {
@@ -149,6 +153,24 @@ class Task {
         if (!objectExistsOnServer) {
           object._deletedAt = object._deletedAt ? object._deletedAt : new Date();
           yield object.save();
+        }
+      }
+    })();
+  }
+
+  lookup(record, resourceID, propName, getter) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      if (resourceID) {
+        const object = yield new Promise(function (resolve) {
+          _this3.dataSource[getter](resourceID, function (err, object) {
+            return resolve(object);
+          });
+        });
+
+        if (object) {
+          record[propName] = object.rowID;
         }
       }
     })();

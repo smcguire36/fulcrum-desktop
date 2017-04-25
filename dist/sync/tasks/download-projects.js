@@ -8,9 +8,9 @@ var _task = require('./task');
 
 var _task2 = _interopRequireDefault(_task);
 
-var _Client = require('../../api/Client');
+var _client = require('../../api/client');
 
-var _Client2 = _interopRequireDefault(_Client);
+var _client2 = _interopRequireDefault(_client);
 
 var _project = require('../../models/project');
 
@@ -33,7 +33,7 @@ class DownloadProjects extends _task2.default {
 
       _this.progress({ message: _this.downloading + ' projects' });
 
-      const response = yield _Client2.default.getProjects(account);
+      const response = yield _client2.default.getProjects(account);
 
       const objects = JSON.parse(response.body).projects;
 
@@ -58,6 +58,8 @@ class DownloadProjects extends _task2.default {
       }
 
       yield sync.update();
+
+      dataSource.source.invalidate('projects');
 
       _this.progress({ message: _this.finished + ' projects', count: objects.length, total: objects.length });
     })();

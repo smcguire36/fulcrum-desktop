@@ -8,9 +8,9 @@ var _task = require('./task');
 
 var _task2 = _interopRequireDefault(_task);
 
-var _Client = require('../../api/Client');
+var _client = require('../../api/client');
 
-var _Client2 = _interopRequireDefault(_Client);
+var _client2 = _interopRequireDefault(_client);
 
 var _role = require('../../models/role');
 
@@ -33,7 +33,7 @@ class DownloadRoles extends _task2.default {
 
       _this.progress({ message: _this.downloading + ' roles' });
 
-      const response = yield _Client2.default.getRoles(account);
+      const response = yield _client2.default.getRoles(account);
 
       const objects = JSON.parse(response.body).roles;
 

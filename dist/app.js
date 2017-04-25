@@ -66,6 +66,14 @@ class App {
     return this._api;
   }
 
+  get yargs() {
+    return _yargs2.default;
+  }
+
+  get args() {
+    return this.yargs.argv;
+  }
+
   dir(dir) {
     return _path2.default.join(this._rootDirectory, dir);
   }
@@ -112,6 +120,10 @@ class App {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
+      // process.env.NODE_PATH = __dirname;
+      // require('module').Module._initPaths();
+      // console.log(process.env.NODE_PATH);
+
       const file = _path2.default.join(_this2.dir('data'), 'fulcrum.db');
 
       _this2._db = yield (0, _database2.default)({ file });
@@ -164,12 +176,14 @@ class App {
         const plugin = new PluginClass({ db: _this5.db, app: _this5 });
 
         const nameParts = _path2.default.dirname(fullPath).split(_path2.default.sep);
-        const name = nameParts[nameParts.length - 1];
+        const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
 
         _this5._pluginsByName[name] = plugin;
         _this5._plugins.push(plugin);
 
         console.log('Loading plugin', fullPath);
+
+        plugin.app = _this5;
 
         yield plugin.initialize({ app: _this5 });
       }

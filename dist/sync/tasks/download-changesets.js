@@ -12,9 +12,9 @@ var _client = require('../../api/client');
 
 var _client2 = _interopRequireDefault(_client);
 
-var _photo = require('../../models/photo');
+var _changeset = require('../../models/changeset');
 
-var _photo2 = _interopRequireDefault(_photo);
+var _changeset2 = _interopRequireDefault(_changeset);
 
 var _fulcrumCore = require('fulcrum-core');
 
@@ -22,33 +22,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-class DownloadPhotos extends _downloadSequence2.default {
+class DownloadChangesets extends _downloadSequence2.default {
   get syncResourceName() {
-    return 'photos';
+    return 'changesets';
   }
 
   get syncLabel() {
-    return 'photos';
+    return 'changesets';
   }
 
   get resourceName() {
-    return 'photos';
+    return 'changesets';
   }
 
   get lastSync() {
-    return this.account._lastSyncPhotos;
+    return this.account._lastSyncChangesets;
   }
 
   fetchObjects(account, lastSync, sequence) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      return _client2.default.getPhotos(account, sequence, _this.pageSize);
+      return _client2.default.getChangesets(account, sequence, _this.pageSize);
     })();
   }
 
   findOrCreate(database, account, attributes) {
-    return _photo2.default.findOrCreate(database, { account_id: account.rowID, resource_id: attributes.access_key });
+    return _changeset2.default.findOrCreate(database, { account_id: account.rowID, resource_id: attributes.id });
   }
 
   process(object, attributes) {
@@ -59,43 +59,16 @@ class DownloadPhotos extends _downloadSequence2.default {
 
       const isChanged = !object.isPersisted || _fulcrumCore.DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
 
-      if (attributes.processed) {
-        if (!object.isDownloaded) {
-          // queue.push(attributes, function(err) {
-          //   if (err) {
-          //     console.log('ERROR DOWNLOADING', err);
-          //     throw err;
-          //   }
-
-          //   object.isDownloaded = true;
-          //   // do we need to await this somehow?
-          //   object.save();
-          // });
-        }
-      } else {
-        object.isDownloaded = false;
-      }
-
-      if (object.isDownloaded == null) {
-        object.isDownloaded = false;
-      }
-
       yield _this2.lookup(object, attributes.form_id, '_formRowID', 'getForm');
+      yield _this2.lookup(object, attributes.closed_by_id, '_closedByRowID', 'getUser');
+      yield _this2.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
 
-      if (object._formRowID) {
-        const record = yield _this2.account.findFirstRecord({ resource_id: attributes.record_id });
-
-        if (record) {
-          object._recordRowID = record.rowID;
-        }
-      }
-
-      _this2.account._lastSyncPhotos = object._updatedAt;
+      _this2.account._lastSyncChangesets = object._updatedAt;
 
       yield object.save();
 
       if (isChanged) {
-        yield _this2.trigger('photo:save', { photo: object });
+        yield _this2.trigger('changeset:save', { changeset: object });
       }
     })();
   }
@@ -113,5 +86,5 @@ class DownloadPhotos extends _downloadSequence2.default {
     console.log(account.organizationName.green, 'failed'.red);
   }
 }
-exports.default = DownloadPhotos;
-//# sourceMappingURL=download-photos.js.map
+exports.default = DownloadChangesets;
+//# sourceMappingURL=download-changesets.js.map

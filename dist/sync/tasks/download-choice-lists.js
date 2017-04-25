@@ -8,9 +8,9 @@ var _task = require('./task');
 
 var _task2 = _interopRequireDefault(_task);
 
-var _Client = require('../../api/Client');
+var _client = require('../../api/client');
 
-var _Client2 = _interopRequireDefault(_Client);
+var _client2 = _interopRequireDefault(_client);
 
 var _choiceList = require('../../models/choice-list');
 
@@ -33,7 +33,7 @@ class DownloadChoiceLists extends _task2.default {
 
       _this.progress({ message: _this.downloading + ' choice lists' });
 
-      const response = yield _Client2.default.getChoiceLists(account);
+      const response = yield _client2.default.getChoiceLists(account);
 
       const objects = JSON.parse(response.body).choice_lists;
 
@@ -58,6 +58,8 @@ class DownloadChoiceLists extends _task2.default {
       }
 
       yield sync.update();
+
+      dataSource.source.invalidate('choiceLists');
 
       _this.progress({ message: _this.finished + ' choice lists', count: objects.length, total: objects.length });
     })();

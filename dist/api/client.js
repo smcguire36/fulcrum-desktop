@@ -169,7 +169,7 @@ class Client {
     })();
   }
 
-  getPhotos(account, form, page) {
+  getPhotos(account, sequence, perPage) {
     var _this9 = this;
 
     return _asyncToGenerator(function* () {
@@ -178,20 +178,16 @@ class Client {
       });
 
       options.qs = {
-        per_page: 1000,
-        page: page,
+        per_page: perPage,
+        sequence: sequence || 0,
         full: '1'
       };
-
-      if (form) {
-        options.qs.form_id = form.id;
-      }
 
       return yield req(options);
     })();
   }
 
-  getVideos(account, form, page) {
+  getVideos(account, sequence, perPage) {
     var _this10 = this;
 
     return _asyncToGenerator(function* () {
@@ -200,17 +196,83 @@ class Client {
       });
 
       options.qs = {
-        per_page: 1000,
-        page: page,
+        per_page: perPage,
+        sequence: sequence || 0,
         full: '1'
       };
 
-      if (form) {
-        options.qs.form_id = form.id;
-      }
+      return yield req(options);
+    })();
+  }
+
+  getAudio(account, sequence, perPage) {
+    var _this11 = this;
+
+    return _asyncToGenerator(function* () {
+      const options = _this11.optionsForRequest(account, {
+        url: _this11.urlForResource('/api/v2/audio.json')
+      });
+
+      options.qs = {
+        per_page: perPage,
+        sequence: sequence || 0,
+        full: '1'
+      };
 
       return yield req(options);
     })();
+  }
+
+  getSignatures(account, sequence, perPage) {
+    var _this12 = this;
+
+    return _asyncToGenerator(function* () {
+      const options = _this12.optionsForRequest(account, {
+        url: _this12.urlForResource('/api/v2/signatures.json')
+      });
+
+      options.qs = {
+        per_page: perPage,
+        sequence: sequence || 0,
+        full: '1'
+      };
+
+      return yield req(options);
+    })();
+  }
+
+  getChangesets(account, sequence, perPage) {
+    var _this13 = this;
+
+    return _asyncToGenerator(function* () {
+      const options = _this13.optionsForRequest(account, {
+        url: _this13.urlForResource('/api/v2/changesets.json')
+      });
+
+      options.qs = {
+        per_page: perPage,
+        sequence: sequence || 0,
+        counts: '0'
+      };
+
+      return yield req(options);
+    })();
+  }
+
+  getPhotoURL(account, media) {
+    return this.urlForResource(`/api/v2/photos/${media.id}?token=${account.token}`);
+  }
+
+  getVideoURL(account, media) {
+    return this.urlForResource(`/api/v2/videos/${media.id}?token=${account.token}`);
+  }
+
+  getAudioURL(account, media) {
+    return this.urlForResource(`/api/v2/audio/${media.id}?token=${account.token}`);
+  }
+
+  getSignatureURL(account, media) {
+    return this.urlForResource(`/api/v2/signatures/${media.id}?token=${account.token}`);
   }
 
   download(url, to) {
@@ -222,17 +284,16 @@ class Client {
   }
 
   getRecords(account, form, sequence, pageSize) {
-    var _this11 = this;
+    var _this14 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this11.optionsForRequest(account, {
-        url: _this11.urlForResource('/api/v2/records.json')
+      const options = _this14.optionsForRequest(account, {
+        url: _this14.urlForResource('/api/v2/records.json')
       });
 
       options.qs = {
         form_id: form.id,
         per_page: pageSize,
-        extents: 0,
         sequence: sequence || 0
       };
 
@@ -241,11 +302,11 @@ class Client {
   }
 
   getRecordsHistory(account, form, sequence, pageSize) {
-    var _this12 = this;
+    var _this15 = this;
 
     return _asyncToGenerator(function* () {
-      const options = _this12.optionsForRequest(account, {
-        url: _this12.urlForResource('/api/v2/records/history.json')
+      const options = _this15.optionsForRequest(account, {
+        url: _this15.urlForResource('/api/v2/records/history.json')
       });
 
       options.qs = {

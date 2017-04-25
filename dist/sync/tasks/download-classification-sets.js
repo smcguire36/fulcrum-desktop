@@ -8,9 +8,9 @@ var _task = require('./task');
 
 var _task2 = _interopRequireDefault(_task);
 
-var _Client = require('../../api/Client');
+var _client = require('../../api/client');
 
-var _Client2 = _interopRequireDefault(_Client);
+var _client2 = _interopRequireDefault(_client);
 
 var _classificationSet = require('../../models/classification-set');
 
@@ -33,7 +33,7 @@ class DownloadClassificationSets extends _task2.default {
 
       _this.progress({ message: _this.downloading + ' classification sets' });
 
-      const response = yield _Client2.default.getClassificationSets(account);
+      const response = yield _client2.default.getClassificationSets(account);
 
       const objects = JSON.parse(response.body).classification_sets;
 
@@ -58,6 +58,8 @@ class DownloadClassificationSets extends _task2.default {
       }
 
       yield sync.update();
+
+      dataSource.source.invalidate('classificationSets');
 
       _this.progress({ message: _this.finished + ' classification sets', count: objects.length, total: objects.length });
     })();

@@ -12,9 +12,9 @@ var _client = require('../../api/client');
 
 var _client2 = _interopRequireDefault(_client);
 
-var _photo = require('../../models/photo');
+var _audio = require('../../models/audio');
 
-var _photo2 = _interopRequireDefault(_photo);
+var _audio2 = _interopRequireDefault(_audio);
 
 var _fulcrumCore = require('fulcrum-core');
 
@@ -22,33 +22,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-class DownloadPhotos extends _downloadSequence2.default {
+class DownloadAudio extends _downloadSequence2.default {
   get syncResourceName() {
-    return 'photos';
+    return 'audio';
   }
 
   get syncLabel() {
-    return 'photos';
+    return 'audio';
   }
 
   get resourceName() {
-    return 'photos';
+    return 'audio';
   }
 
   get lastSync() {
-    return this.account._lastSyncPhotos;
+    return this.account._lastSyncAudio;
   }
 
   fetchObjects(account, lastSync, sequence) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      return _client2.default.getPhotos(account, sequence, _this.pageSize);
+      return _client2.default.getAudio(account, sequence, _this.pageSize);
     })();
   }
 
   findOrCreate(database, account, attributes) {
-    return _photo2.default.findOrCreate(database, { account_id: account.rowID, resource_id: attributes.access_key });
+    return _audio2.default.findOrCreate(database, { account_id: account.rowID, resource_id: attributes.access_key });
   }
 
   process(object, attributes) {
@@ -90,12 +90,12 @@ class DownloadPhotos extends _downloadSequence2.default {
         }
       }
 
-      _this2.account._lastSyncPhotos = object._updatedAt;
+      _this2.account._lastSyncAudio = object._updatedAt;
 
       yield object.save();
 
       if (isChanged) {
-        yield _this2.trigger('photo:save', { photo: object });
+        yield _this2.trigger('audio:save', { audio: object });
       }
     })();
   }
@@ -113,5 +113,5 @@ class DownloadPhotos extends _downloadSequence2.default {
     console.log(account.organizationName.green, 'failed'.red);
   }
 }
-exports.default = DownloadPhotos;
-//# sourceMappingURL=download-photos.js.map
+exports.default = DownloadAudio;
+//# sourceMappingURL=download-audio.js.map
