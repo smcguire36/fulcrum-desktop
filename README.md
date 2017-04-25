@@ -66,5 +66,6 @@ To install a plugin:
 ./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-reports
 
 ./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-postgres
-```
 
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-s3-upload
+```
