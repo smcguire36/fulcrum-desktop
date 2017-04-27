@@ -75,6 +75,8 @@ class DownloadRecords extends _downloadSequence2.default {
 
           yield object.delete();
 
+          _this2._hasChanges = true;
+
           yield _this2.trigger('record:delete', { record: object });
         }
       } else {
@@ -94,6 +96,7 @@ class DownloadRecords extends _downloadSequence2.default {
         yield object.save();
 
         if (isChanged) {
+          _this2._hasChanges = true;
           yield _this2.trigger('record:save', { record: object });
         }
       }
@@ -106,6 +109,10 @@ class DownloadRecords extends _downloadSequence2.default {
     return _asyncToGenerator(function* () {
       // update the lastSync date
       yield _this3.form.save();
+
+      if (_this3._hasChanges) {
+        yield _this3.trigger('records:finish', { form: _this3.form });
+      }
     })();
   }
 

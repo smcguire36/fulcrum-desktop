@@ -94,7 +94,9 @@ class DownloadForms extends _task2.default {
 
         const statements = yield _this.updateFormTables(account, oldForm, newForm);
 
-        yield account.db.execute((0, _util.format)('CREATE VIEW %s AS SELECT * FROM %s_view_full', account.db.ident(object.name), _sqliteRecordValues2.default.tableNameWithForm(object)));
+        // await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
+        //                                 account.db.ident(object.name),
+        //                                 SQLiteRecordValues.tableNameWithForm(object)));
 
         if (isChanged) {
           yield _this.trigger('form:save', { form: object, account, statements, oldForm, newForm });
