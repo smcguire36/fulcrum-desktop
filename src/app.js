@@ -130,7 +130,9 @@ class App {
       this._pluginsByName[name] = plugin;
       this._plugins.push(plugin);
 
-      console.log('Loading plugin', fullPath);
+      if (this.args.debug) {
+        console.error('Loading plugin', fullPath);
+      }
 
       plugin.app = this;
 
