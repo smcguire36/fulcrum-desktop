@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/client.js"],"names":["require"],"mappings":";;AAAAA,QAAQ,gBAAR;AACAA,QAAQ,cAAR","file":"client.js","sourcesContent":["require('babel-register');\nrequire('./client/app');\n"]}
