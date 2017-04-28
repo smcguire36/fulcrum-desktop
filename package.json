@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-sync",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-sync",
   "main": "app/index.js",
