@@ -27,8 +27,9 @@ export default class {
       console.log('Updating plugin...', pluginPath);
 
       try {
-        execSync(string, {cwd: pluginDir});
-        console.log('Plugin updated.');
+        const result = execSync(string, {cwd: pluginDir});
+        console.log(result.toString());
+        console.log('Plugin updated.\n\n');
       } catch (ex) {
         console.error('Error updating plugin', pluginPath, ex.stderr.toString());
       }
