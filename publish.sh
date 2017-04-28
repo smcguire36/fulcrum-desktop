@@ -7,4 +7,12 @@ if [ -z "$GH_TOKEN" ]; then
 fi
 
 # This will build, package and upload the app to GitHub.
-node_modules/.bin/build --mac --linux -p always
+
+if [ "$1" == "mac" ]; then
+  node_modules/.bin/build --mac -p always
+elif [ "$1" == "linux" ]; then
+  node_modules/.bin/build --linux -p always
+else
+  echo "Must pass either mac or linux"
+  exit 1
+fi
