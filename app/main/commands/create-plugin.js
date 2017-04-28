@@ -19,17 +19,23 @@ exports.default = class {
     this.runCommand = _asyncToGenerator(function* () {
       const pluginPath = fulcrum.dir('plugins');
 
+      const files = ['package.json', 'plugin.js', '.gitignore'];
+
       const commands = [];
 
-      const parts = fulcrum.args.url.split('/');
+      const newPluginPath = _path2.default.join(pluginPath, fulcrum.args.name);
 
-      const name = parts[parts.length - 1].replace(/\.git/, '');
+      commands.push(`mkdir -p ${newPluginPath}`);
 
-      const newPluginPath = _path2.default.join(pluginPath, name);
+      for (const file of files) {
+        const sourcePath = _path2.default.resolve(_path2.default.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
 
-      commands.push(`git clone ${fulcrum.args.url} ${newPluginPath}`);
+        commands.push(`cp ${sourcePath} ${newPluginPath}`);
+      }
+
       commands.push(`cd ${newPluginPath}`);
       commands.push('yarn');
+      commands.push('git init');
 
       const string = commands.join(' && ');
 
@@ -37,7 +43,9 @@ exports.default = class {
 
       (0, _child_process.execSync)(string);
 
-      console.log('Plugin installed at', newPluginPath);
+      console.log('Plugin created at', _path2.default.join(pluginPath, fulcrum.args.name));
+      console.log('Run the plugin task using:\n');
+      console.log('  ./run task ' + fulcrum.args.name);
     });
   }
 
@@ -46,12 +54,12 @@ exports.default = class {
 
     return _asyncToGenerator(function* () {
       return cli.command({
-        command: 'install-plugin',
-        desc: 'install a plugin',
+        command: 'create-plugin',
+        desc: 'create a new plugin',
         builder: {
           url: {
             type: 'string',
-            desc: 'the URL to a git repo',
+            desc: 'the new plugin name',
             required: true
           }
         },
@@ -61,4 +69,4 @@ exports.default = class {
   }
 
 };
-//# sourceMappingURL=install-plugin.js.map
+//# sourceMappingURL=create-plugin.js.map

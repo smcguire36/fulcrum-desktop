@@ -40,6 +40,12 @@ var _account = require('./models/account');
 
 var _account2 = _interopRequireDefault(_account);
 
+var _localDatabaseDataSource = require('./local-database-data-source');
+
+var _localDatabaseDataSource2 = _interopRequireDefault(_localDatabaseDataSource);
+
+var _fulcrumCore = require('fulcrum-core');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -130,15 +136,13 @@ class App {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      // process.env.NODE_PATH = __dirname;
-      // require('module').Module._initPaths();
-      // console.log(process.env.NODE_PATH);
-
       const file = _path2.default.join(_this2.dir('data'), 'fulcrum.db');
 
       _this2._db = yield (0, _database2.default)({ file });
 
-      yield _this2.initializePlugins();
+      if (!_this2.args.safe) {
+        yield _this2.initializePlugins();
+      }
     })();
   }
 
@@ -156,27 +160,11 @@ class App {
     })();
   }
 
-  runTask(command) {
+  initializePlugins() {
     var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      const name = command.args._[1];
-
-      const plugin = _this4._pluginsByName[name];
-
-      if (plugin && plugin.task) {
-        yield plugin.task();
-      } else {
-        console.error('Plugin named', name, 'not found');
-      }
-    })();
-  }
-
-  initializePlugins() {
-    var _this5 = this;
-
-    return _asyncToGenerator(function* () {
-      const pluginPaths = _glob2.default.sync(_path2.default.join(_this5.dir('plugins'), '*', 'plugin.js'));
+      const pluginPaths = _glob2.default.sync(_path2.default.join(_this4.dir('plugins'), '*', 'plugin.js'));
 
       for (const pluginPath of pluginPaths) {
         const fullPath = _path2.default.resolve(pluginPath);
@@ -190,13 +178,21 @@ class App {
         const nameParts = _path2.default.dirname(fullPath).split(_path2.default.sep);
         const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
 
-        _this5._pluginsByName[name] = plugin;
-        _this5._plugins.push(plugin);
+        _this4._pluginsByName[name] = plugin;
+        _this4._plugins.push(plugin);
 
-        if (_this5.args.debug) {
+        if (_this4.args.debug) {
           console.error('Loading plugin', fullPath);
         }
+      }
+    })();
+  }
 
+  activatePlugins() {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      for (const plugin of _this5._plugins) {
         yield plugin.activate();
       }
     })();
@@ -215,6 +211,22 @@ class App {
       const accounts = yield _account2.default.findAll(_this6.db, where);
 
       return accounts[0];
+    })();
+  }
+
+  createDataSource(account) {
+    var _this7 = this;
+
+    return _asyncToGenerator(function* () {
+      let dataSource = new _fulcrumCore.DataSource();
+
+      const localDatabase = new _localDatabaseDataSource2.default(account);
+
+      dataSource.add(localDatabase);
+
+      yield localDatabase.load(_this7.db);
+
+      return dataSource;
     })();
   }
 }

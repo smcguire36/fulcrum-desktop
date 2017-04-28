@@ -37,6 +37,10 @@ class Environment {
   fetchAccount(name) {
     return Environment.app.fetchAccount(name);
   }
+
+  createDataSource(account) {
+    return Environment.app.createDataSource(account);
+  }
 }
 exports.default = Environment;
 //# sourceMappingURL=environment.js.map

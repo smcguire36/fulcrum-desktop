@@ -10,6 +10,10 @@ var _path2 = _interopRequireDefault(_path);
 
 var _child_process = require('child_process');
 
+var _glob = require('glob');
+
+var _glob2 = _interopRequireDefault(_glob);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -17,27 +21,27 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 exports.default = class {
   constructor() {
     this.runCommand = _asyncToGenerator(function* () {
-      const pluginPath = fulcrum.dir('plugins');
+      const pluginPaths = _glob2.default.sync(_path2.default.join(fulcrum.dir('plugins'), '*', 'plugin.js'));
 
-      const commands = [];
+      for (const pluginPath of pluginPaths) {
+        const pluginDir = _path2.default.resolve(_path2.default.dirname(pluginPath));
 
-      const parts = fulcrum.args.url.split('/');
+        const commands = [];
 
-      const name = parts[parts.length - 1].replace(/\.git/, '');
+        commands.push('git pull');
+        commands.push('yarn');
 
-      const newPluginPath = _path2.default.join(pluginPath, name);
+        const string = commands.join(' && ');
 
-      commands.push(`git clone ${fulcrum.args.url} ${newPluginPath}`);
-      commands.push(`cd ${newPluginPath}`);
-      commands.push('yarn');
+        console.log('Updating plugin...', pluginPath);
 
-      const string = commands.join(' && ');
-
-      console.log('Installing...');
-
-      (0, _child_process.execSync)(string);
-
-      console.log('Plugin installed at', newPluginPath);
+        try {
+          (0, _child_process.execSync)(string, { cwd: pluginDir });
+          console.log('Plugin updated.');
+        } catch (ex) {
+          console.error('Error updating plugin', pluginPath, ex.stderr.toString());
+        }
+      }
     });
   }
 
@@ -46,19 +50,12 @@ exports.default = class {
 
     return _asyncToGenerator(function* () {
       return cli.command({
-        command: 'install-plugin',
-        desc: 'install a plugin',
-        builder: {
-          url: {
-            type: 'string',
-            desc: 'the URL to a git repo',
-            required: true
-          }
-        },
+        command: 'update-plugins',
+        desc: 'update all plugins',
         handler: _this.runCommand
       });
     })();
   }
 
 };
-//# sourceMappingURL=install-plugin.js.map
+//# sourceMappingURL=update-plugins.js.map

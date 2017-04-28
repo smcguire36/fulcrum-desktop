@@ -1,8 +1,8 @@
 'use strict';
 
-var _command = require('./command');
-
-var _command2 = _interopRequireDefault(_command);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 require('colors');
 
@@ -43,11 +43,9 @@ const againQuestion = {
   'default': true
 };
 
-class Setup extends _command2.default {
-  run() {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
+exports.default = class {
+  constructor() {
+    this.runCommand = _asyncToGenerator(function* () {
       let exit = false;
 
       while (!exit) {
@@ -67,7 +65,7 @@ class Setup extends _command2.default {
               organization_resource_id: context.id
             };
 
-            const db = _this.db;
+            const db = fulcrum.db;
 
             const account = yield _account2.default.findOrCreate(db, contextAttributes);
 
@@ -93,9 +91,21 @@ class Setup extends _command2.default {
           }
         }
       }
+    });
+  }
+
+  task(cli) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      return cli.command({
+        command: 'setup',
+        desc: 'setup the local fulcrum database',
+        builder: {},
+        handler: _this.runCommand
+      });
     })();
   }
-}
 
-new Setup().start();
+};
 //# sourceMappingURL=setup.js.map
