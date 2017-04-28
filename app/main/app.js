@@ -181,7 +181,9 @@ class App {
       for (const pluginPath of pluginPaths) {
         const fullPath = _path2.default.resolve(pluginPath);
 
-        const PluginClass = require(fullPath).default;
+        const pluginModule = require(fullPath);
+
+        const PluginClass = pluginModule.default || pluginModule;
 
         const plugin = new PluginClass();
 

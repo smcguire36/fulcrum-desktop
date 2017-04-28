@@ -30,7 +30,7 @@ class NewPlugin extends _command2.default {
       commands.push(`mkdir -p ${newPluginPath}`);
 
       for (const file of files) {
-        const sourcePath = _path2.default.resolve(_path2.default.join(__dirname, '..', '..', 'resources', 'default-plugin', file));
+        const sourcePath = _path2.default.resolve(_path2.default.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
 
         commands.push(`cp ${sourcePath} ${newPluginPath}`);
       }

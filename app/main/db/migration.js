@@ -4,19 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _fs = require('fs');
+var _version_ = require('./migrations/version_001');
 
-var _fs2 = _interopRequireDefault(_fs);
-
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
+var _version_2 = _interopRequireDefault(_version_);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const readFile = _bluebird2.default.promisify(_fs2.default.readFile);
+const MIGRATIONS = {
+  '001': _version_2.default
+};
 
 class Migration {
   constructor(db, versionName) {
@@ -28,11 +26,7 @@ class Migration {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const dialect = '.' + _this.db.dialect;
-
-      const fileName = './src/db/migrations/version_' + _this.versionName + '.' + suffix + dialect + '.sql';
-
-      const data = yield readFile(fileName, { encoding: 'utf8' });
+      const data = MIGRATIONS[_this.versionName];
 
       const sql = [];
 
