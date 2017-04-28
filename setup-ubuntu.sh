@@ -31,5 +31,10 @@ sudo apt-get install -y \
   gcc-multilib \
   g++-multilib \
   libxss1 \
+  icnsutils \
+  graphicsmagick \
+  rpm \
+  bsdtar \
+  xz-utils \
   nodejs \
   yarn
