@@ -62,8 +62,14 @@ exports.default = class {
 
         fullSync = false;
 
+        if (!fulcrum.args.forever) {
+          break;
+        }
+
+        const interval = fulcrum.args.interval ? +fulcrum.args.interval * 1000 : 15000;
+
         yield new Promise(function (resolve) {
-          return setTimeout(resolve, 10000);
+          return setTimeout(resolve, interval);
         });
       }
     })();

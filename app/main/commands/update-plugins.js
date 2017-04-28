@@ -36,8 +36,9 @@ exports.default = class {
         console.log('Updating plugin...', pluginPath);
 
         try {
-          (0, _child_process.execSync)(string, { cwd: pluginDir });
-          console.log('Plugin updated.');
+          const result = (0, _child_process.execSync)(string, { cwd: pluginDir });
+          console.log(result.toString());
+          console.log('Plugin updated.\n\n');
         } catch (ex) {
           console.error('Error updating plugin', pluginPath, ex.stderr.toString());
         }
