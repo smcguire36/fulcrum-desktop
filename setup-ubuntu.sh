@@ -21,5 +21,15 @@ sudo apt-get install -y \
   vim \
   zip \
   libpq-dev \
+  libdbus-1-dev \
+  libgconf2-dev \
+  libgnome-keyring-dev \
+  libgtk2.0-dev \
+  libnotify-dev \
+  libnss3-dev \
+  libxtst-dev \
+  gcc-multilib \
+  g++-multilib \
+  libxss1 \
   nodejs \
   yarn
