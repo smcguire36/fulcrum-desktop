@@ -19,7 +19,7 @@ class NewPlugin extends Command {
     commands.push(`mkdir -p ${newPluginPath}`);
 
     for (const file of files) {
-      const sourcePath = path.resolve(path.join(__dirname, '..', '..', 'resources', 'default-plugin', file));
+      const sourcePath = path.resolve(path.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
 
       commands.push(`cp ${sourcePath} ${newPluginPath}`);
     }
