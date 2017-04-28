@@ -6,6 +6,7 @@ fi
 
 # This will build, package and upload the app to GitHub.
 
+yarn build
 ./bump-version
 
 if [ "$1" == "mac" ]; then
