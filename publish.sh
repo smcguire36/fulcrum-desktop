@@ -8,6 +8,7 @@ fi
 
 yarn build
 ./bump-version
+cp src/version.json app/version.json
 
 if [ "$1" == "mac" ]; then
   node_modules/.bin/build --mac -p always
