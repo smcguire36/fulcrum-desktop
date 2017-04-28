@@ -11,4 +11,4 @@ require('../Resources/app.asar/node_modules/babel-register')({
     return source;
   }
 });
-require('../Resources/app.asar/app/main/commands/' + process.argv[2]);
+require('../Resources/app.asar/app/main/commands/cli');

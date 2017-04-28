@@ -13,4 +13,4 @@ require('babel-register')({
   }
 });
 
-require('./src/main/commands/' + process.argv[2]);
+require('./src/main/commands/cli');

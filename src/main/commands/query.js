@@ -1,11 +1,25 @@
-import Command from './command';
 import CSV from 'csv-string';
 
-class QueryCommand extends Command {
-  async run() {
+export default class {
+  async task(cli) {
+    return cli.command({
+      command: 'query',
+      desc: 'run a query in the local database',
+      builder: {
+        sql: {
+          type: 'string',
+          desc: 'sql query',
+          required: true
+        }
+      },
+      handler: this.runCommand
+    });
+  }
+
+  runCommand = async () => {
     let headers = false;
 
-    await this.db.each(this.args.sql, {}, (columns, row, index) => {
+    await fulcrum.db.each(fulcrum.args.sql, {}, (columns, row, index) => {
       if (!headers) {
         headers = true;
         process.stdout.write(CSV.stringify(columns.map(c => c.name)));
@@ -17,5 +31,3 @@ class QueryCommand extends Command {
     });
   }
 }
-
-new QueryCommand().start();

@@ -1,10 +1,24 @@
-import Command from './command';
 import path from 'path';
 import { execSync } from 'child_process';
 
-class NewPlugin extends Command {
-  async run() {
-    const pluginPath = this.app.dir('plugins');
+export default class {
+  async task(cli) {
+    return cli.command({
+      command: 'create-plugin',
+      desc: 'create a new plugin',
+      builder: {
+        url: {
+          type: 'string',
+          desc: 'the new plugin name',
+          required: true
+        }
+      },
+      handler: this.runCommand
+    });
+  }
+
+  runCommand = async () => {
+    const pluginPath = fulcrum.dir('plugins');
 
     const files = [
       'package.json',
@@ -14,7 +28,7 @@ class NewPlugin extends Command {
 
     const commands = [];
 
-    const newPluginPath = path.join(pluginPath, this.args.name);
+    const newPluginPath = path.join(pluginPath, fulcrum.args.name);
 
     commands.push(`mkdir -p ${newPluginPath}`);
 
@@ -34,10 +48,8 @@ class NewPlugin extends Command {
 
     execSync(string);
 
-    console.log('Plugin created at', path.join(pluginPath, this.args.name));
+    console.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
     console.log('Run the plugin task using:\n');
-    console.log('  ./run task ' + this.args.name);
+    console.log('  ./run task ' + fulcrum.args.name);
   }
 }
-
-new NewPlugin().start();

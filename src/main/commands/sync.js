@@ -1,24 +1,43 @@
-import Command from './command';
 import Synchronizer from '../sync/synchronizer';
 
-class Sync extends Command {
-  async run() {
-    const accounts = await this.fetchAccount(this.args.org);
+export default class {
+  async task(cli) {
+    return cli.command({
+      command: 'sync',
+      desc: 'sync an organization',
+      builder: {
+        org: {
+          desc: 'organization name',
+          required: true,
+          type: 'string'
+        },
+        forever: {
+          default: false,
+          type: 'boolean',
+          describe: 'keep the sync running forever'
+        }
+      },
+      handler: this.runCommand
+    });
+  }
 
-    for (const account of accounts) {
-      await this.syncLoop(account, this.args.full);
-    }
+  runCommand = async () => {
+    await this.app.activatePlugins();
+
+    const account = await fulcrum.fetchAccount(fulcrum.args.org);
+
+    await this.syncLoop(account, fulcrum.args.full);
   }
 
   async syncLoop(account, fullSync) {
     const sync = true;
 
-    const dataSource = await this.createDataSource(account);
+    const dataSource = await fulcrum.createDataSource(account);
 
     while (sync) {
       const synchronizer = new Synchronizer();
 
-      await synchronizer.run(account, this.args.form, dataSource, {fullSync});
+      await synchronizer.run(account, fulcrum.args.form, dataSource, {fullSync});
 
       fullSync = false;
 
@@ -26,5 +45,3 @@ class Sync extends Command {
     }
   }
 }
-
-new Sync().start();

@@ -1,4 +1,3 @@
-import Command from './command';
 import 'colors';
 import inquirer from 'inquirer';
 import Account from '../models/account';
@@ -27,8 +26,17 @@ const againQuestion = {
   'default': true
 };
 
-class Setup extends Command {
-  async run() {
+export default class {
+  async task(cli) {
+    return cli.command({
+      command: 'setup',
+      desc: 'setup the local fulcrum database',
+      builder: {},
+      handler: this.runCommand
+    });
+  }
+
+  runCommand = async () => {
     let exit = false;
 
     while (!exit) {
@@ -48,7 +56,7 @@ class Setup extends Command {
             organization_resource_id: context.id
           };
 
-          const db = this.db;
+          const db = fulcrum.db;
 
           const account = await Account.findOrCreate(db, contextAttributes);
 
@@ -76,5 +84,3 @@ class Setup extends Command {
     }
   }
 }
-
-new Setup().start();

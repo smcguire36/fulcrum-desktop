@@ -7,6 +7,8 @@ import database from './db/database';
 import api from './api';
 import Environment from './environment';
 import Account from './models/account';
+import LocalDatabaseDataSource from './local-database-data-source';
+import { DataSource } from 'fulcrum-core';
 
 let app = null;
 
@@ -87,15 +89,13 @@ class App {
   }
 
   async initialize() {
-    // process.env.NODE_PATH = __dirname;
-    // require('module').Module._initPaths();
-    // console.log(process.env.NODE_PATH);
-
     const file = path.join(this.dir('data'), 'fulcrum.db');
 
     this._db = await database({file});
 
-    await this.initializePlugins();
+    if (!this.args.safe) {
+      await this.initializePlugins();
+    }
   }
 
   async dispose() {
@@ -106,18 +106,6 @@ class App {
     }
 
     await this._db.close();
-  }
-
-  async runTask(command) {
-    const name = command.args._[1];
-
-    const plugin = this._pluginsByName[name];
-
-    if (plugin && plugin.task) {
-      await plugin.task();
-    } else {
-      console.error('Plugin named', name, 'not found');
-    }
   }
 
   async initializePlugins() {
@@ -141,7 +129,11 @@ class App {
       if (this.args.debug) {
         console.error('Loading plugin', fullPath);
       }
+    }
+  }
 
+  async activatePlugins() {
+    for (const plugin of this._plugins) {
       await plugin.activate();
     }
   }
@@ -156,6 +148,18 @@ class App {
     const accounts = await Account.findAll(this.db, where);
 
     return accounts[0];
+  }
+
+  async createDataSource(account) {
+    let dataSource = new DataSource();
+
+    const localDatabase = new LocalDatabaseDataSource(account);
+
+    dataSource.add(localDatabase);
+
+    await localDatabase.load(this.db);
+
+    return dataSource;
   }
 }
 
