@@ -1,7 +1,8 @@
-import fs from 'fs';
-import Promise from 'bluebird';
+import V1 from './migrations/version_001';
 
-const readFile = Promise.promisify(fs.readFile);
+const MIGRATIONS = {
+  '001': V1
+};
 
 export default class Migration {
   constructor(db, versionName) {
@@ -10,11 +11,7 @@ export default class Migration {
   }
 
   async executeMigrationSQL(suffix) {
-    const dialect = '.' + this.db.dialect;
-
-    const fileName = './src/db/migrations/version_' + this.versionName + '.' + suffix + dialect + '.sql';
-
-    const data = await readFile(fileName, { encoding: 'utf8' });
+    const data = MIGRATIONS[this.versionName];
 
     const sql = [];
 

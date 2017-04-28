@@ -1,3 +1,4 @@
+export default `
 CREATE TABLE IF NOT EXISTS accounts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_resource_id TEXT,
@@ -324,3 +325,4 @@ END;
 CREATE TRIGGER changesets_after_insert AFTER INSERT ON changesets BEGIN
   INSERT INTO changesets_index (docid, metadata_index_text, form_id) VALUES (new.rowid, new.metadata_index_text, new.form_id);
 END;
+`;

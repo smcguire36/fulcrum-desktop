@@ -6,6 +6,9 @@ import { DataSource } from 'fulcrum-core';
 import LocalDatabaseDataSource from '../local-database-data-source';
 import app from '../app';
 
+// import { Database } from 'minidb';
+// Database.debug = true;
+
 Promise.longStackTraces();
 
 export default class Command {
