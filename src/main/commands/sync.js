@@ -41,7 +41,13 @@ export default class {
 
       fullSync = false;
 
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      if (!fulcrum.args.forever) {
+        break;
+      }
+
+      const interval = fulcrum.args.interval ? (+fulcrum.args.interval * 1000) : 15000;
+
+      await new Promise((resolve) => setTimeout(resolve, interval));
     }
   }
 }
