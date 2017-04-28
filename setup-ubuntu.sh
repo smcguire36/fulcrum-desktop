@@ -31,6 +31,14 @@ sudo apt-get install -y \
   gcc-multilib \
   g++-multilib \
   libxss1 \
+  indicator-application \
+  libappindicator1 \
+  libappindicator3-1 \
+  libdbusmenu-glib4 \
+  libdbusmenu-gtk3-4 \
+  libdbusmenu-gtk4 \
+  libindicator3-7 \
+  libindicator7 \
   icnsutils \
   graphicsmagick \
   rpm \

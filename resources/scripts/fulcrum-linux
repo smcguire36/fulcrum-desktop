@@ -1,7 +1,7 @@
-#!/usr/bin/env ELECTRON_RUN_AS_NODE=true ./Fulcrum
+#!/usr/bin/env ../fulcrum-sync
 
-require('./resources/app.asar/node_modules/source-map-support').install();
-require('./resources/app.asar/node_modules/babel-register')({
+require('../resources/app.asar/node_modules/source-map-support').install();
+require('../resources/app.asar/node_modules/babel-register')({
   sourceMaps: 'inline',
   sourceType: 'module',
   resolveModuleSource: (source, filename) => {
@@ -11,4 +11,4 @@ require('./resources/app.asar/node_modules/babel-register')({
     return source;
   }
 });
-require('./resources/app.asar/app/main/commands/' + process.argv[2]);
+require('../resources/app.asar/app/main/commands/' + process.argv[2]);

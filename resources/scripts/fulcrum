@@ -25,9 +25,9 @@ SCRIPT_PATH=$(dirname "$SCRIPT_FILE")
 pushd $SCRIPT_PATH > /dev/null
 
 if [[ "$unamestr" == 'Darwin' ]]; then
-  ./fulcrum-mac "$@"
+  ELECTRON_RUN_AS_NODE=true ./fulcrum-mac "$@"
 else
-  ./fulcrum-linux "$@"
+  ELECTRON_RUN_AS_NODE=true ./fulcrum-linux "$@"
 fi
 
 popd > /dev/null
