@@ -109,25 +109,29 @@ class App {
   }
 
   async initializePlugins() {
-    const pluginPaths = glob.sync(path.join(this.dir('plugins'), '*', 'plugin.js'));
+    const pluginPaths = glob.sync(path.join(this.dir('plugins'), '*'));
 
     for (const pluginPath of pluginPaths) {
       const fullPath = path.resolve(pluginPath);
 
-      const pluginModule = require(fullPath);
+      try {
+        const pluginModule = require(fullPath);
 
-      const PluginClass = pluginModule.default || pluginModule;
+        const PluginClass = pluginModule.default || pluginModule;
 
-      const plugin = new PluginClass();
+        const plugin = new PluginClass();
 
-      const nameParts = path.dirname(fullPath).split(path.sep);
-      const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
+        const nameParts = path.dirname(fullPath).split(path.sep);
+        const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
 
-      this._pluginsByName[name] = plugin;
-      this._plugins.push(plugin);
+        this._pluginsByName[name] = plugin;
+        this._plugins.push(plugin);
 
-      if (this.args.debug) {
-        console.error('Loading plugin', fullPath);
+        if (this.args.debug) {
+          console.error('Loading plugin', fullPath);
+        }
+      } catch (ex) {
+        console.error('Failed to load plugin', ex);
       }
     }
   }

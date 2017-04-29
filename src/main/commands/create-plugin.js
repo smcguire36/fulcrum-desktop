@@ -7,7 +7,7 @@ export default class {
       command: 'create-plugin',
       desc: 'create a new plugin',
       builder: {
-        url: {
+        name: {
           type: 'string',
           desc: 'the new plugin name',
           required: true
@@ -50,6 +50,6 @@ export default class {
 
     console.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
     console.log('Run the plugin task using:\n');
-    console.log('  ./run task ' + fulcrum.args.name);
+    console.log('  fulcrum ' + fulcrum.args.name);
   }
 }

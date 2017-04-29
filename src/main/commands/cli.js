@@ -10,6 +10,7 @@ import Setup from './setup';
 import InstallPlugin from './install-plugin';
 import CreatePlugin from './create-plugin';
 import UpdatePlugins from './update-plugins';
+import BuildPlugins from './build-plugins';
 import Sync from './sync';
 import Query from './query';
 import version from '../../version';
@@ -26,6 +27,7 @@ const COMMANDS = [
   InstallPlugin,
   CreatePlugin,
   UpdatePlugins,
+  BuildPlugins,
   Query
 ];
 

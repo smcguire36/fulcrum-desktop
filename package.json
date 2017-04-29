@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-sync",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-sync",
   "main": "app/index.js",
@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "async": "^2.0.0-rc.3",
+    "babel-plugin-fulcrum-sync": "^1.0.0",
     "babel-preset-env": "^1.2.2",
     "babel-register": "^6.7.2",
     "bluebird": "^3.3.5",

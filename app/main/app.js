@@ -164,25 +164,29 @@ class App {
     var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      const pluginPaths = _glob2.default.sync(_path2.default.join(_this4.dir('plugins'), '*', 'plugin.js'));
+      const pluginPaths = _glob2.default.sync(_path2.default.join(_this4.dir('plugins'), '*'));
 
       for (const pluginPath of pluginPaths) {
         const fullPath = _path2.default.resolve(pluginPath);
 
-        const pluginModule = require(fullPath);
+        try {
+          const pluginModule = require(fullPath);
 
-        const PluginClass = pluginModule.default || pluginModule;
+          const PluginClass = pluginModule.default || pluginModule;
 
-        const plugin = new PluginClass();
+          const plugin = new PluginClass();
 
-        const nameParts = _path2.default.dirname(fullPath).split(_path2.default.sep);
-        const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
+          const nameParts = _path2.default.dirname(fullPath).split(_path2.default.sep);
+          const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
 
-        _this4._pluginsByName[name] = plugin;
-        _this4._plugins.push(plugin);
+          _this4._pluginsByName[name] = plugin;
+          _this4._plugins.push(plugin);
 
-        if (_this4.args.debug) {
-          console.error('Loading plugin', fullPath);
+          if (_this4.args.debug) {
+            console.error('Loading plugin', fullPath);
+          }
+        } catch (ex) {
+          console.error('Failed to load plugin', ex);
         }
       }
     })();

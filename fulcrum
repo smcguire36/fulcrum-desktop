@@ -1,16 +1,3 @@
 #!/usr/bin/env node_modules/.bin/electron
 
-require('source-map-support').install();
-
-require('babel-register')({
-  sourceMaps: 'inline',
-  sourceType: 'module',
-  resolveModuleSource: (source, filename) => {
-    if (source === 'fulcrum') {
-      return 'fulcrum-sync-plugin';
-    }
-    return source;
-  }
-});
-
-require('./src/main/commands/cli');
+require('./app/main/commands/cli');
