@@ -1,6 +1,7 @@
 import path from 'path';
 import { execSync } from 'child_process';
 import glob from 'glob';
+import pluginEnv from '../plugin-env';
 
 export default class {
   async task(cli) {
@@ -27,7 +28,7 @@ export default class {
       console.log('Building plugin...', pluginPath);
 
       try {
-        const result = execSync(string, {cwd: pluginDir});
+        const result = execSync(string, {cwd: pluginDir, env: pluginEnv});
         console.log(result.toString());
         console.log('Plugin built.\n\n');
       } catch (ex) {

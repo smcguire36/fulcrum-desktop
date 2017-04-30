@@ -1,5 +1,6 @@
 import path from 'path';
 import { execSync } from 'child_process';
+import pluginEnv from '../plugin-env';
 
 export default class {
   async task(cli) {
@@ -36,7 +37,7 @@ export default class {
 
     console.log('Installing...');
 
-    execSync(string);
+    execSync(string, {env: pluginEnv});
 
     console.log('Plugin installed at', newPluginPath);
   }

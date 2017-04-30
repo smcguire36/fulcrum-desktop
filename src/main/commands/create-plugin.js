@@ -1,5 +1,6 @@
 import path from 'path';
 import { execSync } from 'child_process';
+import pluginEnv from '../plugin-env';
 
 export default class {
   async task(cli) {
@@ -38,15 +39,15 @@ export default class {
       commands.push(`cp ${sourcePath} ${newPluginPath}`);
     }
 
-    commands.push(`cd ${newPluginPath}`);
     commands.push('yarn');
+    commands.push(`cd ${newPluginPath}`);
     commands.push('git init');
 
     const string = commands.join(' && ');
 
     console.log('Installing...');
 
-    execSync(string);
+    execSync(string, {env: pluginEnv});
 
     console.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
     console.log('Run the plugin task using:\n');
