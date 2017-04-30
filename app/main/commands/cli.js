@@ -44,6 +44,10 @@ var _buildPlugins = require('./build-plugins');
 
 var _buildPlugins2 = _interopRequireDefault(_buildPlugins);
 
+var _watchPlugins = require('./watch-plugins');
+
+var _watchPlugins2 = _interopRequireDefault(_watchPlugins);
+
 var _sync = require('./sync');
 
 var _sync2 = _interopRequireDefault(_sync);
@@ -64,7 +68,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 _yargs2.default.$0 = 'fulcrum';
 
-const COMMANDS = [_setup2.default, _sync2.default, _installPlugin2.default, _createPlugin2.default, _updatePlugins2.default, _buildPlugins2.default, _query2.default];
+require('source-map-support').install();
+
+const COMMANDS = [_setup2.default, _sync2.default, _installPlugin2.default, _createPlugin2.default, _updatePlugins2.default, _buildPlugins2.default, _watchPlugins2.default, _query2.default];
 
 class CLI {
   constructor() {
