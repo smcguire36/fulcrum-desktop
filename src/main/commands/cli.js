@@ -1,6 +1,5 @@
 import 'colors';
 import yargs from 'yargs';
-import Promise from 'bluebird';
 import Account from '../models/account';
 import { DataSource } from 'fulcrum-core';
 import LocalDatabaseDataSource from '../local-database-data-source';
@@ -16,8 +15,6 @@ import Query from './query';
 import version from '../../version';
 
 import { Database } from 'minidb';
-
-Promise.longStackTraces();
 
 yargs.$0 = 'fulcrum';
 
@@ -63,6 +60,8 @@ export default class CLI {
       promiseReject = reject;
     });
 
+    // cli = await this.addDefault(this.wrapAsync(cli, promiseResolve, promiseReject));
+
     for (const CommandClass of COMMANDS) {
       const command = new CommandClass();
 
@@ -86,14 +85,25 @@ export default class CLI {
     }
 
     this.argv =
-      cli.command('*', 'help', (argv) => cli.showHelp())
-       .demandCommand()
-       .version(version.fulcrum)
-       .help()
-       .argv;
+      cli.demandCommand()
+         .version(version.fulcrum)
+         .help()
+         .argv;
 
     await completion;
   }
+
+  // addDefault = async (cli) => {
+  //   return cli.command({
+  //     command: 'yoyo',
+  //     desc: 'yyo',
+  //     builder: {},
+  //     handler: this.runDefaultCommand
+  //   });
+  // }
+
+  // runDefaultCommand = async () => {
+  // }
 
   get db() {
     return this.app.db;
@@ -132,23 +142,17 @@ export default class CLI {
   }
 
   async start() {
-    try {
-      // TODO(zhm) required or it hangs for ~30sec https://github.com/electron/electron/issues/4944
-      process.on('SIGINT', function() {
-        process.exit();
-      });
+    // TODO(zhm) required or it hangs for ~30sec https://github.com/electron/electron/issues/4944
+    process.on('SIGINT', function() {
+      process.exit();
+    });
 
+    try {
       await this.setup();
       await this.run();
       await this.destroy();
     } catch (err) {
       console.error(err.stack);
-      // if (this.args.verbose) {
-      //   console.error(err.stack);
-      // } else {
-      //   console.error(err.message);
-      // }
-
       await this.destroy();
     }
 

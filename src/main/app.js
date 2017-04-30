@@ -105,7 +105,9 @@ class App {
       }
     }
 
-    await this._db.close();
+    if (this._db) {
+      await this._db.close();
+    }
   }
 
   async initializePlugins() {
