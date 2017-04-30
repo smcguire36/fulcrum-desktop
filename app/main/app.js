@@ -156,7 +156,9 @@ class App {
         }
       }
 
-      yield _this3._db.close();
+      if (_this3._db) {
+        yield _this3._db.close();
+      }
     })();
   }
 

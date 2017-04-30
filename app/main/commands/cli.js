@@ -10,10 +10,6 @@ var _yargs = require('yargs');
 
 var _yargs2 = _interopRequireDefault(_yargs);
 
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _account = require('../models/account');
 
 var _account2 = _interopRequireDefault(_account);
@@ -64,9 +60,7 @@ var _minidb = require('minidb');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-_bluebird2.default.longStackTraces();
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 _yargs2.default.$0 = 'fulcrum';
 
@@ -134,10 +128,12 @@ class CLI {
       let promiseResolve = null;
       let promiseReject = null;
 
-      const completion = new _bluebird2.default(function (resolve, reject) {
+      const completion = new Promise(function (resolve, reject) {
         promiseResolve = resolve;
         promiseReject = reject;
       });
+
+      // cli = await this.addDefault(this.wrapAsync(cli, promiseResolve, promiseReject));
 
       for (const CommandClass of COMMANDS) {
         const command = new CommandClass();
@@ -161,13 +157,23 @@ class CLI {
         }
       }
 
-      _this3.argv = cli.command('*', 'help', function (argv) {
-        return cli.showHelp();
-      }).demandCommand().version(_version2.default.fulcrum).help().argv;
+      _this3.argv = cli.demandCommand().version(_version2.default.fulcrum).help().argv;
 
       yield completion;
     })();
   }
+
+  // addDefault = async (cli) => {
+  //   return cli.command({
+  //     command: 'yoyo',
+  //     desc: 'yyo',
+  //     builder: {},
+  //     handler: this.runDefaultCommand
+  //   });
+  // }
+
+  // runDefaultCommand = async () => {
+  // }
 
   get db() {
     return this.app.db;
@@ -217,23 +223,17 @@ class CLI {
     var _this6 = this;
 
     return _asyncToGenerator(function* () {
-      try {
-        // TODO(zhm) required or it hangs for ~30sec https://github.com/electron/electron/issues/4944
-        process.on('SIGINT', function () {
-          process.exit();
-        });
+      // TODO(zhm) required or it hangs for ~30sec https://github.com/electron/electron/issues/4944
+      process.on('SIGINT', function () {
+        process.exit();
+      });
 
+      try {
         yield _this6.setup();
         yield _this6.run();
         yield _this6.destroy();
       } catch (err) {
         console.error(err.stack);
-        // if (this.args.verbose) {
-        //   console.error(err.stack);
-        // } else {
-        //   console.error(err.message);
-        // }
-
         yield _this6.destroy();
       }
 
