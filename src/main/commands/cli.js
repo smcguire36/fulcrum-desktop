@@ -10,6 +10,7 @@ import InstallPlugin from './install-plugin';
 import CreatePlugin from './create-plugin';
 import UpdatePlugins from './update-plugins';
 import BuildPlugins from './build-plugins';
+import WatchPlugins from './watch-plugins';
 import Sync from './sync';
 import Query from './query';
 import version from '../../version';
@@ -18,6 +19,8 @@ import { Database } from 'minidb';
 
 yargs.$0 = 'fulcrum';
 
+require('source-map-support').install();
+
 const COMMANDS = [
   Setup,
   Sync,
@@ -25,6 +28,7 @@ const COMMANDS = [
   CreatePlugin,
   UpdatePlugins,
   BuildPlugins,
+  WatchPlugins,
   Query
 ];
 
