@@ -35,7 +35,7 @@ install:
 - yarn run install-app-deps
 
 script:
-- yarn dist:travis
+- yarn dist:$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "mac")
 
 branches:
   except:
