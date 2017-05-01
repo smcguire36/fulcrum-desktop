@@ -1,0 +1,38 @@
+image: Visual Studio 2015
+
+version: "{build}"
+
+skip_tags: true
+clone_folder: c:\projects\fulcrum-sync
+clone_depth: 10
+
+platform:
+  - x64
+  - x86
+
+environment:
+  global:
+    FULCRUM_DEV_RESOURCE_PATH: c:\projects\fulcrum-sync
+
+  matrix:
+  - NODE_VERSION: 7.9.0
+
+matrix:
+  fast_finish: true
+
+install:
+  - SET PATH=C:\Program Files\Fulcrum\resources\cli;%PATH%
+  - ps: Install-Product node $env:NODE_VERSION $env:PLATFORM
+  - yarn run install-app-deps
+
+build_script:
+  - yarn dist
+
+deploy: off
+
+cache:
+  - node_modules
+  - '%APPDATA%\npm-cache'
+  - '%USERPROFILE%\.electron'
+  - '%APPVEYOR_BUILD_FOLDER%\node_modules'
+  - '%APPVEYOR_BUILD_FOLDER%\electron'
