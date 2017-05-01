@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/fulcrumapp/fulcrum-sync.svg?branch=master)](https://travis-ci.org/fulcrumapp/fulcrum-sync)
 
+[![Build Status](https://ci.appveyor.com/api/projects/status/orvg142ommlitw7v?svg=true)](https://ci.appveyor.com/project/zhm/fulcrum-sync)
+
 Sync Fulcrum data to a local database. The local database is a complete API representation with search indexes and
 query tables. It also supports downloading all media files locally. It's intended to be the foundation for local/disconnected data synchronization and reporting.
 
