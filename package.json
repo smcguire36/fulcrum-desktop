@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-sync",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-sync",
   "main": "app/index.js",
@@ -8,8 +8,8 @@
     "test": "node_modules/.bin/mocha ./test/setup.js ./test/test.js",
     "prepublish": "npm run clean && npm run build",
     "lint": "node_modules/.bin/eslint src/**/*.js",
-    "build": "node_modules/.bin/babel src --out-dir app --source-maps",
-    "watch": "node_modules/.bin/babel src --out-dir app --source-maps --watch",
+    "build": "node_modules/.bin/babel src --out-dir app --source-maps=inline",
+    "watch": "node_modules/.bin/babel src --out-dir app --source-maps=inline --watch",
     "clean": "rm -rf dist",
     "postinstallOLD": "install-app-deps",
     "pack": "build --dir",
@@ -17,6 +17,7 @@
     "dist:win": "build --windows --publish always",
     "dist:mac": "build --mac --publish always",
     "dist:linux": "build --linux --publish always",
+    "dist:travis": "build --linux --mac --publish always",
     "mac": "build --mac dir"
   },
   "author": "Zac McCormick <zac.mccormick@gmail.com> (http://github.com/zhm)",
