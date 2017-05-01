@@ -21,6 +21,9 @@ addons:
     - libgnome-keyring-dev
     - libsecret-1-dev
     - icnsutils
+    - graphicsmagick
+    - rpm
+    - xz-utils
 
 before_install:
 - mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.5.5/git-lfs-$([
