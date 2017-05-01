@@ -37,7 +37,34 @@
       "node_modules"
     ],
     "extraFiles": [
-      "resources/spatialite/**/*",
+      {
+        "from": "resources/spatialite/${os}/${arch}",
+        "to": ".",
+        "filter": [
+          "*.dll"
+        ]
+      },
+      {
+        "from": "resources/spatialite/${os}/${arch}",
+        "to": ".",
+        "filter": [
+          "*.exe"
+        ]
+      },
+      {
+        "from": "resources/spatialite/${os}/${arch}",
+        "to": "resources",
+        "filter": [
+          "*.dylib"
+        ]
+      },
+      {
+        "from": "resources/spatialite/${os}/${arch}",
+        "to": ".",
+        "filter": [
+          "*.so"
+        ]
+      },
       {
         "from": "resources/scripts",
         "to": "scripts",
