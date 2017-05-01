@@ -11,6 +11,9 @@ platform:
   - x86
 
 environment:
+  GH_TOKEN:
+    secure: qrUjEf9plfA/TOQRrxgsiPblyVIxOlmxVK/yA2aX+5dvFkLwRXRn72GFl9AXxXzR
+
   global:
     FULCRUM_DEV_RESOURCE_PATH: c:\projects\fulcrum-sync
 
@@ -30,10 +33,6 @@ build_script:
   - yarn dist:win
 
 deploy: off
-
-environment:
-  GH_TOKEN:
-    secure: qrUjEf9plfA/TOQRrxgsiPblyVIxOlmxVK/yA2aX+5dvFkLwRXRn72GFl9AXxXzR
 
 cache:
   - node_modules
