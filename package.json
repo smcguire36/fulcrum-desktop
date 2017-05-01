@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-sync",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-sync",
   "main": "app/index.js",
@@ -14,6 +14,9 @@
     "postinstallOLD": "install-app-deps",
     "pack": "build --dir",
     "dist": "build",
+    "dist:win": "build --windows --publish always",
+    "dist:mac": "build --mac --publish always",
+    "dist:linux": "build --linux --publish always",
     "mac": "build --mac dir"
   },
   "author": "Zac McCormick <zac.mccormick@gmail.com> (http://github.com/zhm)",

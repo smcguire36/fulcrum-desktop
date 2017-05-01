@@ -27,7 +27,7 @@ install:
   - yarn run install-app-deps
 
 build_script:
-  - yarn dist
+  - yarn dist:win
 
 deploy: off
 
