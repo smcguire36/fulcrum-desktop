@@ -31,6 +31,10 @@ build_script:
 
 deploy: off
 
+environment:
+  GH_TOKEN:
+    secure: qrUjEf9plfA/TOQRrxgsiPblyVIxOlmxVK/yA2aX+5dvFkLwRXRn72GFl9AXxXzR
+
 cache:
   - node_modules
   - '%APPDATA%\npm-cache'
