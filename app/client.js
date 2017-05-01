@@ -1,4 +1,4 @@
 'use strict';
 
 require('./client/app');
-//# sourceMappingURL=client.js.map
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9jbGllbnQuanMiXSwibmFtZXMiOlsicmVxdWlyZSJdLCJtYXBwaW5ncyI6Ijs7QUFBQUEsUUFBUSxjQUFSIiwiZmlsZSI6ImNsaWVudC5qcyIsInNvdXJjZXNDb250ZW50IjpbInJlcXVpcmUoJy4vY2xpZW50L2FwcCcpO1xuIl19
