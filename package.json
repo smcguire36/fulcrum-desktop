@@ -103,7 +103,7 @@
       {
         "provider": "github",
         "owner": "fulcrumapp",
-        "repo": "fulcrum-sync-releases"
+        "repo": "fulcrum-sync"
       }
     ]
   },
