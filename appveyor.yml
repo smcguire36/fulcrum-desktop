@@ -8,7 +8,6 @@ clone_depth: 10
 
 platform:
   - x64
-  - x86
 
 environment:
   GH_TOKEN:

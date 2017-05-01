@@ -14,9 +14,9 @@
     "postinstallOLD": "install-app-deps",
     "pack": "build --dir",
     "dist": "build",
-    "dist:win": "build --windows --publish always",
+    "dist:win": "build --windows --x64 --ia32 --publish always",
     "dist:mac": "build --mac --publish always",
-    "dist:linux": "build --linux --publish always",
+    "dist:linux": "build --linux --x64 --ia32 --publish always",
     "dist:travis": "build --linux --mac --publish always",
     "mac": "build --mac dir"
   },
@@ -32,6 +32,7 @@
   "build": {
     "appId": "com.spatialnetworks.fulcrum-sync",
     "productName": "Fulcrum",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "app/*",
       "app/**/*",
@@ -74,6 +75,12 @@
         ]
       }
     ],
+    "win": {
+      "target": [
+        "nsis",
+        "nsis-web"
+      ]
+    },
     "mac": {},
     "dmg": {
       "contents": [

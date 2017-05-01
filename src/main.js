@@ -3,6 +3,9 @@ import path from 'path';
 import url from 'url';
 import './auto-updater';
 
+// TODO(zhm) add this for notifications to work properly - https://github.com/electron-userland/electron-builder/wiki/NSIS
+// app.setAppUserModelId(appId)
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let browserWindow = null;
