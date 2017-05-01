@@ -40,41 +40,18 @@ export default class {
     let exit = false;
 
     while (!exit) {
+      if (fulcrum.args.email && fulcrum.args.password) {
+        await this.setupAccount(fulcrum.args.email, fulcrum.args.password);
+        return;
+      }
+
       const answers = await prompt(questions);
 
-      const results = await Client.authenticate(answers.email, answers.password);
-      const response = results;
-      const body = results.body;
+      const success = await this.setupAccount(answers.email, answers.password);
 
-      if (response.statusCode === 200) {
-        console.log(('Successfully authenticated with ' + answers.email).green);
-        const user = JSON.parse(body).user;
-
-        for (let context of user.contexts) {
-          const contextAttributes = {
-            user_resource_id: user.id,
-            organization_resource_id: context.id
-          };
-
-          const db = fulcrum.db;
-
-          const account = await Account.findOrCreate(db, contextAttributes);
-
-          account._organizationName = context.name;
-          account._firstName = user.first_name;
-          account._lastName = user.last_name;
-          account._email = user.email;
-          account._token = context.api_token;
-
-          await account.save();
-
-          console.log('✓'.green, context.name);
-
-          exit = true;
-        }
+      if (success) {
+        exit = true;
       } else {
-        console.log('Username or password incorrect'.red);
-
         let retry = await prompt(againQuestion);
 
         if (!retry.again) {
@@ -82,5 +59,44 @@ export default class {
         }
       }
     }
+  }
+
+  setupAccount = async (email, password) => {
+    const results = await Client.authenticate(email, password);
+    const response = results;
+    const body = results.body;
+
+    if (response.statusCode === 200) {
+      console.log(('Successfully authenticated with ' + email).green);
+
+      const user = JSON.parse(body).user;
+
+      for (let context of user.contexts) {
+        const contextAttributes = {
+          user_resource_id: user.id,
+          organization_resource_id: context.id
+        };
+
+        const db = fulcrum.db;
+
+        const account = await Account.findOrCreate(db, contextAttributes);
+
+        account._organizationName = context.name;
+        account._firstName = user.first_name;
+        account._lastName = user.last_name;
+        account._email = user.email;
+        account._token = context.api_token;
+
+        await account.save();
+
+        console.log('✓'.green, context.name);
+      }
+
+      return true;
+    } else {
+      console.log('Username or password incorrect'.red);
+    }
+
+    return false;
   }
 }

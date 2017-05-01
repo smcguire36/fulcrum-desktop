@@ -45,18 +45,42 @@ const againQuestion = {
 
 exports.default = class {
   constructor() {
+    var _this = this;
+
     this.runCommand = _asyncToGenerator(function* () {
       let exit = false;
 
       while (!exit) {
+        if (fulcrum.args.email && fulcrum.args.password) {
+          yield _this.setupAccount(fulcrum.args.email, fulcrum.args.password);
+          return;
+        }
+
         const answers = yield prompt(questions);
 
-        const results = yield _client2.default.authenticate(answers.email, answers.password);
+        const success = yield _this.setupAccount(answers.email, answers.password);
+
+        if (success) {
+          exit = true;
+        } else {
+          let retry = yield prompt(againQuestion);
+
+          if (!retry.again) {
+            exit = true;
+          }
+        }
+      }
+    });
+
+    this.setupAccount = (() => {
+      var _ref2 = _asyncToGenerator(function* (email, password) {
+        const results = yield _client2.default.authenticate(email, password);
         const response = results;
         const body = results.body;
 
         if (response.statusCode === 200) {
-          console.log(('Successfully authenticated with ' + answers.email).green);
+          console.log(('Successfully authenticated with ' + email).green);
+
           const user = JSON.parse(body).user;
 
           for (let context of user.contexts) {
@@ -78,31 +102,31 @@ exports.default = class {
             yield account.save();
 
             console.log('✓'.green, context.name);
-
-            exit = true;
           }
+
+          return true;
         } else {
           console.log('Username or password incorrect'.red);
-
-          let retry = yield prompt(againQuestion);
-
-          if (!retry.again) {
-            exit = true;
-          }
         }
-      }
-    });
+
+        return false;
+      });
+
+      return function (_x, _x2) {
+        return _ref2.apply(this, arguments);
+      };
+    })();
   }
 
   task(cli) {
-    var _this = this;
+    var _this2 = this;
 
     return _asyncToGenerator(function* () {
       return cli.command({
         command: 'setup',
         desc: 'setup the local fulcrum database',
         builder: {},
-        handler: _this.runCommand
+        handler: _this2.runCommand
       });
     })();
   }
