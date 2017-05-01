@@ -171,13 +171,7 @@ async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
 
-async@^2.1.4:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.1.5.tgz#e587c68580994ac67fc56ff86d3ac56bdbe810bc"
-  dependencies:
-    lodash "^4.14.0"
-
-async@^2.4.0:
+async@^2.1.4, async@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/async/-/async-2.4.0.tgz#4990200f18ea5b837c2cc4f8c031a6985c385611"
   dependencies:
@@ -2568,13 +2562,12 @@ mime@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
-minidb@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/minidb/-/minidb-0.8.0.tgz#9d89eff93b61f16311a9b1e71074e538ed6b5a4c"
+minidb@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/minidb/-/minidb-0.9.0.tgz#fcd0f1b4803ec5f44a01045df8029adf788c5435"
   dependencies:
     bluebird "^3.5.0"
     humanize-duration "^3.10.0"
-    minipg "^0.3.1"
     minisqlite "^1.3.0"
     mixmatch "^0.0.2"
     pg "^4.5.6"
@@ -2600,15 +2593,6 @@ minimist@0.0.8:
 minimist@^1.1.0, minimist@^1.1.3, minimist@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-
-minipg@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/minipg/-/minipg-0.3.1.tgz#7beb1324b7fdefa35108850fe0ff4704a43bc275"
-  dependencies:
-    bindings "^1.2.1"
-    generic-pool "^2.4.2"
-    nan "^2.3.3"
-    node-gyp "^3.3.1"
 
 minisqlite@^1.3.0:
   version "1.3.0"
