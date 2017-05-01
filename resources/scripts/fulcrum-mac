@@ -1,3 +1,0 @@
-#!/usr/bin/env ELECTRON_RUN_AS_NODE=true ../MacOS/Fulcrum
-
-require('../Resources/app.asar/app/main/commands/cli');

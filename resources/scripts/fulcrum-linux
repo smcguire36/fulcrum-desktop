@@ -1,3 +1,0 @@
-#!/usr/bin/env ../fulcrum-sync
-
-require('../resources/app.asar/app/main/commands/cli');

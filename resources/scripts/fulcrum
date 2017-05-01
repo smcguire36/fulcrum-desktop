@@ -25,9 +25,9 @@ SCRIPT_PATH=$(dirname "$SCRIPT_FILE")
 pushd $SCRIPT_PATH > /dev/null
 
 if [[ "$unamestr" == 'Darwin' ]]; then
-  ELECTRON_RUN_AS_NODE=true ./fulcrum-mac "$@"
+  ELECTRON_RUN_AS_NODE=true ../MacOS/Fulcrum fulcrum.js "$@"
 else
-  ELECTRON_RUN_AS_NODE=true ./fulcrum-linux "$@"
+  ELECTRON_RUN_AS_NODE=true ../fulcrum-sync fulcrum.js "$@"
 fi
 
 popd > /dev/null
