@@ -26,7 +26,7 @@ This is very very very alpha at the moment.
 
 ### Documentation
 
-* [Get Started](/docs/installation.md)
+* [Get Started](/docs/guides/installation.md)
 * [Documentation](/docs)
 
 ### Development
