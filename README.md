@@ -1,4 +1,4 @@
-<img src="http://www.fulcrumapp.com/assets/img/fulcrum-logo.svg" style="width:180px" />
+![Fulcrum](https://d2ppvlu71ri8gs.cloudfront.net/items/2x2s2z332R463V091S1n/fulcrum-360.png)
 
 ## Fulcrum Desktop
 
