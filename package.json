@@ -31,7 +31,6 @@
   },
   "build": {
     "appId": "com.spatialnetworks.fulcrum",
-    "npmSkipBuildFromSource": true,
     "productName": "Fulcrum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
