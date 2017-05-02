@@ -37,6 +37,8 @@
     "files": [
       "app/*",
       "app/**/*",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,d}",
+      "!node_modules/nodegit/vendor/libgit2/tests/**/*",
       "node_modules"
     ],
     "extraFiles": [
