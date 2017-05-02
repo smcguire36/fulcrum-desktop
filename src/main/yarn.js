@@ -3,20 +3,16 @@ import path from 'path';
 import pluginEnv from './plugin-env';
 
 export default class Yarn {
-  static get yarnRoot() {
+  static get yarnBin() {
     if (process.env.DEVELOPMENT) {
-      return path.resolve(path.join(__dirname, '..', '..', 'resources', 'yarn', 'yarn'));
+      return path.resolve(path.join(__dirname, '..', '..', 'resources', 'yarn', 'yarn', 'bin', 'yarn.js'));
     }
 
     if (process.platform === 'darwin') {
-      return path.resolve(path.join(process.execPath, '..', 'yarn'));
+      return path.resolve(path.join(path.dirname(process.execPath), '..', 'scripts', 'yarn.js'));
     }
 
-    return path.join(process.execPath, 'yarn');
-  }
-
-  static get yarnBin() {
-    return path.join(this.yarnRoot, 'bin', 'yarn.js');
+    return path.join(path.dirname(process.execPath), 'scripts', 'yarn.js');
   }
 
   static run(command, options = {}) {
