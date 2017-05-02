@@ -1,7 +1,7 @@
-## Fulcrum Sync
+## Fulcrum Desktop
 
-[![Build Status](https://travis-ci.org/fulcrumapp/fulcrum-sync.svg?branch=master)](https://travis-ci.org/fulcrumapp/fulcrum-sync)
-[![Build Status](https://ci.appveyor.com/api/projects/status/orvg142ommlitw7v?svg=true)](https://ci.appveyor.com/project/zhm/fulcrum-sync)
+[![Build Status](https://travis-ci.org/fulcrumapp/fulcrum-desktop.svg?branch=master)](https://travis-ci.org/fulcrumapp/fulcrum-desktop)
+[![Build Status](https://ci.appveyor.com/api/projects/status/orvg142ommlitw7v?svg=true)](https://ci.appveyor.com/project/zhm/fulcrum-desktop)
 
 Sync Fulcrum data to a local database. The local database is a complete API representation with search indexes and
 query tables. It also supports downloading all media files locally. It's intended to be the foundation for local/disconnected data synchronization and reporting.
@@ -30,8 +30,8 @@ This is very very very alpha at the moment.
 ### Install
 
 ```sh
-git clone git@github.com:fulcrumapp/fulcrum-sync.git
-cd fulcrum-sync
+git clone git@github.com:fulcrumapp/fulcrum-desktop.git
+cd fulcrum-desktop
 yarn
 ```
 
@@ -66,9 +66,9 @@ To create a new plugin:
 To install a plugin:
 
 ```sh
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-reports
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-reports
 
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-postgres
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-postgres
 
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-sync-s3-upload
+./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-s3-upload
 ```

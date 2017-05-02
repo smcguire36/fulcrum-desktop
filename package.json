@@ -1,8 +1,8 @@
 {
-  "name": "fulcrum-sync",
+  "name": "fulcrum-desktop",
   "version": "0.0.21",
   "description": "Fulcrum",
-  "homepage": "http://github.com/fulcrumapp/fulcrum-sync",
+  "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
   "main": "app/index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha ./test/setup.js ./test/test.js",
@@ -24,13 +24,13 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/fulcrumapp/fulcrum-sync.git"
+    "url": "git://github.com/fulcrumapp/fulcrum-desktop.git"
   },
   "eslintConfig": {
     "extends": "fulcrum"
   },
   "build": {
-    "appId": "com.spatialnetworks.fulcrum-sync",
+    "appId": "com.spatialnetworks.fulcrum",
     "productName": "Fulcrum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
@@ -103,7 +103,7 @@
       {
         "provider": "github",
         "owner": "fulcrumapp",
-        "repo": "fulcrum-sync"
+        "repo": "fulcrum-desktop"
       }
     ]
   },
@@ -125,7 +125,7 @@
   },
   "dependencies": {
     "async": "^2.4.0",
-    "babel-plugin-fulcrum-sync": "^1.0.0",
+    "babel-plugin-fulcrum-desktop": "^1.0.0",
     "babel-preset-env": "^1.2.2",
     "babel-register": "^6.7.2",
     "bluebird": "^3.3.5",

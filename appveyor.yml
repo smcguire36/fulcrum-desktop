@@ -3,7 +3,7 @@ image: Visual Studio 2015
 version: "{build}"
 
 skip_tags: true
-clone_folder: c:\projects\fulcrum-sync
+clone_folder: c:\projects\fulcrum
 clone_depth: 10
 
 platform:
@@ -14,7 +14,7 @@ environment:
     secure: qrUjEf9plfA/TOQRrxgsiPblyVIxOlmxVK/yA2aX+5dvFkLwRXRn72GFl9AXxXzR
 
   global:
-    FULCRUM_DEV_RESOURCE_PATH: c:\projects\fulcrum-sync
+    FULCRUM_DEV_RESOURCE_PATH: c:\projects\fulcrum
 
   matrix:
   - NODE_VERSION: 7.9.0

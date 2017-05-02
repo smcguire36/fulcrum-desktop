@@ -24,7 +24,7 @@ class App {
     this._api = api;
 
     // TODO(zhm) this needs to be adjusted for Windows and Linux
-    this._rootDirectory = path.join(os.homedir(), 'Documents', 'fulcrum-sync');
+    this._rootDirectory = path.join(os.homedir(), 'Documents', 'fulcrum');
 
     this.mkdirp('data');
     this.mkdirp('plugins');
@@ -124,7 +124,7 @@ class App {
         const plugin = new PluginClass();
 
         const nameParts = path.dirname(fullPath).split(path.sep);
-        const name = nameParts[nameParts.length - 1].replace(/^fulcrum-sync-/, '');
+        const name = nameParts[nameParts.length - 1].replace(/^fulcrum-desktop-/, '');
 
         this._pluginsByName[name] = plugin;
         this._plugins.push(plugin);
