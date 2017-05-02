@@ -1,6 +1,6 @@
 {
   "name": "Fulcrum",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
   "main": "app/index.js",
@@ -33,6 +33,7 @@
     "appId": "com.spatialnetworks.fulcrum",
     "productName": "Fulcrum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "npmSkipBuildFromSource": true,
     "files": [
       "app/*",
       "app/**/*",
