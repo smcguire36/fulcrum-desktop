@@ -1,5 +1,5 @@
 {
-  "name": "fulcrum",
+  "name": "Fulcrum",
   "version": "0.0.23",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
@@ -75,7 +75,8 @@
         ]
       }
     ],
-    "win": {
+    "win": {},
+    "nsis": {
       "perMachine": true
     },
     "mac": {},
