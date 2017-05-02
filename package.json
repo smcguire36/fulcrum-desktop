@@ -14,7 +14,7 @@
     "postinstallOLD": "install-app-deps",
     "pack": "build --dir",
     "dist": "build",
-    "dist:win": "build --windows --x64 --ia32 --publish always",
+    "dist:win": "build --windows nsis --x64 --ia32 --publish always && build --windows portable --x64 --ia32 --publish always",
     "dist:mac": "build --mac --publish always",
     "dist:linux": "build --linux --x64 --publish always",
     "dist:travis": "build --linux --mac --publish always",
@@ -85,7 +85,8 @@
     ],
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "portable"
       ]
     },
     "nsis": {},
