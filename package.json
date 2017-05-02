@@ -69,13 +69,6 @@
         ]
       },
       {
-        "from": "resources/yarn/yarn",
-        "to": "yarn",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
         "from": "resources/scripts",
         "to": "scripts",
         "filter": [

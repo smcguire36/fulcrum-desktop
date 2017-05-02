@@ -35,7 +35,6 @@ before_install:
 install:
 - nvm install 7
 - yarn install --network-concurrency 1
-- yarn run install-app-deps
 
 script:
 - yarn dist:$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "mac")
