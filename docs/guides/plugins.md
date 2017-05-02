@@ -1,7 +1,7 @@
 # Plugins
 
-Plugins are extensions to the Fulcrum Desktop application. Each plugin performs a little piece
-of functionality to a specific task.
+Plugins are extensions to the Fulcrum Desktop application. Each plugin adds a little piece
+of functionality to accomplish a specific task.
 
 ## Available Plugins
 
@@ -12,7 +12,7 @@ of functionality to a specific task.
 
 To install or use plugins, you will first need a basic development environment. The development
 environment consists of Git, Nodejs and Yarn. Eventually it will not be necessary to install these
-to *use* plugins and it will only be required if you want to make changes to the plugins.
+to *use* plugins and it will only be required if you want to develop plugins.
 
 ## macOS
 
