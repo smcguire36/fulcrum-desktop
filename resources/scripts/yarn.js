@@ -1,5 +1,5 @@
 try {
-  require('../resources/app.asar/app/yarn/bin/yarn.js');
+  require('../resources/yarn.asar/bin/yarn.js');
 } catch (ex) {
   console.log(ex);
 }

@@ -37,9 +37,15 @@
     "files": [
       "app/*",
       "app/**/*",
-      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,d}",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,o.d}",
       "!node_modules/nodegit/vendor/libgit2/tests/**/*",
       "node_modules"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/yarn/yarn.asar",
+        "to": "yarn.asar"
+      }
     ],
     "extraFiles": [
       {
