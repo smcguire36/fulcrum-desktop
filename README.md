@@ -1,4 +1,4 @@
-![Fulcrum](http://www.fulcrumapp.com/assets/img/fulcrum-logo.svg)
+<img src="http://www.fulcrumapp.com/assets/img/fulcrum-logo.svg" style="width:180px" />
 
 ## Fulcrum Desktop
 
