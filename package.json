@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-desktop",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
   "main": "app/index.js",
@@ -84,7 +84,7 @@
           "y": 150
         },
         {
-          "x": 340,
+          "x": 420,
           "y": 150,
           "type": "link",
           "path": "/Applications"
@@ -92,6 +92,7 @@
       ]
     },
     "linux": {
+      "executableName": "fulcrum",
       "target": [
         "AppImage",
         "deb",

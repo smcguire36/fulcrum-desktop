@@ -22,12 +22,29 @@ Pie in the Sky:
 
 This is very very very alpha at the moment.
 
-### Requirements
+### Installation
+
+#### macOS
+
+Install the .dmg, drag to `Applications`
+
+#### Windows
+
+Install from the setup .exe and follow instructions
+
+#### Linux
+
+```sh
+wget https://github.com/fulcrumapp/fulcrum-desktop/releases/download/v0.0.22/fulcrum-desktop_0.0.22_amd64.deb -O fulcrum-desktop.deb
+sudo apt-get update
+sudo dpkg -i fulcrum-desktop.deb # it will complain about missing dependencies, the next command will fix it up
+sudo apt-get install -f
+```
+
+### Development
 
 * Latest Node.js
 * Yarn
-
-### Install
 
 ```sh
 git clone git@github.com:fulcrumapp/fulcrum-desktop.git
@@ -39,7 +56,6 @@ yarn
 
 ```sh
 ./run setup # follow login instructions
-
 ./run sync --org 'Fulcrum Labs'
 ```
 
@@ -60,7 +76,7 @@ yarn
 To create a new plugin:
 
 ```sh
-./run new-plugin --name my-plugin
+./run create-plugin --name my-plugin
 ```
 
 To install a plugin:
