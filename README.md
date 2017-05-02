@@ -1,4 +1,4 @@
-![Fulcrum](https://d2ppvlu71ri8gs.cloudfront.net/items/2x2s2z332R463V091S1n/fulcrum-360.png)
+![Fulcrum](https://d2ppvlu71ri8gs.cloudfront.net/items/322R2o0M300C043H1Y0u/fulcrum-desktop.png)
 
 ## Fulcrum Desktop
 
