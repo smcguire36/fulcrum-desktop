@@ -13,8 +13,8 @@ Install from the setup .exe and follow the instructions.
 
 To use the CLI, start cmd.exe or PowerShell:
 
-```
-cd \AppData\Local\Programs\fulcrum\scripts
+```sh
+cd AppData\Local\Programs\fulcrum-desktop\scripts
 fulcrum.cmd setup --email EMAIL --password SECRET
 fulcrum.cmd sync --org 'Organization Name'
 ```
