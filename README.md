@@ -24,24 +24,10 @@ Pie in the Sky:
 
 This is very very very alpha at the moment.
 
-### Installation
+### Documentation
 
-#### macOS
-
-Install the .dmg, drag to `Applications`
-
-#### Windows
-
-Install from the setup .exe and follow instructions
-
-#### Linux
-
-```sh
-wget https://github.com/fulcrumapp/fulcrum-desktop/releases/download/v0.0.22/fulcrum-desktop_0.0.22_amd64.deb -O fulcrum-desktop.deb
-sudo apt-get update
-sudo dpkg -i fulcrum-desktop.deb # it will complain about missing dependencies, the next command will fix it up
-sudo apt-get install -f
-```
+* [Get Started](/docs/installation)
+* [Documentation](/docs)
 
 ### Development
 
