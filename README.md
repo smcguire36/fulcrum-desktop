@@ -1,3 +1,5 @@
+![Fulcrum](http://www.fulcrumapp.com/assets/img/fulcrum-logo.svg)
+
 ## Fulcrum Desktop
 
 [![Build Status](https://travis-ci.org/fulcrumapp/fulcrum-desktop.svg?branch=master)](https://travis-ci.org/fulcrumapp/fulcrum-desktop)
