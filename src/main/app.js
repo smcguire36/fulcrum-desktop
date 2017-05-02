@@ -9,6 +9,7 @@ import Environment from './environment';
 import Account from './models/account';
 import LocalDatabaseDataSource from './local-database-data-source';
 import { DataSource } from 'fulcrum-core';
+import paths from '../application-paths';
 
 let app = null;
 
@@ -23,13 +24,14 @@ class App {
     this._listeners = {};
     this._api = api;
 
-    // TODO(zhm) this needs to be adjusted for Windows and Linux
-    this._rootDirectory = path.join(os.homedir(), 'Documents', 'fulcrum');
+    this._appDirectory = paths.userData;
+    this._dotDirectory = path.join(os.homedir(), '.fulcrum');
 
-    this.mkdirp('data');
-    this.mkdirp('plugins');
-    this.mkdirp('media');
-    this.mkdirp('reports');
+    mkdirp.sync(this._appDirectory);
+    mkdirp.sync(this._dotDirectory);
+
+    mkdirp.sync(path.join(this._appDirectory, 'data'));
+    mkdirp.sync(path.join(this._dotDirectory, 'plugins'));
 
     this._environment = new Environment({app: this});
   }
@@ -50,12 +52,20 @@ class App {
     return this.yargs.argv;
   }
 
+  appDir(dir) {
+    return path.join(this._appDirectory, dir);
+  }
+
   dir(dir) {
-    return path.join(this._rootDirectory, dir);
+    return path.join(this._dotDirectory, dir);
   }
 
   mkdirp(name) {
     mkdirp.sync(this.dir(name));
+  }
+
+  get databaseFilePath() {
+    return path.join(this.appDir('data'), 'fulcrum.db');
   }
 
   get db() {
@@ -89,9 +99,7 @@ class App {
   }
 
   async initialize() {
-    const file = path.join(this.dir('data'), 'fulcrum.db');
-
-    this._db = await database({file});
+    this._db = await database({file: this.databaseFilePath});
 
     if (!this.args.safe) {
       await this.initializePlugins();

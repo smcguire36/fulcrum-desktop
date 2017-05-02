@@ -33,6 +33,7 @@ sudo apt-get install -y git make build-essential nodejs yarn
 ```
 
 ## Windows
+
 * [Install Git](https://git-scm.com/downloads)
 * [Install Nodejs](https://nodejs.org/en/download/current/)
 * [Install Yarn](https://yarnpkg.com/en/docs/install)

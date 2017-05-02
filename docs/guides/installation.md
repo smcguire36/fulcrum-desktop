@@ -5,7 +5,7 @@ Installers are available from the [releases](https://github.com/fulcrumapp/fulcr
 
 #### macOS
 
-Install the .dmg, drag to `Applications`. That's it!
+Open the .dmg, drag the icon to `Applications`. That's it!
 
 #### Windows
 
