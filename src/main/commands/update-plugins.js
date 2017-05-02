@@ -1,7 +1,7 @@
 import path from 'path';
-import { execSync } from 'child_process';
 import glob from 'glob';
-import pluginEnv from '../plugin-env';
+import yarn from '../yarn';
+import git from '../git';
 
 export default class {
   async task(cli) {
@@ -18,21 +18,17 @@ export default class {
     for (const pluginPath of pluginPaths) {
       const pluginDir = path.resolve(path.dirname(pluginPath));
 
-      const commands = [];
-
-      commands.push('git pull');
-      commands.push('yarn');
-
-      const string = commands.join(' && ');
-
-      console.log('Updating plugin...', pluginPath);
-
       try {
-        const result = execSync(string, {cwd: pluginDir, env: pluginEnv});
-        console.log(result.toString());
+        console.log('Pulling changes...');
+        await git.pull(pluginDir);
+
+        console.log('Installing dependencies...');
+
+        await yarn.run('install', {cwd: pluginDir});
+
         console.log('Plugin updated.\n\n');
       } catch (ex) {
-        console.error('Error updating plugin', pluginPath, ex.stderr.toString());
+        console.error('Error updating plugin', pluginPath, ex.toString());
       }
     }
   }

@@ -68,6 +68,13 @@
         ]
       },
       {
+        "from": "resources/yarn/yarn",
+        "to": "yarn",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
         "from": "resources/scripts",
         "to": "scripts",
         "filter": [
@@ -156,6 +163,7 @@
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
     "node-uuid": "^1.4.7",
+    "nodegit": "^0.18.3",
     "pg": "^6.1.5",
     "pg-format": "^1.0.4",
     "progress": "^1.1.8",

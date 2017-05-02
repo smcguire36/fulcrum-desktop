@@ -1,6 +1,8 @@
 import path from 'path';
-import { execSync } from 'child_process';
-import pluginEnv from '../plugin-env';
+import yarn from '../yarn';
+import git from '../git';
+import mkdirp from 'mkdirp';
+import fs from 'fs';
 
 export default class {
   async task(cli) {
@@ -27,27 +29,23 @@ export default class {
       '.gitignore'
     ];
 
-    const commands = [];
-
     const newPluginPath = path.join(pluginPath, fulcrum.args.name);
 
-    commands.push(`mkdir -p ${newPluginPath}`);
+    mkdirp.sync(newPluginPath);
 
     for (const file of files) {
       const sourcePath = path.resolve(path.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
 
-      commands.push(`cp ${sourcePath} ${newPluginPath}`);
+      fs.writeFileSync(path.join(newPluginPath, file), fs.readFileSync(sourcePath));
     }
 
-    commands.push('yarn');
-    commands.push(`cd ${newPluginPath}`);
-    commands.push('git init');
+    console.log('Installing dependencies...');
 
-    const string = commands.join(' && ');
+    await yarn.run('install', {cwd: newPluginPath});
 
-    console.log('Installing...');
+    console.log('Setting up git repository...');
 
-    execSync(string, {env: pluginEnv});
+    await git.init(newPluginPath);
 
     console.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
     console.log('Run the plugin task using:\n');
