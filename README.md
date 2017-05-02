@@ -1,6 +1,6 @@
 ![Fulcrum](https://d2ppvlu71ri8gs.cloudfront.net/items/322R2o0M300C043H1Y0u/fulcrum-desktop.png)
 
-## Fulcrum Desktop :construction:
+## :construction: Fulcrum Desktop :construction:
 
 [![Build Status](https://travis-ci.org/fulcrumapp/fulcrum-desktop.svg?branch=master)](https://travis-ci.org/fulcrumapp/fulcrum-desktop)
 [![Build Status](https://ci.appveyor.com/api/projects/status/orvg142ommlitw7v?svg=true)](https://ci.appveyor.com/project/zhm/fulcrum-desktop)
@@ -24,18 +24,6 @@ yarn
 ```sh
 ./run setup # follow login instructions
 ./run sync --org 'Fulcrum Labs'
-```
-
-### Postgres Build
-
-```sh
-# first, sync the local database
-
-# run this once, it sets up the postgres database
-./setup-postgres.sh
-
-# run this to fully rebuild the postgres tables from the SQLite database
-./run task postgres --org 'Fulcrum Labs'
 ```
 
 ### Plugins
