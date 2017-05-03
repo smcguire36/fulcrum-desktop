@@ -21,11 +21,8 @@ fulcrum.cmd sync --org 'Organization Name'
 
 #### Linux
 
-Ubuntu:
+Ubuntu x64:
 
 ```sh
-wget https://github.com/fulcrumapp/fulcrum-desktop/releases/download/v0.0.22/fulcrum-desktop_0.0.22_amd64.deb -O fulcrum-desktop.deb
-sudo apt-get update
-sudo dpkg -i fulcrum-desktop.deb # it will complain about missing dependencies, the next command will fix it up
-sudo apt-get install -f
+curl -o- -L https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/install.sh | sudo bash
 ```
