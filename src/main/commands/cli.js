@@ -13,7 +13,7 @@ import BuildPlugins from './build-plugins';
 import WatchPlugins from './watch-plugins';
 import Sync from './sync';
 import Query from './query';
-import manifest from '../../../package.json';
+import fulcrumPackage from '../../version';
 
 import { Database } from 'minidb';
 
@@ -90,7 +90,7 @@ export default class CLI {
 
     this.argv =
       cli.demandCommand()
-         .version(manifest.version)
+         .version(fulcrumPackage.version)
          .help()
          .argv;
 
