@@ -11,4 +11,3 @@ json.fulcrum = pkg.version;
 
 fs.writeFileSync('./src/version.json', JSON.stringify(json));
 fs.writeFileSync('./app/version.json', JSON.stringify(json));
-// fs.writeFileSync('./package.json', JSON.stringify(pkg, null, '  '));
