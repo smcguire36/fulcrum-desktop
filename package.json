@@ -33,7 +33,7 @@
     "appId": "com.spatialnetworks.fulcrum",
     "productName": "Fulcrum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "npmSkipBuildFromSource": true,
+    "npmSkipBuildFromSource": false,
     "files": [
       "app/*",
       "app/**/*",
