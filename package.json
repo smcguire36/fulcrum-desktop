@@ -38,10 +38,17 @@
       "app/*",
       "app/**/*",
       "node_modules",
-      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,o.d}",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,o.d,a,d.ts,m4,vc}",
+      "!node_modules/minisqlite/deps/sqlite3.c",
+      "!node_modules/nodegit/build/Release/openssl.a",
+      "!node_modules/nodegit/build/Release/git2.a",
+      "!node_modules/nodegit/build/Release/ssh2.a",
       "!node_modules/nodegit/vendor/**/*",
       "!node_modules/nodegit/src/**/*",
-      "!node_modules/nodegit/include/**/*"
+      "!node_modules/nodegit/include/**/*",
+      "!node_modules/caniuse-db/fulldata-json/data-2.0.json",
+      "!node_modules/caniuse-db/fulldata-json/data-1.0.json",
+      "!node_modules/caniuse-db/data.json"
     ],
     "extraResources": [
       {
