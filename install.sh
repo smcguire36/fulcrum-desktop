@@ -19,5 +19,5 @@ dpkg -i $DEB_FILE
 apt-get install -f
 
 echo "Fulcrum successfully installed to /opt/Fulcrum"
-echo "To get started: run:"
+echo "To get started, run:"
 echo "  /opt/Fulcrum/scripts/fulcrum setup"
