@@ -7,8 +7,6 @@ fi
 # This will build, package and upload the app to GitHub.
 
 yarn build
-./bump-version
-cp src/version.json app/version.json
 
 if [ "$1" == "mac" ]; then
   node_modules/.bin/build --mac -p always

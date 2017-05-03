@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index.js"],"names":["require"],"mappings":";;AAAAA,QAAQ,QAAR","file":"index.js","sourcesContent":["require('./main');\n"]}
