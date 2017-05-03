@@ -1,6 +1,6 @@
 {
   "name": "Fulcrum",
-  "version": "0.0.26",
+  "version": "0.0.28",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
   "main": "app/index.js",
@@ -37,9 +37,9 @@
     "files": [
       "app/*",
       "app/**/*",
+      "node_modules",
       "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,o.d}",
-      "!node_modules/nodegit/vendor/libgit2/tests/**/*",
-      "node_modules"
+      "!node_modules/nodegit/vendor/libgit2/tests/**/*"
     ],
     "extraResources": [
       {

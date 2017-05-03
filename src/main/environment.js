@@ -10,6 +10,10 @@ export default class Environment {
     return Environment.app.yargs;
   }
 
+  get databaseFilePath() {
+    return Environment.app.databaseFilePath;
+  }
+
   dir(dir) {
     return Environment.app.dir(dir);
   }
