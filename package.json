@@ -1,6 +1,6 @@
 {
   "name": "Fulcrum",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Fulcrum",
   "homepage": "http://github.com/fulcrumapp/fulcrum-desktop",
   "main": "app/index.js",
