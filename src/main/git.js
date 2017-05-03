@@ -1,4 +1,6 @@
-import git from 'nodegit';
+// import git from 'nodegit';
+
+const git = {};
 
 export default class Git {
   static async clone(url, path) {
