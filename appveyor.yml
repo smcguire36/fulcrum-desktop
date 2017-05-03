@@ -26,7 +26,6 @@ install:
   - SET PATH=C:\Program Files\Fulcrum\resources\cli;%PATH%
   - ps: Install-Product node $env:NODE_VERSION $env:PLATFORM
   - yarn install --network-concurrency 1
-  - yarn run install-app-deps
 
 build_script:
   - yarn dist:win

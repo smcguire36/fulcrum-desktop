@@ -14,7 +14,7 @@
     "postinstallOLD": "install-app-deps",
     "pack": "build --dir",
     "dist": "build",
-    "dist:win": "build --windows nsis --x64 --publish always",
+    "dist:win": "build --windows nsis --x64 --ia32 --publish always",
     "dist:mac": "build --mac --publish always",
     "dist:linux": "build --linux --x64 --publish always",
     "dist:travis": "build --linux --mac --publish always",
@@ -33,9 +33,12 @@
     "appId": "com.spatialnetworks.fulcrum",
     "productName": "Fulcrum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "npmSkipBuildFromSource": true,
     "files": [
       "app/*",
       "app/**/*",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc,lib,pdb,obj,map,tlog,o.d}",
+      "!node_modules/nodegit/vendor/libgit2/tests/**/*",
       "node_modules"
     ],
     "extraResources": [
@@ -83,7 +86,8 @@
     ],
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "portable"
       ]
     },
     "nsis": {},
@@ -142,6 +146,7 @@
     "babel-register": "^6.7.2",
     "bluebird": "^3.3.5",
     "colors": "^1.1.2",
+    "commander": "^2.9.0",
     "csv-string": "^2.3.0",
     "ejs": "^2.4.1",
     "electron-log": "^2.2.3",
@@ -160,6 +165,7 @@
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
     "node-uuid": "^1.4.7",
+    "nodegit": "^0.18.3",
     "pg": "^6.1.5",
     "pg-format": "^1.0.4",
     "progress": "^1.1.8",
