@@ -1,4 +1,4 @@
 export ELECTRON_RUN_AS_NODE=true
 export DEVELOPMENT=1
 
-./fulcrum "$@"
+./node_modules/.bin/electron --max-old-space-size=16384 resources/scripts/fulcrum.js "$@"
