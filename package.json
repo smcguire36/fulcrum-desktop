@@ -145,7 +145,6 @@
     "babel-register": "^6.7.2",
     "bluebird": "^3.3.5",
     "colors": "^1.1.2",
-    "commander": "^2.9.0",
     "csv-string": "^2.3.0",
     "ejs": "^2.4.1",
     "electron-log": "^2.2.3",
