@@ -5,7 +5,7 @@ import pluginEnv from './plugin-env';
 export default class Yarn {
   static get yarnBin() {
     if (process.env.DEVELOPMENT) {
-      return path.resolve(path.join(__dirname, '..', '..', 'resources', 'yarn', 'yarn', 'bin', 'yarn.js'));
+      return path.resolve(path.join(__dirname, '..', '..', 'resources', 'scripts', 'yarn.js'));
     }
 
     if (process.platform === 'darwin') {
