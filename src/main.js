@@ -17,7 +17,7 @@ import menubar from 'menubar';
 const options = {
   dir: __dirname,
   width: 200,
-  height: 52,
+  height: 90,
   icon: path.join(__dirname, 'static', 'images', 'IconTemplate.png')
 };
 

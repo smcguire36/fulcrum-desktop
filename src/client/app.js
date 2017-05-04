@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { remote } from 'electron';
 
 window.onload = () => {
   document.querySelector('.cli').onclick = () => {
@@ -11,5 +12,9 @@ window.onload = () => {
         alert(`Successfully installed 'fulcrum' command at /usr/local/bin/fulcrum`);
       }
     });
+  };
+
+  document.querySelector('.quit').onclick = () => {
+    remote.app.quit();
   };
 };
