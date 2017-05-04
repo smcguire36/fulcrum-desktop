@@ -25,7 +25,7 @@ export default class DownloadMemberships extends Task {
     for (let index = 0; index < objects.length; ++index) {
       const attributes = objects[index];
 
-      const object = await Membership.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
+      const object = await Membership.findOrCreate(account.db, {user_resource_id: attributes.user_id, account_id: account.rowID});
 
       object.updateFromAPIAttributes(attributes);
 
