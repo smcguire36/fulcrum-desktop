@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import pluginEnv from '../plugin-env';
 import git from '../git';
 import yarn from '../yarn';
+import pluginLogger from '../plugin-logger';
 
 export default class {
   async task(cli) {
@@ -29,14 +30,16 @@ export default class {
 
     const newPluginPath = path.join(pluginPath, name);
 
-    console.log('Cloning...');
+    const logger = pluginLogger(newPluginPath);
+
+    logger.log('Cloning...');
 
     await git.clone(fulcrum.args.url, newPluginPath);
 
-    console.log('Installing...');
+    logger.log('Installing dependencies...');
 
-    await yarn.run('install', {env: pluginEnv, cwd: newPluginPath});
+    await yarn.run('install', {env: pluginEnv, cwd: newPluginPath, logger});
 
-    console.log('Plugin installed at', newPluginPath);
+    logger.log('Plugin installed at', newPluginPath);
   }
 }

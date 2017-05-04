@@ -2,6 +2,7 @@ import path from 'path';
 import glob from 'glob';
 import yarn from '../yarn';
 import git from '../git';
+import pluginLogger from '../plugin-logger';
 
 export default class {
   async task(cli) {
@@ -18,17 +19,20 @@ export default class {
     for (const pluginPath of pluginPaths) {
       const pluginDir = path.resolve(path.dirname(pluginPath));
 
+      const logger = pluginLogger(pluginDir);
+
       try {
-        console.log('Pulling changes...');
+        logger.log('Pulling changes...');
+
         await git.pull(pluginDir);
 
-        console.log('Installing dependencies...');
+        logger.log('Installing dependencies...');
 
-        await yarn.run('install', {cwd: pluginDir});
+        await yarn.run('install', {cwd: pluginDir, logger});
 
-        console.log('Plugin updated.\n\n');
+        logger.log('Plugin updated.');
       } catch (ex) {
-        console.error('Error updating plugin', pluginPath, ex.toString());
+        logger.error('Error updating plugin', pluginPath, ex);
       }
     }
   }

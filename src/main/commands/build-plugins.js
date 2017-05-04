@@ -1,6 +1,7 @@
 import path from 'path';
 import glob from 'glob';
 import yarn from '../yarn';
+import pluginLogger from '../plugin-logger';
 
 export default class {
   async task(cli) {
@@ -16,19 +17,20 @@ export default class {
 
     for (const pluginPath of pluginPaths) {
       const pluginDir = path.resolve(path.dirname(pluginPath));
+      const logger = pluginLogger(pluginDir);
 
       try {
-        console.log('Installing dependencies...', pluginPath);
+        logger.log('Installing dependencies...', pluginPath);
 
-        await yarn.run('install', {cwd: pluginDir});
+        await yarn.run('install', {cwd: pluginDir, logger});
 
-        console.log('Compiling plugin...', pluginPath);
+        logger.log('Compiling plugin...', pluginPath);
 
-        await yarn.run('build', {cwd: pluginDir});
+        await yarn.run('build', {cwd: pluginDir, logger});
 
-        console.log('Plugin built.\n\n');
+        logger.log('Plugin built.');
       } catch (ex) {
-        console.error('Error building plugin', pluginPath, ex);
+        logger.error('Error building plugin', pluginPath, ex);
       }
     }
   }

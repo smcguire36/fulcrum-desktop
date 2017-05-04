@@ -2,6 +2,7 @@ import path from 'path';
 import { spawn, exec } from 'child_process';
 import glob from 'glob';
 import yarn from '../yarn';
+import pluginLogger from '../plugin-logger';
 
 export default class {
   async task(cli) {
@@ -26,6 +27,8 @@ export default class {
     for (const pluginPath of pluginPaths) {
       const pluginDir = path.resolve(pluginPath);
 
+      const logger = pluginLogger(pluginDir);
+
       const parts = pluginPath.split(path.sep);
       const name = parts[parts.length - 1];
 
@@ -33,9 +36,9 @@ export default class {
         continue;
       }
 
-      console.log('Watching plugin...', pluginPath);
+      logger.log('Watching plugin...', pluginPath);
 
-      promises.push(yarn.run('watch', {cwd: pluginDir}));
+      promises.push(yarn.run('watch', {cwd: pluginDir, logger}));
     }
 
     await Promise.all(promises);

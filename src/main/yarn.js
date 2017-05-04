@@ -29,20 +29,13 @@ export default class Yarn {
       command
     ].join(' ');
 
-    const parts = options.cwd.split(path.sep);
-    const name = parts[parts.length - 1];
-
     return new Promise((resolve, reject) => {
       try {
         const child = exec(wrappedCommand, {...options, env});
 
-        child.stdout.on('data', (data) => {
-          process.stdout.write(name.green + ' ' + data.toString());
-        });
+        child.stdout.on('data', options.logger.stdoutWrite);
 
-        child.stderr.on('data', (data) => {
-          process.stderr.write(name.red + ' ' + data.toString());
-        });
+        child.stderr.on('data', options.logger.stderrWrite);
 
         child.on('exit', function() {
           resolve();

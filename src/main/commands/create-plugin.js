@@ -3,6 +3,7 @@ import yarn from '../yarn';
 import git from '../git';
 import mkdirp from 'mkdirp';
 import fs from 'fs';
+import pluginLogger from '../plugin-logger';
 
 export default class {
   async task(cli) {
@@ -47,16 +48,22 @@ export default class {
       fs.writeFileSync(path.join(newPluginPath, file), fs.readFileSync(sourcePath));
     }
 
-    console.log('Installing dependencies...');
+    const logger = pluginLogger(newPluginPath);
 
-    await yarn.run('install', {cwd: newPluginPath});
+    logger.log('Installing dependencies...');
 
-    console.log('Setting up git repository...');
+    await yarn.run('install', {cwd: newPluginPath, logger});
+
+    logger.log('Compiling...');
+
+    await yarn.run('build', {cwd: newPluginPath, logger});
+
+    logger.log('Setting up git repository...');
 
     await git.init(newPluginPath);
 
-    console.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
-    console.log('Run the plugin task using:\n');
-    console.log('  fulcrum ' + fulcrum.args.name);
+    logger.log('Plugin created at', path.join(pluginPath, fulcrum.args.name));
+    logger.log('Run the plugin task using:');
+    logger.log('  fulcrum ' + fulcrum.args.name);
   }
 }
