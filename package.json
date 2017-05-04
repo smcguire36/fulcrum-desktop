@@ -98,6 +98,13 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "resources/default-plugin",
+        "to": "default-plugin",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {

@@ -34,7 +34,15 @@ export default class {
     mkdirp.sync(newPluginPath);
 
     for (const file of files) {
-      const sourcePath = path.resolve(path.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
+      let sourcePath = null;
+
+      if (process.env.DEVELOPMENT) {
+        sourcePath = path.resolve(path.join(__dirname, '..', '..', '..', 'resources', 'default-plugin', file));
+      } else if (process.platform === 'darwin') {
+        sourcePath = path.join(path.dirname(process.execPath), '..', 'default-plugin', file);
+      } else {
+        sourcePath = path.join(path.dirname(process.execPath), 'default-plugin', file);
+      }
 
       fs.writeFileSync(path.join(newPluginPath, file), fs.readFileSync(sourcePath));
     }
