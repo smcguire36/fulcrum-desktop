@@ -10,6 +10,7 @@ import Account from './models/account';
 import LocalDatabaseDataSource from './local-database-data-source';
 import { DataSource } from 'fulcrum-core';
 import paths from '../application-paths';
+import pluginLogger from './plugin-logger';
 
 let app = null;
 
@@ -124,6 +125,8 @@ class App {
     for (const pluginPath of pluginPaths) {
       const fullPath = path.resolve(pluginPath);
 
+      const logger = pluginLogger(pluginPath);
+
       try {
         const pluginModule = require(fullPath);
 
@@ -138,10 +141,11 @@ class App {
         this._plugins.push(plugin);
 
         if (this.args.debug) {
-          console.error('Loading plugin', fullPath);
+          logger.error('Loading plugin', fullPath);
         }
       } catch (ex) {
-        console.error('Failed to load plugin', ex);
+        logger.error('Failed to load plugin', ex);
+        logger.error('This is most likely an error in the plugin.');
       }
     }
   }
