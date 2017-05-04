@@ -38,5 +38,9 @@ autoUpdater.on('update-downloaded', (ev, info) => {
 });
 
 app.on('ready', function() {
+  if (process.env.DEVELOPMENT) {
+    return;
+  }
+
   autoUpdater.checkForUpdates();
 });

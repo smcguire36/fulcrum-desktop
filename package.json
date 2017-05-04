@@ -175,6 +175,7 @@
     "glob": "^7.1.1",
     "inquirer": "^1.0.2",
     "lodash": "^4.11.1",
+    "menubar": "^5.2.3",
     "minidb": "^0.9.1",
     "mixmatch": "0.0.2",
     "mkdirp": "^0.5.1",
