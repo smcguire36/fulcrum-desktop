@@ -18,7 +18,7 @@ const options = {
   dir: __dirname,
   width: 200,
   height: 90,
-  icon: path.join(__dirname, 'static', 'images', 'IconTemplate.png')
+  icon: path.join(__dirname, 'assets', 'images', 'IconTemplate.png')
 };
 
 const bar = menubar(options);
@@ -42,7 +42,7 @@ function start() {
       slashes: true
     }));
 
-    // browserWindow.webContents.openDevTools();
+    browserWindow.webContents.openDevTools({mode: 'detach'});
 
     browserWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
