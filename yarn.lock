@@ -3010,13 +3010,13 @@ mime@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
-minidb@^0.9.3:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/minidb/-/minidb-0.9.3.tgz#99a324dbb0bf3e33773d6f9ddbce6cba7a6bfa8a"
+minidb@^0.9.4:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/minidb/-/minidb-0.9.4.tgz#3ac384513c4fc894f0dd1dc8b6b8c66ce1e62566"
   dependencies:
     bluebird "^3.5.0"
     humanize-duration "^3.10.0"
-    minisqlite "^1.4.4"
+    minisqlite "^1.4.5"
     mixmatch "^0.0.2"
     pg "^4.5.6"
     pg-format "^1.0.2"
@@ -3042,9 +3042,9 @@ minimist@^1.1.0, minimist@^1.1.3, minimist@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
-minisqlite@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/minisqlite/-/minisqlite-1.4.4.tgz#4f156e7ab54b2403162eab83db13bc0390dcce8c"
+minisqlite@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/minisqlite/-/minisqlite-1.4.5.tgz#0b41fbc958ad1f80aa9ed0d7bdc34fd49878228d"
   dependencies:
     bindings "^1.2.1"
     eslint-plugin-babel "^4.1.1"
