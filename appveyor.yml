@@ -28,7 +28,8 @@ install:
   - yarn install --network-concurrency 1
 
 build_script:
-  - yarn dist:win
+  - yarn dist:win:nsis
+  - yarn dist:win:portable
 
 deploy: off
 
