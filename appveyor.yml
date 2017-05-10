@@ -10,9 +10,6 @@ platform:
   - x64
 
 environment:
-  GH_TOKEN:
-    secure: qrUjEf9plfA/TOQRrxgsiPblyVIxOlmxVK/yA2aX+5dvFkLwRXRn72GFl9AXxXzR
-
   global:
     FULCRUM_DEV_RESOURCE_PATH: c:\projects\fulcrum
 
