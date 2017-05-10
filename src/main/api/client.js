@@ -203,7 +203,7 @@ class Client {
   download(url, to) {
     return new Promise((resolve, reject) => {
       const rq = request(url).pipe(fs.createWriteStream(to));
-      rq.on('close', resolve);
+      rq.on('close', () => resolve(rq));
       rq.on('error', reject);
     });
   }

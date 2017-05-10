@@ -11,10 +11,13 @@ export default class {
       command: 'install-plugin',
       desc: 'install a plugin',
       builder: {
+        name: {
+          type: 'string',
+          desc: 'the plugin name'
+        },
         url: {
           type: 'string',
-          desc: 'the URL to a git repo',
-          required: true
+          desc: 'the URL to a git repo'
         }
       },
       handler: this.runCommand
@@ -24,7 +27,15 @@ export default class {
   runCommand = async () => {
     const pluginPath = fulcrum.dir('plugins');
 
-    const parts = fulcrum.args.url.split('/');
+    let pluginName = fulcrum.args.name;
+
+    if (pluginName && pluginName.indexOf('fulcrum-desktop') !== 0) {
+      pluginName = `fulcrum-desktop-${ pluginName }`;
+    }
+
+    const url = fulcrum.args.url || `https://github.com/fulcrumapp/${ pluginName }`;
+
+    const parts = url.split('/');
 
     const name = parts[parts.length - 1].replace(/\.git/, '');
 
@@ -34,7 +45,7 @@ export default class {
 
     logger.log('Cloning...');
 
-    await git.clone(fulcrum.args.url, newPluginPath);
+    await git.clone(url, newPluginPath);
 
     logger.log('Installing dependencies...');
 
