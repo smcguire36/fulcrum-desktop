@@ -12,21 +12,6 @@ if (process.platform === 'win32') {
 
 import './auto-updater';
 
-// import menubar from 'menubar';
-
-// const options = {
-//   dir: __dirname,
-//   width: 200,
-//   height: 90,
-//   icon: path.join(__dirname, 'assets', 'images', 'IconTemplate.png')
-// };
-
-// const bar = menubar(options);
-
-// bar.on('ready', () => {
-//   // ready
-// });
-
 let browserWindow = null;
 
 function start() {
