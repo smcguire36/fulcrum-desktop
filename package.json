@@ -142,7 +142,9 @@
         "deb",
         "rpm",
         "tar.gz"
-      ],
+      ]
+    },
+    "rpm": {
       "depends": []
     },
     "publish": [
