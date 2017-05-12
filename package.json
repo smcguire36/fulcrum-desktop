@@ -115,12 +115,6 @@
         "portable"
       ]
     },
-    "portable": {
-      "artifactName": "Fulcrum-${version}.exe"
-    },
-    "nsis": {
-      "artifactName": "Fulcrum-${version}-Setup.exe"
-    },
     "mac": {},
     "dmg": {
       "contents": [
