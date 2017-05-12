@@ -3,7 +3,7 @@ import ReportGenerator from './reports/generator';
 import RecordValues from './models/record-values/record-values';
 import SQLiteRecordValues from './models/record-values/sqlite-record-values';
 import PostgresRecordValues from './models/record-values/postgres-record-values';
-import { Postgres, SQLite, PersistentObject } from 'minidb';
+import { Postgres, SQLite, MSSQL, PersistentObject } from 'minidb';
 import APIClient from './api/client';
 
 const api = {};
@@ -16,6 +16,7 @@ Object.assign(api, {
   PostgresRecordValues,
   Postgres,
   SQLite,
+  MSSQL,
   PersistentObject,
   APIClient
 });
