@@ -144,9 +144,6 @@
         "tar.gz"
       ]
     },
-    "rpm": {
-      "depends": []
-    },
     "publish": [
       {
         "provider": "github",
