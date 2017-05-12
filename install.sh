@@ -14,6 +14,9 @@ cd ~
 
 curl -L $DOWNLOAD_URL -o $DEB_FILE
 
+# these 2 packages are needed for Ubuntu 16.04
+sudo apt-get install -y libasound2 libcurl4-openssl-dev
+
 dpkg -i $DEB_FILE
 
 apt-get install -f
