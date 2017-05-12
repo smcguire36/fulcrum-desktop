@@ -12,28 +12,28 @@ if (process.platform === 'win32') {
 
 import './auto-updater';
 
-import menubar from 'menubar';
+// import menubar from 'menubar';
 
-const options = {
-  dir: __dirname,
-  width: 200,
-  height: 90,
-  icon: path.join(__dirname, 'assets', 'images', 'IconTemplate.png')
-};
+// const options = {
+//   dir: __dirname,
+//   width: 200,
+//   height: 90,
+//   icon: path.join(__dirname, 'assets', 'images', 'IconTemplate.png')
+// };
 
-const bar = menubar(options);
+// const bar = menubar(options);
 
-bar.on('ready', () => {
-  // ready
-});
+// bar.on('ready', () => {
+//   // ready
+// });
+
+let browserWindow = null;
 
 function start() {
   // Keep a global reference of the window object, if you don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
-  let browserWindow = null;
-
   function createWindow() {
-    browserWindow = new BrowserWindow({width: 210, height: 74});
+    browserWindow = new BrowserWindow({width: 210, height: 114});
 
     // and load the index.html of the app.
     browserWindow.loadURL(url.format({
@@ -42,7 +42,7 @@ function start() {
       slashes: true
     }));
 
-    browserWindow.webContents.openDevTools({mode: 'detach'});
+    // browserWindow.webContents.openDevTools({mode: 'detach'});
 
     browserWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
@@ -70,3 +70,5 @@ function start() {
     }
   });
 }
+
+start();
