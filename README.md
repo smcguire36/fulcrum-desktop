@@ -37,9 +37,11 @@ To create a new plugin:
 To install a plugin:
 
 ```sh
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-reports
+./run install-plugin --name geopackage
 
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-postgres
+./run install-plugin --name reports
 
-./run install-plugin --git https://github.com/fulcrumapp/fulcrum-desktop-s3-upload
+./run install-plugin --name postgres
+
+./run install-plugin --name s3
 ```
