@@ -101,8 +101,6 @@ export default class DownloadSequence extends Task {
 
     const totalTime = new Date().getTime() - now.getTime();
 
-    await this.finish();
-
     const message = format(this.finished + ' %s | %s | %s',
                            this.syncLabel.blue,
                            (totalFetchTime + 'ms').cyan,
@@ -114,6 +112,7 @@ export default class DownloadSequence extends Task {
       await this.download(account, lastSync, data.next_sequence, state);
     } else {
       await state.update();
+      await this.finish();
     }
   }
 }

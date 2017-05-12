@@ -184,6 +184,20 @@ class Client {
     return await req(options);
   }
 
+  getQueryURL(account, sql) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource('/api/v2/query')
+    });
+
+    options.qs = {
+      q: sql,
+      format: 'jsonseq',
+      arrays: 1
+    };
+
+    return options;
+  }
+
   getPhotoURL(account, media) {
     return this.urlForResource(`/api/v2/photos/${ media.id }?token=${account.token}`);
   }

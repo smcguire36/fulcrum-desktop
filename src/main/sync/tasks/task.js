@@ -70,10 +70,17 @@ export default class Task {
   }
 
   progress({message, count, total}) {
+    let fmt = '';
+
+    if (total === -1) {
+      fmt = format('%s (:current) :elapsed', message.green);
+    } else if (count != null) {
+      fmt = format('%s :bar :percent (:current/:total) :etas :elapsed', message.green);
+    } else {
+      fmt = format('%s', message.green);
+    }
     // const fmt = count != null ? format('%s :bar :percent (:current/:total) :etas :elapsed', message.green)
     //                           : format('%s', message.green);
-    const fmt = count != null ? format('%s :bar :percent (:current/:total) :etas :elapsed', message.green)
-                              : format('%s', message.green);
 
     if (!this.bar) {
       const options = {
