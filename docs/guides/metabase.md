@@ -5,3 +5,9 @@
 ```sh
 curl -o- -L https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/install-metabase.sh | sudo bash
 ```
+
+#### Running Metabase
+
+```sh
+java -jar metabase.jar
+```
