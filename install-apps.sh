@@ -2,7 +2,7 @@
 
 METABASE_URL="http://downloads.metabase.com/v0.24.1/metabase.jar"
 
-apt-get update
+sudo apt-get update
 
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 
@@ -67,8 +67,8 @@ sudo apt-get install -y openjdk-8-jre
 
 sudo yarn global add jsreport-cli
 
-curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.service" > /etc/systemd/system/metabase.service
-curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.service" > /etc/systemd/system/jsreport.service
+sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.service" > /etc/systemd/system/metabase.service
+sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.service" > /etc/systemd/system/jsreport.service
 
 curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.sh" > /home/ubuntu/metabase/metabase.sh
 curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.sh" > /home/ubuntu/jsreport/jsreport.sh
