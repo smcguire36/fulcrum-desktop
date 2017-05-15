@@ -22,13 +22,6 @@
     "7zip-bin-mac" "^1.0.1"
     "7zip-bin-win" "^2.0.2"
 
-"@risingstack/v8-profiler@^5.7.0":
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/@risingstack/v8-profiler/-/v8-profiler-5.7.0.tgz#32bf1524d62da5e259ece85130d54048ff1b12ef"
-  dependencies:
-    nan "^2.3.2"
-    node-pre-gyp "^0.6.5"
-
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -2239,9 +2232,9 @@ fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2, fstream@~1.0.10:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fulcrum-core@^0.9.19:
-  version "0.9.19"
-  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-0.9.19.tgz#ae7fb6759d1c038214a5a89f617226db0cccfc6e"
+fulcrum-core@^0.9.22:
+  version "0.9.22"
+  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-0.9.22.tgz#76cba7ba538ec692193046da8d3cef77b3793670"
   dependencies:
     async "^2.1.4"
     lodash.compact "^3.0.1"
@@ -3114,9 +3107,9 @@ mz@^2.3.1:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@^2.2.0, nan@^2.3.0, nan@^2.3.2, nan@^2.3.3:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
+nan@^2.2.0, nan@^2.3.0, nan@^2.3.3:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.2.tgz#e4ff34e6c95fdfb5aecc08de6596f43605a7db45"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -3172,7 +3165,7 @@ node-pre-gyp@^0.6.29, node-pre-gyp@^0.6.34:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node-pre-gyp@^0.6.5, node-pre-gyp@~0.6.32:
+node-pre-gyp@~0.6.32:
   version "0.6.33"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.33.tgz#640ac55198f6a925972e0c16c4ac26a034d5ecc9"
   dependencies:
