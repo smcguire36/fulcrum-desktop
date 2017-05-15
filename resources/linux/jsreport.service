@@ -5,7 +5,7 @@ Description=jsreport
 WorkingDirectory=/home/ubuntu/jsreport
 ExecStart=/home/ubuntu/jsreport/jsreport.sh
 User=root
-Restart=no
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

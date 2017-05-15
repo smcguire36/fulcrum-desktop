@@ -57,6 +57,7 @@ cd ~
 
 mkdir -p metabase
 mkdir -p jsreport
+mkdir -p geoserver
 
 curl -L "$METABASE_URL" -o metabase/metabase.jar
 
@@ -66,11 +67,11 @@ sudo apt-get install -y openjdk-8-jre
 
 sudo yarn global add jsreport-cli
 
-sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.service" > /etc/systemd/system/metabase.service
-sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.service" > /etc/systemd/system/jsreport.service
+curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.service" > /etc/systemd/system/metabase.service
+curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.service" > /etc/systemd/system/jsreport.service
 
-sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.sh" > /home/ubuntu/metabase/metabase.sh
-sudo curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.sh" > /home/ubuntu/metabase/jsreport.sh
+curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/metabase.sh" > /home/ubuntu/metabase/metabase.sh
+curl -L "https://raw.githubusercontent.com/fulcrumapp/fulcrum-desktop/master/resources/linux/jsreport.sh" > /home/ubuntu/jsreport/jsreport.sh
 
 sudo chmod +x /home/ubuntu/metabase/metabase.sh
 sudo chmod +x /home/ubuntu/jsreport/jsreport.sh
@@ -81,5 +82,39 @@ sudo jsreport init
 
 sudo systemctl daemon-reload
 
+# GeoServer
+sudo apt-get install -y tomcat7 tomcat7-admin
+
+curl -L "http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0.war" > geoserver/geoserver.war
+
+sudo cp geoserver/geoserver.war /var/lib/tomcat7/webapps/geoserver.war
+
+sudo unzip /var/lib/tomcat7/webapps/geoserver.war -d /var/lib/tomcat7/webapps/geoserver
+
+cd geoserver
+
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-excel-plugin.zip
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-gdal-plugin.zip
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-geopkg-plugin.zip
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-spatialite-plugin.zip
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-vectortiles-plugin.zip
+wget http://fulcrum-devops.s3.amazonaws.com/geoserver/geoserver-2.11.0-wps-plugin.zip
+
+unzip -o geoserver-2.11.0-excel-plugin.zip -d plugins
+unzip -o geoserver-2.11.0-gdal-plugin.zip -d plugins
+unzip -o geoserver-2.11.0-geopkg-plugin.zip -d plugins
+unzip -o geoserver-2.11.0-spatialite-plugin.zip -d plugins
+unzip -o geoserver-2.11.0-vectortiles-plugin.zip -d plugins
+unzip -o geoserver-2.11.0-wps-plugin.zip -d plugins
+
+sudo cp -rp plugins/*.jar /var/lib/tomcat7/webapps/geoserver/WEB-INF/lib/
+
+sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/webapps/geoserver
+
+sudo service metabase stop
+sudo service jsreport stop
+sudo service tomcat7 stop
+
 sudo service metabase start
 sudo service jsreport start
+sudo service tomcat7 start
