@@ -1,5 +1,6 @@
 import * as core from 'fulcrum-core';
 import ReportGenerator from './reports/generator';
+import HtmlToPdf from './reports/html-to-pdf';
 import RecordValues from './models/record-values/record-values';
 import SQLiteRecordValues from './models/record-values/sqlite-record-values';
 import PostgresRecordValues from './models/record-values/postgres-record-values';
@@ -18,7 +19,8 @@ Object.assign(api, {
   SQLite,
   MSSQL,
   PersistentObject,
-  APIClient
+  APIClient,
+  HtmlToPdf
 });
 
 export default api;

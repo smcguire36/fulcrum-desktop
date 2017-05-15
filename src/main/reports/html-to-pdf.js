@@ -13,20 +13,20 @@ const DEFAULT_IMAGE_QUALITY = '85';
 const DEFAULT_ORIENTATION = 'Portrait';
 
 export default class HtmlToPdf {
-  constructor(html, header, footer, cover) {
+  constructor(html, {header, footer, cover, marginTop, marginBottom, marginLeft, marginRight, pageSize, imageQuality, orientation}) {
     this.tempID = uuid.v4();
     this.debug = false;
     this.html = html;
     this.header = header;
     this.footer = footer;
     this.cover = cover;
-    this.marginTop = DEFAULT_MARGIN;
-    this.marginBottom = DEFAULT_MARGIN;
-    this.marginLeft = DEFAULT_MARGIN;
-    this.marginRight = DEFAULT_MARGIN;
-    this.pageSize = DEFAULT_PAGE_SIZE;
-    this.imageQuality = DEFAULT_IMAGE_QUALITY;
-    this.orientation = DEFAULT_ORIENTATION;
+    this.marginTop = marginTop || DEFAULT_MARGIN;
+    this.marginBottom = marginBottom || DEFAULT_MARGIN;
+    this.marginLeft = marginLeft || DEFAULT_MARGIN;
+    this.marginRight = marginRight || DEFAULT_MARGIN;
+    this.pageSize = pageSize || DEFAULT_PAGE_SIZE;
+    this.imageQuality = imageQuality || DEFAULT_IMAGE_QUALITY;
+    this.orientation = orientation || DEFAULT_ORIENTATION;
   }
 
   get binary() {
@@ -44,12 +44,10 @@ export default class HtmlToPdf {
       '--orientation', this.orientation,
       '--encoding', 'UTF-8',
       this.quietArgument,
-      this.coverArgument,
-      this.headerArgument,
-      this.footerArgument,
+      ...this.coverArgument,
+      ...this.headerArgument,
+      ...this.footerArgument,
       this.inputArgument,
-      this.headerArgument,
-      this.footerArgument,
       this.outputArgument ];
 
     return _.compact(parts);
@@ -78,10 +76,10 @@ export default class HtmlToPdf {
 
       fs.writeFileSync(coverPath, this.cover);
 
-      return `cover "${coverPath}"`;
+      return [ 'cover', coverPath ];
     }
 
-    return null;
+    return [];
   }
 
   get headerArgument() {
@@ -90,10 +88,10 @@ export default class HtmlToPdf {
 
       fs.writeFileSync(headerPath, this.header);
 
-      return `--header-html "${headerPath}"`;
+      return [ '--header-html', headerPath ];
     }
 
-    return null;
+    return [];
   }
 
   get footerArgument() {
@@ -102,10 +100,10 @@ export default class HtmlToPdf {
 
       fs.writeFileSync(footerPath, this.footer);
 
-      return `--footer-html "${footerPath}"`;
+      return [ '--footer-html', footerPath ];
     }
 
-    return null;
+    return [];
   }
 
   run() {
