@@ -1,0 +1,11 @@
+[Unit]
+Description=jsreport
+
+[Service]
+WorkingDirectory=/home/ubuntu/jsreport
+ExecStart=/home/ubuntu/jsreport/jsreport.sh
+User=root
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

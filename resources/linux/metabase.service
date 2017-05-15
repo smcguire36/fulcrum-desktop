@@ -1,0 +1,11 @@
+[Unit]
+Description=Metabase
+
+[Service]
+WorkingDirectory=/home/ubuntu/metabase
+ExecStart=/home/ubuntu/metabase/metabase.sh
+User=root
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
