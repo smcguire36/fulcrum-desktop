@@ -114,6 +114,9 @@ sudo cp -rp plugins/*.jar /var/lib/tomcat7/webapps/geoserver/WEB-INF/lib/
 
 sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/webapps/geoserver
 
+sudo systemctl enable metabase
+sudo systemctl enable jsreport
+
 sudo service metabase stop
 sudo service jsreport stop
 sudo service tomcat7 stop
