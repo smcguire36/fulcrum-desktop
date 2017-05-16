@@ -97,31 +97,42 @@ export default class DownloadRecords extends DownloadSequence {
     if (lastSync != null) {
       await DownloadSequence.prototype.download.call(this, account, lastSync, sequence, state);
     } else {
-      const sql = this.recordQuery(this.form, sequence || 0);
+      let nextSequence = sequence || 0;
 
-      const options = Client.getQueryURL(account, sql);
+      while (nextSequence != null) {
+        nextSequence = await this.downloadQueryPage(account, lastSync, nextSequence, state);
 
-      const filePath = tempy.file({extension: 'jsonseq'});
-
-      this.progress({message: this.downloading + ' ' + this.syncLabel.blue});
-
-      await this.downloadQuery(options, filePath);
-
-      const {count, lastRecord} = await this.processRecords(account, filePath);
-
-      const message = format(this.finished + ' %s',
-                             this.syncLabel.blue);
-
-      this.progress({message, count: count, total: -1});
-
-      if (count >= QUERY_PAGE_SIZE) {
-        const nextSequence = Math.ceil(lastRecord.updatedAt.getTime() - 1);
-        await this.download(account, lastSync, nextSequence, state);
-      } else {
-        await state.update();
-        await this.finish();
+        await account.save();
       }
+
+      await state.update();
+      await this.finish();
     }
+  }
+
+  async downloadQueryPage(account, lastSync, sequence, state) {
+    const sql = this.recordQuery(this.form, sequence || 0);
+
+    const options = Client.getQueryURL(account, sql);
+
+    const filePath = tempy.file({extension: 'jsonseq'});
+
+    this.progress({message: this.downloading + ' ' + this.syncLabel.blue});
+
+    await this.downloadQuery(options, filePath);
+
+    const {count, lastRecord} = await this.processRecords(account, filePath);
+
+    const message = format(this.finished + ' %s',
+                           this.syncLabel.blue);
+
+    this.progress({message, count: count, total: -1});
+
+    if (count >= QUERY_PAGE_SIZE) {
+      return Math.ceil(lastRecord.updatedAt.getTime() - 1);
+    }
+
+    return null;
   }
 
   async processRecords(account, filePath) {

@@ -64,6 +64,19 @@ export default class DownloadSequence extends Task {
   }
 
   async download(account, lastSync, sequence, state) {
+    let nextSequence = sequence || 0;
+
+    while (nextSequence != null) {
+      nextSequence = await this.downloadPage(account, lastSync, nextSequence, state);
+
+      await account.save();
+    }
+
+    await state.update();
+    await this.finish();
+  }
+
+  async downloadPage(account, lastSync, sequence, state) {
     const beginFetchTime = new Date();
 
     this.progress({message: this.downloading + ' ' + this.syncLabel.blue});
@@ -74,7 +87,7 @@ export default class DownloadSequence extends Task {
 
     if (results.statusCode !== 200) {
       this.fail(account, results);
-      return;
+      return null;
     }
 
     const data = JSON.parse(results.body);
@@ -108,11 +121,6 @@ export default class DownloadSequence extends Task {
 
     this.progress({message, count: objects.length, total: objects.length});
 
-    if (data.next_sequence) {
-      await this.download(account, lastSync, data.next_sequence, state);
-    } else {
-      await state.update();
-      await this.finish();
-    }
+    return data.next_sequence;
   }
 }
