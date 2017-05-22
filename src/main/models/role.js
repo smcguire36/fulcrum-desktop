@@ -32,8 +32,8 @@ export default class Role extends RoleBase {
       { name: 'canRunReports', column: 'can_run_reports', type: 'boolean', null: false },
       { name: 'canManageLayers', column: 'can_manage_layers', type: 'boolean', null: false },
       { name: 'canManageAuthorizations', column: 'can_manage_authorizations', type: 'boolean', null: false },
-      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
-      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
+      { name: 'createdAt', column: 'server_created_at', type: 'datetime' },
+      { name: 'updatedAt', column: 'server_updated_at', type: 'datetime' },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }

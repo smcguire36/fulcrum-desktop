@@ -15,6 +15,8 @@ export default class Record extends RecordBase {
       { name: 'formValuesJSON', column: 'form_values', type: 'json', null: false },
       { name: 'clientCreatedAt', column: 'client_created_at', type: 'datetime' },
       { name: 'clientUpdatedAt', column: 'client_updated_at', type: 'datetime' },
+      { name: 'createdAt', column: 'server_created_at', type: 'datetime' },
+      { name: 'updatedAt', column: 'server_updated_at', type: 'datetime' },
       { name: 'status', column: 'status', type: 'string' },
       { name: 'latitude', column: 'latitude', type: 'double' },
       { name: 'longitude', column: 'longitude', type: 'double' },

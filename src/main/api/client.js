@@ -206,8 +206,32 @@ class Client {
     return this.urlForResource(`/api/v2/videos/${ media.id }?token=${account.token}`);
   }
 
+  getVideoTrackURL(account, media) {
+    return this.urlForResource(`/api/v2/videos/${ media.id }/track.json?token=${account.token}`);
+  }
+
+  async getVideoTrack(account, media) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource(`/api/v2/videos/${ media.id }/track.json?token=${account.token}`)
+    });
+
+    return await req(options);
+  }
+
   getAudioURL(account, media) {
     return this.urlForResource(`/api/v2/audio/${ media.id }?token=${account.token}`);
+  }
+
+  getAudioTrackURL(account, media) {
+    return this.urlForResource(`/api/v2/audio/${ media.id }/track.json?token=${account.token}`);
+  }
+
+  async getAudioTrack(account, media) {
+    const options = this.optionsForRequest(account, {
+      url: this.urlForResource(`/api/v2/audio/${ media.id }/track.json?token=${account.token}`)
+    });
+
+    return await req(options);
   }
 
   getSignatureURL(account, media) {

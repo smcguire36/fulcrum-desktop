@@ -17,9 +17,20 @@ export default class Form extends FormBase {
       { name: 'elementsJSON', column: 'elements', type: 'json', null: false },
       { name: 'titleFieldKeysJSON', column: 'title_field_keys', type: 'json' },
       { name: 'statusFieldJSON', column: 'status_field', type: 'json' },
+      { name: 'geometryTypes', column: 'geometry_types', type: 'json' },
+      { name: 'geometryRequired', column: 'geometry_required', type: 'boolean' },
+      { name: 'projectEnabled', column: 'projects_enabled', type: 'boolean' },
+      { name: 'assignmentEnabled', column: 'assignment_enabled', type: 'boolean' },
+      { name: 'autoAssign', column: 'auto_assign', type: 'boolean' },
+      { name: 'hiddenOnDashboard', column: 'hidden_on_dashboard', type: 'boolean' },
+      { name: 'image', column: 'image', type: 'string' },
+      { name: 'imageLarge', column: 'image_large', type: 'string' },
+      { name: 'imageSmall', column: 'image_small', type: 'string' },
+      { name: 'imageThumbnail', column: 'image_thumbnail', type: 'string' },
       { name: 'lastSync', column: 'last_sync', type: 'datetime' },
-      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
-      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
+      { name: 'script', column: 'script', type: 'string' },
+      { name: 'createdAt', column: 'server_created_at', type: 'datetime' },
+      { name: 'updatedAt', column: 'server_updated_at', type: 'datetime' },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }

@@ -1,9 +1,9 @@
-import DownloadSequence from './download-sequence';
+import DownloadQuerySequence from './download-query-sequence';
 import Client from '../../api/client';
 import Changeset from '../../models/changeset';
 import { DateUtils } from 'fulcrum-core';
 
-export default class DownloadChangesets extends DownloadSequence {
+export default class DownloadChangesets extends DownloadQuerySequence {
   get syncResourceName() {
     return 'changesets';
   }
@@ -54,5 +54,67 @@ export default class DownloadChangesets extends DownloadSequence {
 
   fail(account, results) {
     console.log(account.organizationName.green, 'failed'.red);
+  }
+
+  attributesForQueryRow(row) {
+    return {
+      id: row[0],
+      created_at: row[1],
+      updated_at: row[2],
+      closed_at: row[3],
+      metadata: row[4] && JSON.parse(row[4]),
+      min_lat: row[5],
+      max_lat: row[6],
+      min_lon: row[7],
+      max_lon: row[8],
+      number_of_changes: row[9],
+      number_created: row[10],
+      number_updated: row[11],
+      number_deleted: row[12],
+      form_id: row[13],
+      created_by_id: row[14],
+      updated_by_id: row[15],
+      closed_by_id: row[16],
+      created_by: row[17],
+      updated_by: row[18],
+      closed_by: row[19]
+    };
+  }
+
+  generateQuery(sequence, limit) {
+    const sequenceString = new Date(+sequence).toISOString();
+
+    return `
+SELECT
+  "changeset_id" AS "id",
+  to_char(pg_catalog.timezone('UTC', "records"."created_at"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "created_at",
+  to_char(pg_catalog.timezone('UTC', "records"."updated_at"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "updated_at",
+  to_char(pg_catalog.timezone('UTC', "records"."closed_at"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "closed_at",
+  "metadata" AS "metadata",
+  "min_lat" AS min_lat,
+  "max_lat" AS max_lat,
+  "min_lon" AS min_lon,
+  "max_lon" AS max_lon,
+  "number_of_changes" AS number_of_changes,
+  "number_of_creates" AS number_created,
+  "number_of_updates" AS number_updated,
+  "number_of_deletes" AS number_deleted,
+  "form_id" AS form_id,
+  "created_by_id" AS "created_by_id",
+  "updated_by_id" AS "updated_by_id",
+  "closed_by_id" AS "closed_by_id",
+  "created_by"."name" AS "created_by",
+  "updated_by"."name" AS "updated_by",
+  "closed_by"."name" AS "closed_by"
+FROM "changesets" AS "records"
+LEFT OUTER JOIN "memberships" AS "created_by" ON (("records"."created_by_id") = ("created_by"."user_id"))
+LEFT OUTER JOIN "memberships" AS "updated_by" ON (("records"."updated_by_id") = ("updated_by"."user_id"))
+LEFT OUTER JOIN "memberships" AS "closed_by" ON (("records"."closed_by_id") = ("closed_by"."user_id"))
+WHERE
+  "records".updated_at > '${sequenceString}'
+ORDER BY
+  "records".updated_at ASC
+LIMIT ${limit} OFFSET 0
+`;
   }
 }

@@ -6,6 +6,7 @@ import SQLiteRecordValues from './models/record-values/sqlite-record-values';
 import PostgresRecordValues from './models/record-values/postgres-record-values';
 import { Postgres, SQLite, MSSQL, PersistentObject } from 'minidb';
 import APIClient from './api/client';
+import SchemaLoader from './utils/schema-loader';
 
 const api = {};
 
@@ -20,7 +21,8 @@ Object.assign(api, {
   MSSQL,
   PersistentObject,
   APIClient,
-  HtmlToPdf
+  HtmlToPdf,
+  SchemaLoader
 });
 
 export default api;

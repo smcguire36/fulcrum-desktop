@@ -1,5 +1,6 @@
 import { PersistentObject } from 'minidb';
 import Role from './role';
+import { DateUtils } from 'fulcrum-core';
 
 export default class Membership {
   constructor(attributes) {
@@ -15,6 +16,8 @@ export default class Membership {
     this._userID = attributes.user_id;
     this._email = attributes.email;
     this._roleID = attributes.role_id;
+    this._createdAt = DateUtils.parseISOTimestamp(attributes.created_at);
+    this._updatedAt = DateUtils.parseISOTimestamp(attributes.updated_at);
   }
 
   get id() {
@@ -35,8 +38,8 @@ export default class Membership {
       { name: 'email', column: 'email', type: 'string', null: false },
       { name: 'firstName', column: 'first_name', type: 'string', null: false },
       { name: 'lastName', column: 'last_name', type: 'string', null: false },
-      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
-      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
+      { name: 'createdAt', column: 'server_created_at', type: 'datetime' },
+      { name: 'updatedAt', column: 'server_updated_at', type: 'datetime' },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }

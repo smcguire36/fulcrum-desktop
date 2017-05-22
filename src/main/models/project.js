@@ -12,8 +12,8 @@ export default class Project extends ProjectBase {
       { name: 'id', column: 'resource_id', type: 'string', null: false },
       { name: 'name', column: 'name', type: 'string', null: false },
       { name: 'description', column: 'description', type: 'string' },
-      { name: 'createdAt', column: 'created_at', type: 'datetime', null: false },
-      { name: 'updatedAt', column: 'updated_at', type: 'datetime', null: false },
+      { name: 'createdAt', column: 'server_created_at', type: 'datetime' },
+      { name: 'updatedAt', column: 'server_updated_at', type: 'datetime' },
       { name: 'deletedAt', column: 'deleted_at', type: 'datetime' }
     ];
   }

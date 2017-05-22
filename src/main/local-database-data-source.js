@@ -4,6 +4,7 @@ import ClassificationSet from './models/classification-set';
 import Membership from './models/membership';
 import Role from './models/role';
 import Project from './models/project';
+import Changeset from './models/changeset';
 
 export default class LocalDatabaseDataSource {
   constructor(account) {
@@ -21,7 +22,7 @@ export default class LocalDatabaseDataSource {
   }
 
   async loadObjects(db, type, handler) {
-    const objects = await type.findAll(db);
+    const objects = await type.findAll(db, {account_id: this.account.rowID});
 
     const map = {};
 
@@ -34,6 +35,16 @@ export default class LocalDatabaseDataSource {
     }
 
     return map;
+  }
+
+  async loadObject(db, type, id, handler) {
+    const object = await type.findFirst(db, {account_id: this.account.rowID, resource_id: id});
+
+    if (handler) {
+      handler(object);
+    }
+
+    return object;
   }
 
   invalidate(collection) {
@@ -77,6 +88,12 @@ export default class LocalDatabaseDataSource {
 
   getRole(id, callback) {
     return this.lazyLoad('roles', id, Role, null, callback);
+  }
+
+  getChangeset(id, callback) {
+    this.loadObject(this.db, Changeset, id).then((object) => {
+      callback(null, object);
+    });
   }
 }
 

@@ -2,13 +2,14 @@ import Task from './task';
 import Client from '../../api/client';
 import Form from '../../models/form';
 import {format} from 'util';
-import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
+// import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
 
 import Schema from 'fulcrum-schema/dist/schema';
-import sqldiff from 'sqldiff';
+import Metadata from 'fulcrum-schema/dist/metadata';
 import V2 from 'fulcrum-schema/dist/schemas/postgres-query-v2';
+import sqldiff from 'sqldiff';
 
-const {SchemaDiffer, Sqlite, Postgres} = sqldiff;
+const {SchemaDiffer, Sqlite} = sqldiff;
 
 export default class DownloadForms extends Task {
   async run({account, dataSource}) {
@@ -53,12 +54,15 @@ export default class DownloadForms extends Task {
 
       await object.save();
 
-      const newForm = {row_id: object.rowID,
-                       name: object._name,
-                       elements: object._elementsJSON};
+      const newForm = {
+        id: object.id,
+        row_id: object.rowID,
+        name: object._name,
+        elements: object._elementsJSON
+      };
 
-      await account.db.execute(format('DROP VIEW IF EXISTS %s',
-                                      account.db.ident(object.name)));
+      // await account.db.execute(format('DROP VIEW IF EXISTS %s',
+      //                                 account.db.ident(object.name)));
 
       const statements = await this.updateFormTables(account, oldForm, newForm);
 
@@ -94,13 +98,9 @@ export default class DownloadForms extends Task {
 
     const differ = new SchemaDiffer(oldSchema, newSchema);
 
-    let generator = null;
+    const meta = new Metadata(differ, {quote: '`', includeColumns: true});
 
-    if (account.db.dialect === 'sqlite') {
-      generator = new Sqlite(differ, {afterTransform: null});
-    } else if (account.db.dialect === 'postgresql') {
-      generator = new Postgres(differ, {afterTransform: null});
-    }
+    const generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
 
     generator.tablePrefix = 'account_' + account.rowID + '_';
 
