@@ -20,6 +20,10 @@ export default class DownloadChangesets extends DownloadQuerySequence {
     return this.account._lastSyncChangesets;
   }
 
+  get useRestAPI() {
+    return false;
+  }
+
   async fetchObjects(account, lastSync, sequence) {
     return Client.getChangesets(account, sequence, this.pageSize);
   }

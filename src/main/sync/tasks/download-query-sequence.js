@@ -9,8 +9,12 @@ import { format } from 'util';
 const QUERY_PAGE_SIZE = 50000;
 
 export default class DownloadQuerySequence extends DownloadSequence {
+  get useRestAPI() {
+    return true;
+  }
+
   async download(account, lastSync, sequence, state) {
-    if (lastSync != null) {
+    if (this.useRestAPI && lastSync != null) {
       await DownloadSequence.prototype.download.call(this, account, lastSync, sequence, state);
     } else {
       let nextSequence = sequence || 0;

@@ -20,6 +20,10 @@ export default class DownloadAudio extends DownloadQuerySequence {
     return this.account._lastSyncAudio;
   }
 
+  get useRestAPI() {
+    return false;
+  }
+
   async fetchObjects(account, lastSync, sequence) {
     return Client.getAudio(account, sequence, this.pageSize);
   }

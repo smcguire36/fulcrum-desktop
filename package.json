@@ -181,7 +181,7 @@
     "electron-updater": "^1.14.2",
     "exif": "^0.6.0",
     "filesize": "^3.3.0",
-    "fulcrum-core": "^0.9.27",
+    "fulcrum-core": "^0.9.28",
     "fulcrum-query-sql": "^0.0.69",
     "fulcrum-schema": "fulcrumapp/fulcrum-schema#v2",
     "glob": "^7.1.1",

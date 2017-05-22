@@ -20,6 +20,10 @@ export default class DownloadVideos extends DownloadQuerySequence {
     return this.account._lastSyncVideos;
   }
 
+  get useRestAPI() {
+    return false;
+  }
+
   async fetchObjects(account, lastSync, sequence) {
     return Client.getVideos(account, sequence, this.pageSize);
   }

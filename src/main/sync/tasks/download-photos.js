@@ -20,6 +20,10 @@ export default class DownloadPhotos extends DownloadQuerySequence {
     return this.account._lastSyncPhotos;
   }
 
+  get useRestAPI() {
+    return false;
+  }
+
   async fetchObjects(account, lastSync, sequence) {
     return Client.getPhotos(account, sequence, this.pageSize);
   }

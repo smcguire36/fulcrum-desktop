@@ -20,6 +20,10 @@ export default class DownloadSignatures extends DownloadQuerySequence {
     return this.account._lastSyncSignatures;
   }
 
+  get useRestAPI() {
+    return false;
+  }
+
   async fetchObjects(account, lastSync, sequence) {
     return Client.getSignatures(account, sequence, this.pageSize);
   }
