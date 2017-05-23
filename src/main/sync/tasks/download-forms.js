@@ -96,13 +96,15 @@ export default class DownloadForms extends Task {
       newSchema = new Schema(newForm, V2, null);
     }
 
+    const tablePrefix = 'account_' + account.rowID + '_';
+
     const differ = new SchemaDiffer(oldSchema, newSchema);
 
-    const meta = new Metadata(differ, {quote: '`', includeColumns: true});
+    const meta = new Metadata(differ, {tablePrefix, quote: '`', includeColumns: true});
 
     const generator = new Sqlite(differ, {afterTransform: meta.build.bind(meta)});
 
-    generator.tablePrefix = 'account_' + account.rowID + '_';
+    generator.tablePrefix = tablePrefix;
 
     const statements = generator.generate();
 

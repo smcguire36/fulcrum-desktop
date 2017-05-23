@@ -15,6 +15,11 @@ export default class {
           default: false,
           type: 'boolean',
           describe: 'keep the sync running forever'
+        },
+        clean: {
+          default: false,
+          type: 'boolean',
+          describe: 'start a clean sync, all data will be deleted before starting'
         }
       },
       handler: this.runCommand
@@ -29,6 +34,10 @@ export default class {
     if (account == null) {
       console.error('Unable to find organization:', fulcrum.args.org);
       return;
+    }
+
+    if (fulcrum.args.clean) {
+      await account.reset();
     }
 
     await this.syncLoop(account, fulcrum.args.full);

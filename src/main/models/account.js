@@ -118,6 +118,69 @@ export default class Account {
   findSyncState(where) {
     return SyncState.findOrCreate(this.db, {...where, account_id: this.rowID});
   }
+
+  async reset() {
+    await this.db.execute(`
+      DELETE FROM columns WHERE table_name IN (
+        SELECT name FROM tables WHERE name LIKE 'account_${this.rowID}_%'
+      );
+    `);
+
+    await this.db.execute(`
+      DELETE FROM tables WHERE name LIKE 'account_${this.rowID}_%';
+    `);
+
+    const viewNames = (await this.db.all(`
+      SELECT tbl_name AS name FROM sqlite_master
+      WHERE type = 'view' AND tbl_name LIKE 'account_${this.rowID}_%'
+      ORDER BY tbl_name;
+    `)).map(o => o.name);
+
+    for (const viewName of viewNames) {
+      await this.db.execute(`DROP VIEW ${this.db.ident(viewName)};`);
+    }
+
+    const tableNames = (await this.db.all(`
+      SELECT tbl_name AS name FROM sqlite_master
+      WHERE type = 'table' AND tbl_name LIKE 'account_${this.rowID}_%'
+      ORDER BY tbl_name;
+    `)).map(o => o.name);
+
+    for (const tableName of tableNames) {
+      await this.db.execute(`DROP TABLE ${this.db.ident(tableName)};`);
+    }
+
+    const accountTables = [
+      'audio',
+      'changesets',
+      'choice_lists',
+      'classification_sets',
+      'forms',
+      'memberships',
+      'photos',
+      'projects',
+      'records',
+      'roles',
+      'signatures',
+      'videos'
+    ];
+
+    for (const tableName of accountTables) {
+      await this.db.execute(`DELETE FROM ${this.db.ident(tableName)} WHERE account_id = ${this.rowID};`);
+    }
+
+    await this.db.execute(`DELETE FROM sync_state WHERE account_id = ${this.rowID};`);
+
+    this._lastSyncPhotos = null;
+    this._lastSyncVideos = null;
+    this._lastSyncAudio = null;
+    this._lastSyncSignatures = null;
+    this._lastSyncChangesets = null;
+
+    await this.save();
+
+    await this.db.execute('VACUUM');
+  }
 }
 
 PersistentObject.register(Account);

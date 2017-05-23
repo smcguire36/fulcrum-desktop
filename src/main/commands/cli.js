@@ -13,6 +13,7 @@ import BuildPlugins from './build-plugins';
 import WatchPlugins from './watch-plugins';
 import Sync from './sync';
 import Query from './query';
+import Reset from './reset';
 import fulcrumPackage from '../../version';
 
 import { Database } from 'minidb';
@@ -24,6 +25,7 @@ require('source-map-support').install();
 const COMMANDS = [
   Setup,
   Sync,
+  Reset,
   InstallPlugin,
   CreatePlugin,
   UpdatePlugins,
