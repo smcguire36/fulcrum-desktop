@@ -56,6 +56,14 @@ export default class Signature {
   set isDownloaded(value) {
     this._isDownloaded = !!value;
   }
+
+  get createdAt() {
+    return this._createdAt;
+  }
+
+  get updatedAt() {
+    return this._updatedAt;
+  }
 }
 
 PersistentObject.register(Signature);
