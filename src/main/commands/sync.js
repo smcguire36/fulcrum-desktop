@@ -26,6 +26,11 @@ export default class {
 
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
+    if (account == null) {
+      console.error('Unable to find organization:', fulcrum.args.org);
+      return;
+    }
+
     await this.syncLoop(account, fulcrum.args.full);
   }
 
