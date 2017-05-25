@@ -6,7 +6,7 @@ export default class PostgresRecordValues extends RecordValues {
     const searchableValue = feature.searchableValue;
 
     values.record_index_text = searchableValue;
-    values.record_index = {raw: `to_tsvector(${ pgformat('%L', searchableValue) })`};
+    values.record_index = {raw: `to_tsvector('simple', ${ pgformat('%L', searchableValue) })`};
 
     return values;
   }
