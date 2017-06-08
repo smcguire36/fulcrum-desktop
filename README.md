@@ -14,35 +14,10 @@ query tables. It's intended to be the foundation for local/disconnected data syn
 * [Get Started](/docs/guides/installation.md)
 * [Documentation](/docs)
 
+### Development
+
 ```sh
 git clone git@github.com:fulcrumapp/fulcrum-desktop.git
 cd fulcrum-desktop
 yarn
-```
-
-### Setup
-
-```sh
-./run setup # follow login instructions
-./run sync --org 'Fulcrum Labs'
-```
-
-### Plugins
-
-To create a new plugin:
-
-```sh
-./run create-plugin --name my-plugin
-```
-
-To install a plugin:
-
-```sh
-./run install-plugin --name geopackage
-
-./run install-plugin --name reports
-
-./run install-plugin --name postgres
-
-./run install-plugin --name s3
 ```
