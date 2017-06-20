@@ -51,7 +51,11 @@ export default class {
     while (sync) {
       const synchronizer = new Synchronizer();
 
-      await synchronizer.run(account, fulcrum.args.form, dataSource, {fullSync});
+      try {
+        await synchronizer.run(account, fulcrum.args.form, dataSource, {fullSync});
+      } catch (ex) {
+        console.error(ex);
+      }
 
       fullSync = false;
 
