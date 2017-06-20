@@ -49,3 +49,21 @@ Once you've installed the plugin, it will now be accessible to use from the `ful
 ```sh
 fulcrum --help
 ```
+
+To create a new plugin:
+
+```sh
+./run create-plugin --name my-plugin
+```
+
+To install a plugin:
+
+```sh
+./run install-plugin --name geopackage
+
+./run install-plugin --name reports
+
+./run install-plugin --name postgres
+
+./run install-plugin --name s3
+```
