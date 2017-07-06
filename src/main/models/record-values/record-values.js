@@ -4,29 +4,29 @@ import { Record, RepeatableItemValue } from 'fulcrum-core';
 import pgformat from 'pg-format';
 
 export default class RecordValues {
-  static updateForRecordStatements(db, record) {
+  static updateForRecordStatements(db, record, options = {}) {
     const statements = [];
 
-    statements.push.apply(statements, this.deleteForRecordStatements(db, record, record.form));
-    statements.push.apply(statements, this.insertForRecordStatements(db, record, record.form));
+    statements.push.apply(statements, this.deleteForRecordStatements(db, record, record.form, options));
+    statements.push.apply(statements, this.insertForRecordStatements(db, record, record.form, options));
 
     return statements;
   }
 
-  static insertForRecordStatements(db, record, form) {
+  static insertForRecordStatements(db, record, form, options = {}) {
     const statements = [];
 
-    statements.push(this.insertRowForFeatureStatement(db, form, record, null, record));
-    statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, record, record));
-    statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, record, record));
-    statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, record, record));
+    statements.push(this.insertRowForFeatureStatement(db, form, record, null, record, options));
+    statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, record, record, options));
+    statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, record, record, options));
+    statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, record, record, options));
 
     return statements;
   }
 
-  static insertRowForFeatureStatement(db, form, feature, parentFeature, record) {
-    const values = this.columnValuesForFeature(feature);
-    const systemValues = this.systemColumnValuesForFeature(feature, parentFeature, record);
+  static insertRowForFeatureStatement(db, form, feature, parentFeature, record, options = {}) {
+    const values = this.columnValuesForFeature(feature, options);
+    const systemValues = this.systemColumnValuesForFeature(feature, parentFeature, record, options);
 
     Object.assign(values, systemValues);
 
@@ -42,15 +42,15 @@ export default class RecordValues {
     return db.insertStatement(tableName, values, {pk: 'id'});
   }
 
-  static insertChildFeaturesForFeatureStatements(db, form, feature, record) {
+  static insertChildFeaturesForFeatureStatements(db, form, feature, record, options = {}) {
     const statements = [];
 
     for (const formValue of feature.formValues.all) {
       if (formValue.element.isRepeatableElement) {
         // TODO(zhm) add public interface for _items
         for (const repeatableItem of formValue._items) {
-          statements.push(this.insertRowForFeatureStatement(db, form, repeatableItem, feature, record));
-          statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, repeatableItem, record));
+          statements.push(this.insertRowForFeatureStatement(db, form, repeatableItem, feature, record, options));
+          statements.push.apply(statements, this.insertChildFeaturesForFeatureStatements(db, form, repeatableItem, record, options));
         }
       }
     }
@@ -58,7 +58,7 @@ export default class RecordValues {
     return statements;
   }
 
-  static columnValuesForFeature(feature) {
+  static columnValuesForFeature(feature, options = {}) {
     const values = {};
 
     for (const formValue of feature.formValues.all) {
@@ -77,13 +77,27 @@ export default class RecordValues {
         values['f' + formValue.element.key.toLowerCase()] = columnValue;
       } else if (columnValue) {
         Object.assign(values, columnValue);
+
+        const element = formValue.element;
+
+        if (element && options.mediaURLFormatter) {
+          if (element.isPhotoElement || element.isVideoElement || element.isAudioElement) {
+            const prefix = 'f' + formValue.element.key.toLowerCase();
+
+            values[prefix + '_urls'] = options.mediaURLFormatter(formValue);
+
+            if (options.mediaViewURLFormatter) {
+              values[prefix + '_view_url'] = options.mediaViewURLFormatter(formValue);
+            }
+          }
+        }
       }
     }
 
     return values;
   }
 
-  static insertMultipleValuesForFeatureStatements(db, form, feature, record) {
+  static insertMultipleValuesForFeatureStatements(db, form, feature, record, options = {}) {
     const statements = [];
 
     const values = this.multipleValuesForFeature(feature, record);
@@ -106,14 +120,14 @@ export default class RecordValues {
     return statements;
   }
 
-  static insertChildMultipleValuesForFeatureStatements(db, form, feature, record) {
+  static insertChildMultipleValuesForFeatureStatements(db, form, feature, record, options = {}) {
     const statements = [];
 
     for (const formValue of feature.formValues.all) {
       if (formValue.isRepeatableElement) {
         for (const repeatableItem of formValue._items) {
-          statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, repeatableItem, record));
-          statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, repeatableItem, record));
+          statements.push.apply(statements, this.insertMultipleValuesForFeatureStatements(db, form, repeatableItem, record, options));
+          statements.push.apply(statements, this.insertChildMultipleValuesForFeatureStatements(db, form, repeatableItem, record, options));
         }
       }
     }
@@ -139,11 +153,15 @@ export default class RecordValues {
     return values;
   }
 
-  static systemColumnValuesForFeature(feature, parentFeature, record) {
+  static systemColumnValuesForFeature(feature, parentFeature, record, options = {}) {
     const values = {};
 
     values.record_id = record.rowID;
     values.record_resource_id = record.id;
+
+    if (options.reportURLFormatter) {
+      values.report_url = options.reportURLFormatter(feature);
+    }
 
     if (feature instanceof Record) {
       if (record._projectRowID) {
