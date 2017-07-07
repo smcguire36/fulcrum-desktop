@@ -6,6 +6,7 @@ import DownloadProjects from './tasks/download-projects';
 import DownloadForms from './tasks/download-forms';
 import DownloadChangesets from './tasks/download-changesets';
 import DownloadAllRecords from './tasks/download-all-records';
+import app from '../app';
 
 import Client from '../api/client';
 
@@ -48,11 +49,15 @@ export default class Synchronizer {
 
     await dataSource.source.load(account.db);
 
+    await app.emit('sync:start', {account, tasks: this._tasks});
+
     do {
       const task = this.popTask();
 
       await task.execute({account, dataSource});
     } while (this._tasks.length);
+
+    await app.emit('sync:finish', {account});
 
     console.log('Synced', humanizeDuration(new Date().getTime() - start));
   }

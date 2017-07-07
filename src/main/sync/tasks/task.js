@@ -43,10 +43,20 @@ export default class Task {
   async execute({account, dataSource}) {
     this.account = account;
 
+    const syncName = this.syncResourceName;
+
+    if (syncName) {
+      await this.trigger(`${syncName}:start`, {task: this});
+    }
+
     const result = await this.run({account, dataSource});
 
     if (this.bar) {
       console.log('');
+    }
+
+    if (syncName) {
+      await this.trigger(`${syncName}:finish`, {task: this});
     }
 
     return result;
