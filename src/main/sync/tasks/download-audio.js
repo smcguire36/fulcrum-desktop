@@ -33,10 +33,10 @@ export default class DownloadAudio extends DownloadQuerySequence {
   }
 
   async process(object, attributes) {
-    object.updateFromAPIAttributes(attributes);
-
     const isChanged = !object.isPersisted ||
                       DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
+
+    object.updateFromAPIAttributes(attributes);
 
     if (object.isDownloaded == null) {
       object.isDownloaded = false;

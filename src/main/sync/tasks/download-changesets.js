@@ -33,10 +33,10 @@ export default class DownloadChangesets extends DownloadQuerySequence {
   }
 
   async process(object, attributes) {
-    object.updateFromAPIAttributes(attributes);
-
     const isChanged = !object.isPersisted ||
                       DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
+
+    object.updateFromAPIAttributes(attributes);
 
     await this.lookup(object, attributes.form_id, '_formRowID', 'getForm');
     await this.lookup(object, attributes.closed_by_id, '_closedByRowID', 'getUser');
