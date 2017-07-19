@@ -58,6 +58,15 @@ export default class RecordValues {
     return statements;
   }
 
+  static maybeAssignArray(values, key, value, disableArrays) {
+    if (value == null) {
+      return;
+    }
+
+    values[key] = (_.isArray(value) && disableArrays) ? value.join(',')
+                                                      : value;
+  }
+
   static columnValuesForFeature(feature, options = {}) {
     const values = {};
 
@@ -74,23 +83,30 @@ export default class RecordValues {
           columnValue = null;
         }
 
-        values['f' + formValue.element.key.toLowerCase()] = columnValue;
+        this.maybeAssignArray(values, 'f' + formValue.element.key.toLowerCase(), columnValue, options.disableArrays);
       } else if (columnValue) {
-        Object.assign(values, columnValue);
-
         const element = formValue.element;
 
         if (element && options.mediaURLFormatter) {
           if (element.isPhotoElement || element.isVideoElement || element.isAudioElement) {
             const prefix = 'f' + formValue.element.key.toLowerCase();
 
-            values[prefix + '_urls'] = options.mediaURLFormatter(formValue);
+            columnValue[prefix + '_urls'] = options.mediaURLFormatter(formValue);
 
             if (options.mediaViewURLFormatter) {
-              values[prefix + '_view_url'] = options.mediaViewURLFormatter(formValue);
+              columnValue[prefix + '_view_url'] = options.mediaViewURLFormatter(formValue);
             }
           }
         }
+
+        // if array types are disabled, convert all the props to delimited values
+        if (options.disableArrays) {
+          for (const key of Object.keys(columnValue)) {
+            this.maybeAssignArray(columnValue, key, columnValue[key], options.disableArrays);
+          }
+        }
+
+        Object.assign(values, columnValue);
       }
     }
 
