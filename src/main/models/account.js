@@ -6,6 +6,11 @@ import Form from './form';
 import Record from './record';
 import Role from './role';
 import Membership from './membership';
+import Changeset from './changeset';
+import Photo from './photo';
+import Video from './video';
+import Audio from './audio';
+import Signature from './signature';
 import SyncState from './sync-state';
 
 export default class Account {
@@ -97,6 +102,50 @@ export default class Account {
 
   findEachRecord(where, callback) {
     return Record.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachPhoto(where, callback) {
+    return Photo.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachVideo(where, callback) {
+    return Video.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachAudio(where, callback) {
+    return Audio.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachSignature(where, callback) {
+    return Signature.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachChangeset(where, callback) {
+    return Changeset.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachRole(where, callback) {
+    return Role.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachChoiceList(where, callback) {
+    return ChoiceList.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachClassificationSet(where, callback) {
+    return ClassificationSet.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachForm(where, callback) {
+    return Form.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachProject(where, callback) {
+    return Project.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
+  }
+
+  findEachMembership(where, callback) {
+    return Membership.findEach(this.db, {where: {...where, account_id: this.rowID}}, callback);
   }
 
   findEachBySQL(sql, values, callback) {
