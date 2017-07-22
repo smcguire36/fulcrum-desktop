@@ -2,6 +2,7 @@ import Task from './task';
 import Client from '../../api/client';
 import Form from '../../models/form';
 import {format} from 'util';
+import { DateUtils } from 'fulcrum-core';
 // import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
 
 import Schema from 'fulcrum-schema/dist/schema';
@@ -29,7 +30,7 @@ export default class DownloadForms extends Task {
 
     const localObjects = await account.findForms();
 
-    this.markDeletedObjects(localObjects, objects);
+    this.markDeletedObjects(localObjects, objects, 'form');
 
     for (let index = 0; index < objects.length; ++index) {
       const attributes = objects[index];

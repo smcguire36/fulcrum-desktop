@@ -1,6 +1,7 @@
 import ProgressBar from 'progress';
 import {format} from 'util';
 import app from '../../app';
+import { DateUtils } from 'fulcrum-core';
 
 export default class Task {
   constructor({synchronizer, syncState}) {
@@ -123,7 +124,7 @@ export default class Task {
     }
   }
 
-  async markDeletedObjects(localObjects, newObjects) {
+  async markDeletedObjects(localObjects, newObjects, typeName, propName) {
     // delete all objects that don't exist on the server anymore
     for (const object of localObjects) {
       let objectExistsOnServer = false;
@@ -136,8 +137,15 @@ export default class Task {
       }
 
       if (!objectExistsOnServer) {
+        const isChanged = object._deletedAt == null;
+
         object._deletedAt = object._deletedAt ? object._deletedAt : new Date();
+
         await object.save();
+
+        if (isChanged) {
+          await this.trigger(`${ typeName }:delete`, {[propName || typeName]: object});
+        }
       }
     }
   }

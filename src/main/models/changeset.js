@@ -19,6 +19,8 @@ export default class Changeset extends ChangesetBase {
       { name: 'closedByID', column: 'closed_by_resource_id', type: 'string' },
       { name: 'createdByRowID', column: 'created_by_id', type: 'integer' },
       { name: 'createdByID', column: 'created_by_resource_id', type: 'string' },
+      { name: 'updatedByRowID', column: 'updated_by_id', type: 'integer' },
+      { name: 'updatedByID', column: 'updated_by_resource_id', type: 'string' },
       { name: 'numberOfChanges', column: 'number_of_changes', type: 'integer' },
       { name: 'numberOfCreates', column: 'number_of_creates', type: 'integer' },
       { name: 'numberOfUpdates', column: 'number_of_updates', type: 'integer' },

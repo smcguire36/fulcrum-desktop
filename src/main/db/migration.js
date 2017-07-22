@@ -1,9 +1,11 @@
 import V1 from './migrations/version_001';
 import V2 from './migrations/version_002';
+import V3 from './migrations/version_003';
 
 const MIGRATIONS = {
   '001': V1,
-  '002': V2
+  '002': V2,
+  '003': V3
 };
 
 export default class Migration {

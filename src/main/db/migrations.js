@@ -1,6 +1,6 @@
 import Migration from './migration';
 
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 export default class Migrations {
   static get currentVersion() {
@@ -70,11 +70,7 @@ export default class Migrations {
   }
 
   log(message) {
-    if (this.db.verbose) {
-      return console.log(message);
-    }
-
-    return null;
+    return console.log(message);
   }
 
   async migrate() {
