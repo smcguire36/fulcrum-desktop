@@ -39,6 +39,10 @@ export default class RecordValues {
       tableName = this.tableNameWithForm(form, null);
     }
 
+    if (options.valuesTransformer) {
+      options.valuesTransformer({db, form, feature, parentFeature, record, values});
+    }
+
     return db.insertStatement(tableName, values, {pk: 'id'});
   }
 
