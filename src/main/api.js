@@ -7,11 +7,13 @@ import PostgresRecordValues from './models/record-values/postgres-record-values'
 import { Postgres, SQLite, MSSQL, PersistentObject } from 'minidb';
 import APIClient from './api/client';
 import SchemaLoader from './utils/schema-loader';
+import * as data from './models';
 
 const api = {};
 
 Object.assign(api, {
   core,
+  data,
   ReportGenerator,
   RecordValues,
   SQLiteRecordValues,
