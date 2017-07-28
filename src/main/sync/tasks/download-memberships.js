@@ -29,7 +29,7 @@ export default class DownloadMemberships extends Task {
       const object = await Membership.findOrCreate(account.db, {user_resource_id: attributes.user_id, account_id: account.rowID});
 
       const isChanged = !object.isPersisted ||
-                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
+                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object._updatedAt.getTime();
 
       object.updateFromAPIAttributes(attributes);
 
