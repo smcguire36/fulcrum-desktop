@@ -88,6 +88,18 @@ export default class DownloadRecords extends DownloadQuerySequence {
   }
 
   attributesForQueryRow(row) {
+    const hasCreatedLocation =
+      row[28] != null ||
+      row[29] != null ||
+      row[30] != null ||
+      row[31] != null;
+
+    const hasUpdatedLocation =
+      row[32] != null ||
+      row[33] != null ||
+      row[34] != null ||
+      row[35] != null;
+
     return {
       status: row[0],
       version: row[1],
@@ -116,7 +128,19 @@ export default class DownloadRecords extends DownloadQuerySequence {
       updated_by: row[24],
       assigned_to: row[25],
       project: row[26],
-      changeset_id: row[27]
+      changeset_id: row[27],
+      created_location: hasCreatedLocation && {
+        latitude: row[28],
+        longitude: row[29],
+        altitude: row[30],
+        horizontal_accuracy: row[31]
+      },
+      updated_location: hasUpdatedLocation && {
+        latitude: row[32],
+        longitude: row[33],
+        altitude: row[34],
+        horizontal_accuracy: row[35]
+      }
     };
   }
 
@@ -152,7 +176,15 @@ SELECT
   "updated_by"."name" AS "updated_by",
   "assigned_to"."name" AS "assigned_to",
   "project"."name" AS "project",
-  "_changeset_id" AS "changeset_id"
+  "_changeset_id" AS "changeset_id",
+  "_created_latitude" AS "created_latitude",
+  "_created_longitude" AS "created_longitude",
+  "_created_altitude" AS "created_altitude",
+  "_created_horizontal_accuracy" AS "created_horizontal_accuracy",
+  "_updated_latitude" AS "updated_latitude",
+  "_updated_longitude" AS "updated_longitude",
+  "_updated_altitude" AS "updated_altitude",
+  "_updated_horizontal_accuracy" AS "updated_horizontal_accuracy"
 FROM "${ this.form.id }/_full" AS "records"
 LEFT OUTER JOIN "memberships" AS "created_by" ON (("records"."_created_by_id") = ("created_by"."user_id"))
 LEFT OUTER JOIN "memberships" AS "updated_by" ON (("records"."_updated_by_id") = ("updated_by"."user_id"))
