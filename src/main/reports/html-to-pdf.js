@@ -13,13 +13,14 @@ const DEFAULT_IMAGE_QUALITY = '85';
 const DEFAULT_ORIENTATION = 'Portrait';
 
 export default class HtmlToPdf {
-  constructor(html, {header, footer, cover, marginTop, marginBottom, marginLeft, marginRight, pageSize, imageQuality, orientation}) {
+  constructor(html, {header, footer, cover, marginTop, marginBottom, marginLeft, marginRight, pageSize, imageQuality, orientation, wkhtmltopdf}) {
     this.tempID = uuid.v4();
     this.debug = false;
     this.html = html;
     this.header = header;
     this.footer = footer;
     this.cover = cover;
+    this.wkhtmltopdf = wkhtmltopdf;
     this.marginTop = marginTop || DEFAULT_MARGIN;
     this.marginBottom = marginBottom || DEFAULT_MARGIN;
     this.marginLeft = marginLeft || DEFAULT_MARGIN;
@@ -30,7 +31,7 @@ export default class HtmlToPdf {
   }
 
   get binary() {
-    return '/usr/local/bin/wkhtmltopdf';
+    return this.wkhtmltopdf || '/usr/local/bin/wkhtmltopdf';
   }
 
   get command() {
