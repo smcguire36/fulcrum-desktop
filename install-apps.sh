@@ -1,6 +1,6 @@
 #!/bin/sh
 
-METABASE_URL="http://downloads.metabase.com/v0.26.1/metabase.jar"
+METABASE_URL="http://downloads.metabase.com/v0.27.1/metabase.jar"
 
 sudo apt-get update
 
