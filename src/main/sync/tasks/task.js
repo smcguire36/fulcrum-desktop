@@ -1,12 +1,14 @@
 import ProgressBar from 'progress';
 import {format} from 'util';
 import app from '../../app';
-import { DateUtils } from 'fulcrum-core';
 
 export default class Task {
   constructor({synchronizer, syncState}) {
     this._synchronizer = synchronizer;
     this._syncState = syncState;
+
+    this._isSimpleShell = app.args.simpleOutput || process.platform === 'win32';
+    this._noProgress = app.args.progress === false || !process.stdout.isTTY;
   }
 
   get synchronizer() {
@@ -68,19 +70,27 @@ export default class Task {
   }
 
   get downloading() {
-    return '😀 '.yellow;
+    return this._isSimpleShell ? '[downloading]' : '😀 ';
   }
 
   get processing() {
-    // return '➡️ '.cyan;
-    return '🤔 '.cyan;
+    return this._isSimpleShell ? '[processing]' : '🤔 ';
   }
 
   get finished() {
-    return '😎 '.green;
+    return this._isSimpleShell ? '[finished]' : '😎 ';
   }
 
   progress({message, count, total}) {
+    if (this._noProgress) {
+      if (message !== this._lastMessage) {
+        console.log(new Date().toISOString() + ' ' + message);
+        this._lastMessage = message;
+      }
+
+      return;
+    }
+
     let fmt = '';
 
     if (total === -1) {
