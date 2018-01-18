@@ -1,18 +1,12 @@
 import DownloadQuerySequence from './download-query-sequence';
-import Client from '../../api/client';
 import Audio from '../../models/audio';
-import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadAudio extends DownloadQuerySequence {
-  get syncResourceName() {
-    return 'audio';
-  }
-
-  get syncLabel() {
-    return 'audio';
-  }
-
   get resourceName() {
+    return 'audio';
+  }
+
+  get typeName() {
     return 'audio';
   }
 
@@ -24,20 +18,11 @@ export default class DownloadAudio extends DownloadQuerySequence {
     return false;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return Client.getAudio(account, sequence, this.pageSize);
+  findOrCreate(database, attributes) {
+    return Audio.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.access_key});
   }
 
-  findOrCreate(database, account, attributes) {
-    return Audio.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
-  }
-
-  async process(object, attributes) {
-    const isChanged = !object.isPersisted ||
-                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-    object.updateFromAPIAttributes(attributes);
-
+  async loadObject(object, attributes) {
     if (object.isDownloaded == null) {
       object.isDownloaded = false;
     }
@@ -55,21 +40,6 @@ export default class DownloadAudio extends DownloadQuerySequence {
     }
 
     this.account._lastSyncAudio = object._updatedAt;
-
-    await object.save();
-
-    if (isChanged) {
-      await this.trigger('audio:save', {audio: object});
-    }
-  }
-
-  async finish() {
-    // update the lastSync date
-    await this.account.save();
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   attributesForQueryRow(row) {

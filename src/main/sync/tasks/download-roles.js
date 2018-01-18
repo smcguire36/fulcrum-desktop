@@ -1,51 +1,25 @@
-import Task from './task';
 import Client from '../../api/client';
 import Role from '../../models/role';
-import { DateUtils } from 'fulcrum-core';
+import DownloadResource from './download-resource';
 
-export default class DownloadRoles extends Task {
-  async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'roles');
+export default class DownloadRoles extends DownloadResource {
+  get resourceName() {
+    return 'roles';
+  }
 
-    if (!sync.needsUpdate) {
-      return;
-    }
+  get typeName() {
+    return 'role';
+  }
 
-    this.progress({message: this.downloading + ' roles'});
+  fetchObjects(lastSync, sequence) {
+    return Client.getRoles(this.account);
+  }
 
-    const response = await Client.getRoles(account);
+  fetchLocalObjects() {
+    return this.account.findRoles();
+  }
 
-    const objects = JSON.parse(response.body).roles;
-
-    this.progress({message: this.processing + ' roles', count: 0, total: objects.length});
-
-    const localObjects = await account.findRoles();
-
-    this.markDeletedObjects(localObjects, objects, 'role');
-
-    for (let index = 0; index < objects.length; ++index) {
-      const attributes = objects[index];
-
-      const object = await Role.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
-
-      const isChanged = !object.isPersisted ||
-                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-      object.updateFromAPIAttributes(attributes);
-
-      object._deletedAt = null;
-
-      await object.save();
-
-      if (isChanged) {
-        await this.trigger('role:save', {role: object});
-      }
-
-      this.progress({message: this.processing + ' roles', count: index + 1, total: objects.length});
-    }
-
-    await sync.update();
-
-    this.progress({message: this.finished + ' roles', count: objects.length, total: objects.length});
+  findOrCreate(database, attributes) {
+    return Role.findOrCreate(database, {resource_id: attributes.id, account_id: this.account.rowID});
   }
 }

@@ -21,8 +21,11 @@ export default class Task {
     });
   }
 
-  async checkSyncState(account, resource, scope = null) {
-    const oldState = await account.findSyncState({resource, scope: scope || ''});
+  async checkSyncState() {
+    const scope = this.syncResourceScope || '';
+    const resource = this.syncResourceName;
+
+    const oldState = await this.account.findSyncState({resource, scope});
     const newState = this.getSyncState(resource, scope || '');
 
     let needsUpdate = true;
@@ -45,6 +48,7 @@ export default class Task {
 
   async execute({account, dataSource}) {
     this.account = account;
+    this.db = account.db;
 
     const syncName = this.syncResourceName;
 

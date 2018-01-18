@@ -1,53 +1,29 @@
-import Task from './task';
 import Client from '../../api/client';
 import ChoiceList from '../../models/choice-list';
-import { DateUtils } from 'fulcrum-core';
+import DownloadResource from './download-resource';
 
-export default class DownloadChoiceLists extends Task {
-  async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'choice_lists');
+export default class DownloadChoiceLists extends DownloadResource {
+  get resourceName() {
+    return 'choice_lists';
+  }
 
-    if (!sync.needsUpdate) {
-      return;
-    }
+  get typeName() {
+    return 'choice-list';
+  }
 
-    this.progress({message: this.downloading + ' choice lists'});
+  get propertyName() {
+    return 'choiceList';
+  }
 
-    const response = await Client.getChoiceLists(account);
+  fetchObjects(lastSync, sequence) {
+    return Client.getChoiceLists(this.account);
+  }
 
-    const objects = JSON.parse(response.body).choice_lists;
+  fetchLocalObjects() {
+    return this.account.findChoiceLists();
+  }
 
-    this.progress({message: this.processing + ' choice lists', count: 0, total: objects.length});
-
-    const localObjects = await account.findChoiceLists();
-
-    this.markDeletedObjects(localObjects, objects, 'choice-list', 'choiceList');
-
-    for (let index = 0; index < objects.length; ++index) {
-      const attributes = objects[index];
-
-      const object = await ChoiceList.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
-
-      const isChanged = !object.isPersisted ||
-                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-      object.updateFromAPIAttributes(attributes);
-
-      object._deletedAt = null;
-
-      await object.save();
-
-      if (isChanged) {
-        await this.trigger('choice-list:save', {choiceList: object});
-      }
-
-      this.progress({message: this.processing + ' choice lists', count: index + 1, total: objects.length});
-    }
-
-    await sync.update();
-
-    dataSource.source.invalidate('choiceLists');
-
-    this.progress({message: this.finished + ' choice lists', count: objects.length, total: objects.length});
+  findOrCreate(database, attributes) {
+    return ChoiceList.findOrCreate(database, {resource_id: attributes.id, account_id: this.account.rowID});
   }
 }

@@ -1,19 +1,13 @@
 import DownloadQuerySequence from './download-query-sequence';
-import Client from '../../api/client';
 import Signature from '../../models/signature';
-import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadSignatures extends DownloadQuerySequence {
-  get syncResourceName() {
-    return 'signatures';
-  }
-
-  get syncLabel() {
-    return 'signatures';
-  }
-
   get resourceName() {
     return 'signatures';
+  }
+
+  get typeName() {
+    return 'signature';
   }
 
   get lastSync() {
@@ -24,20 +18,11 @@ export default class DownloadSignatures extends DownloadQuerySequence {
     return false;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return Client.getSignatures(account, sequence, this.pageSize);
+  findOrCreate(database, attributes) {
+    return Signature.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.access_key});
   }
 
-  findOrCreate(database, account, attributes) {
-    return Signature.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
-  }
-
-  async process(object, attributes) {
-    const isChanged = !object.isPersisted ||
-                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-    object.updateFromAPIAttributes(attributes);
-
+  async loadObject(object, attributes) {
     if (object.isDownloaded == null) {
       object.isDownloaded = false;
     }
@@ -55,21 +40,6 @@ export default class DownloadSignatures extends DownloadQuerySequence {
     }
 
     this.account._lastSyncSignatures = object._updatedAt;
-
-    await object.save();
-
-    if (isChanged) {
-      await this.trigger('signature:save', {signature: object});
-    }
-  }
-
-  async finish() {
-    // update the lastSync date
-    await this.account.save();
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   attributesForQueryRow(row) {

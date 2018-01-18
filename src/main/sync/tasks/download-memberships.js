@@ -1,55 +1,29 @@
-import Task from './task';
 import Client from '../../api/client';
 import Membership from '../../models/membership';
-import { DateUtils } from 'fulcrum-core';
+import DownloadResource from './download-resource';
 
-export default class DownloadMemberships extends Task {
-  async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'memberships');
+export default class DownloadMemberships extends DownloadResource {
+  get resourceName() {
+    return 'memberships';
+  }
 
-    if (!sync.needsUpdate) {
-      return;
-    }
+  get typeName() {
+    return 'membership';
+  }
 
-    this.progress({message: this.downloading + ' memberships'});
+  fetchObjects(lastSync, sequence) {
+    return Client.getMemberships(this.account);
+  }
 
-    const response = await Client.getMemberships(account);
+  fetchLocalObjects() {
+    return this.account.findMemberships();
+  }
 
-    const objects = JSON.parse(response.body).memberships;
+  findOrCreate(database, attributes) {
+    return Membership.findOrCreate(database, {user_resource_id: attributes.user_id, account_id: this.account.rowID});
+  }
 
-    this.progress({message: this.processing + ' memberships', count: 0, total: objects.length});
-
-    const localObjects = await account.findMemberships();
-
-    this.markDeletedObjects(localObjects, objects, 'membership');
-
-    for (let index = 0; index < objects.length; ++index) {
-      const attributes = objects[index];
-
-      const object = await Membership.findOrCreate(account.db, {user_resource_id: attributes.user_id, account_id: account.rowID});
-
-      const isChanged = !object.isPersisted ||
-                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object._updatedAt.getTime();
-
-      object.updateFromAPIAttributes(attributes);
-
-      await object.getLocalRole();
-
-      object._deletedAt = null;
-
-      await object.save();
-
-      if (isChanged) {
-        await this.trigger('membership:save', {membership: object});
-      }
-
-      this.progress({message: this.processing + ' memberships', count: index + 1, total: objects.length});
-    }
-
-    await sync.update();
-
-    dataSource.source.invalidate('memberships');
-
-    this.progress({message: this.finished + ' memberships', count: objects.length, total: objects.length});
+  async loadObject(object, attributes) {
+    await object.getLocalRole();
   }
 }

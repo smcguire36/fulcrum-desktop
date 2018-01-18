@@ -1,19 +1,13 @@
 import DownloadQuerySequence from './download-query-sequence';
-import Client from '../../api/client';
 import Photo from '../../models/photo';
-import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadPhotos extends DownloadQuerySequence {
-  get syncResourceName() {
-    return 'photos';
-  }
-
-  get syncLabel() {
-    return 'photos';
-  }
-
   get resourceName() {
     return 'photos';
+  }
+
+  get typeName() {
+    return 'photo';
   }
 
   get lastSync() {
@@ -24,20 +18,11 @@ export default class DownloadPhotos extends DownloadQuerySequence {
     return false;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return Client.getPhotos(account, sequence, this.pageSize);
+  findOrCreate(database, attributes) {
+    return Photo.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.access_key});
   }
 
-  findOrCreate(database, account, attributes) {
-    return Photo.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
-  }
-
-  async process(object, attributes) {
-    const isChanged = !object.isPersisted ||
-                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-    object.updateFromAPIAttributes(attributes);
-
+  async loadObject(object, attributes) {
     if (object.isDownloaded == null) {
       object.isDownloaded = false;
     }
@@ -55,21 +40,6 @@ export default class DownloadPhotos extends DownloadQuerySequence {
     }
 
     this.account._lastSyncPhotos = object._updatedAt;
-
-    await object.save();
-
-    if (isChanged) {
-      await this.trigger('photo:save', {photo: object});
-    }
-  }
-
-  async finish() {
-    // update the lastSync date
-    await this.account.save();
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   attributesForQueryRow(row) {

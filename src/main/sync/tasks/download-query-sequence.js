@@ -1,4 +1,4 @@
-import DownloadSequence from './download-sequence';
+import DownloadResource from './download-resource';
 import Client from '../../api/client';
 import request from 'request';
 import fs from 'fs';
@@ -6,34 +6,98 @@ import tempy from 'tempy';
 import { parseFile } from '../../../jsonseq';
 import { format } from 'util';
 
-const QUERY_PAGE_SIZE = 50000;
+const QUERY_PAGE_SIZE = 20000;
 
-export default class DownloadQuerySequence extends DownloadSequence {
+export default class DownloadQuerySequence extends DownloadResource {
   get useRestAPI() {
     return true;
   }
 
-  async download(account, lastSync, sequence, state) {
-    if (this.useRestAPI && lastSync != null) {
-      await DownloadSequence.prototype.download.call(this, account, lastSync, sequence, state);
-    } else {
-      let nextSequence = sequence || 0;
+  async run({dataSource}) {
+    const state = await this.checkSyncState();
 
-      while (nextSequence != null) {
-        nextSequence = await this.downloadQueryPage(account, lastSync, nextSequence, state);
-
-        await account.save();
-      }
-
-      await state.update();
-      await this.finish();
+    if (!state.needsUpdate) {
+      return;
     }
+
+    const lastSync = this.lastSync;
+
+    const sequence = lastSync ? lastSync.getTime() : null;
+
+    this.dataSource = dataSource;
+
+    await this.download(lastSync, sequence, state);
   }
 
-  async downloadQueryPage(account, lastSync, sequence, state) {
+  async download(lastSync, sequence, state) {
+    let nextSequence = sequence || 0;
+
+    while (nextSequence != null) {
+      if (this.useRestAPI && lastSync != null) {
+        nextSequence = await this.downloadRestAPIPage(lastSync, nextSequence, state);
+      } else {
+        nextSequence = await this.downloadQueryAPIPage(lastSync, nextSequence, state);
+      }
+
+      await this.account.save();
+    }
+
+    await state.update();
+    await this.finish();
+  }
+
+  async downloadRestAPIPage(lastSync, sequence, state) {
+    const beginFetchTime = new Date();
+
+    this.progress({message: this.downloading + ' ' + this.syncLabel.blue});
+
+    const results = await this.fetchObjects(lastSync, sequence);
+
+    const totalFetchTime = new Date().getTime() - beginFetchTime.getTime();
+
+    if (results.statusCode !== 200) {
+      this.fail(results);
+      return null;
+    }
+
+    const data = JSON.parse(results.body);
+
+    const objects = data[this.resourceName];
+
+    const db = this.db;
+
+    let now = new Date();
+
+    this.progress({message: this.processing + ' ' + this.syncLabel.blue, count: 0, total: objects.length});
+
+    await db.transaction(async (database) => {
+      for (let index = 0; index < objects.length; ++index) {
+        const attributes = objects[index];
+
+        const object = await this.findOrCreate(database, attributes);
+
+        await this.process(object, attributes);
+
+        this.progress({message: this.processing + ' ' + this.syncLabel.blue, count: index + 1, total: objects.length});
+      }
+    });
+
+    const totalTime = new Date().getTime() - now.getTime();
+
+    const message = format(this.finished + ' %s | %s | %s',
+                           this.syncLabel.blue,
+                           (totalFetchTime + 'ms').cyan,
+                           (totalTime + 'ms').red);
+
+    this.progress({message, count: objects.length, total: objects.length});
+
+    return data.next_sequence;
+  }
+
+  async downloadQueryAPIPage(lastSync, sequence, state) {
     const sql = this.generateQuery(sequence || 0, QUERY_PAGE_SIZE);
 
-    const options = Client.getQueryURL(account, sql);
+    const options = Client.getQueryURL(this.account, sql);
 
     const filePath = tempy.file({extension: 'jsonseq'});
 
@@ -41,7 +105,7 @@ export default class DownloadQuerySequence extends DownloadSequence {
 
     await this.downloadQuery(options, filePath);
 
-    const {count, lastObject} = await this.processQueryResponse(account, filePath);
+    const {count, lastObject} = await this.processQueryResponse(filePath);
 
     const message = format(this.finished + ' %s',
                            this.syncLabel.blue);
@@ -55,17 +119,17 @@ export default class DownloadQuerySequence extends DownloadSequence {
     return null;
   }
 
-  async processQueryResponse(account, filePath) {
+  async processQueryResponse(filePath) {
     this.progress({message: this.processing + ' ' + this.syncLabel.blue, count: 0, total: -1});
 
     let index = 0;
     let lastObject = null;
 
-    await account.db.transaction(async (database) => {
+    await this.db.transaction(async (database) => {
       await new Promise((resolve, reject) => {
         const onObject = (json, done) => {
           if (json.row) {
-            this.processQueryObject(json, account, database, (object) => {
+            this.processQueryObject(json, database, (object) => {
               lastObject = object;
               this.progress({message: this.processing + ' ' + this.syncLabel.blue, count: index + 1, total: -1});
               ++index;
@@ -103,14 +167,14 @@ export default class DownloadQuerySequence extends DownloadSequence {
     return {count: index, lastObject};
   }
 
-  processQueryObject(attributes, account, database, done) {
-    this.processObjectAsync(attributes, account, database).then(done).catch(done);
+  processQueryObject(attributes, database, done) {
+    this.processObjectAsync(attributes, database).then(done).catch(done);
   }
 
-  async processObjectAsync(json, account, database) {
+  async processObjectAsync(json, database) {
     const attributes = this.attributesForQueryRow(json.row);
 
-    const object = await this.findOrCreate(database, account, attributes);
+    const object = await this.findOrCreate(database, attributes);
 
     await this.process(object, attributes);
 
@@ -123,5 +187,9 @@ export default class DownloadQuerySequence extends DownloadSequence {
       rq.on('close', () => resolve(rq));
       rq.on('error', reject);
     });
+  }
+
+  async finish() {
+    await this.account.save();
   }
 }

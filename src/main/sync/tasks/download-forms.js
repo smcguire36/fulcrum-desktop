@@ -1,91 +1,68 @@
-import Task from './task';
 import Client from '../../api/client';
 import Form from '../../models/form';
-import {format} from 'util';
-import { DateUtils } from 'fulcrum-core';
-// import SQLiteRecordValues from '../../models/record-values/sqlite-record-values';
-
 import Schema from 'fulcrum-schema/dist/schema';
 import Metadata from 'fulcrum-schema/dist/metadata';
 import V2 from 'fulcrum-schema/dist/schemas/postgres-query-v2';
 import sqldiff from 'sqldiff';
+import DownloadResource from './download-resource';
 
 const {SchemaDiffer, Sqlite} = sqldiff;
 
-export default class DownloadForms extends Task {
-  async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'forms');
+export default class DownloadForms extends DownloadResource {
+  get resourceName() {
+    return 'forms';
+  }
 
-    if (!sync.needsUpdate) {
-      return;
-    }
+  get typeName() {
+    return 'form';
+  }
 
-    this.progress({message: this.downloading + ' forms'});
+  fetchObjects(lastSync, sequence) {
+    return Client.getForms(this.account);
+  }
 
-    const response = await Client.getForms(account);
+  fetchLocalObjects() {
+    return this.account.findForms();
+  }
 
-    const objects = JSON.parse(response.body).forms;
+  findOrCreate(database, attributes) {
+    return Form.findOrCreate(database, {resource_id: attributes.id, account_id: this.account.rowID});
+  }
 
-    this.progress({message: this.processing + ' forms', count: 0, total: objects.length});
+  async process(object, attributes) {
+    const isChanged = !object.isPersisted || attributes.version !== object.version;
 
-    const localObjects = await account.findForms();
+    let oldForm = null;
 
-    this.markDeletedObjects(localObjects, objects, 'form');
-
-    for (let index = 0; index < objects.length; ++index) {
-      const attributes = objects[index];
-
-      const object = await Form.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
-
-      let oldForm = null;
-
-      if (object.isPersisted) {
-        oldForm = {
-          id: object._id,
-          row_id: object.rowID,
-          name: object._name,
-          elements: object._elementsJSON
-        };
-      }
-
-      const isChanged = !object.isPersisted || attributes.version !== object.version;
-
-      object.updateFromAPIAttributes(attributes);
-      object._deletedAt = null;
-
-      await object.save();
-
-      const newForm = {
-        id: object.id,
+    if (object.isPersisted) {
+      oldForm = {
+        id: object._id,
         row_id: object.rowID,
         name: object._name,
         elements: object._elementsJSON
       };
-
-      // await account.db.execute(format('DROP VIEW IF EXISTS %s',
-      //                                 account.db.ident(object.name)));
-
-      const statements = await this.updateFormTables(account, oldForm, newForm);
-
-      // await account.db.execute(format('CREATE VIEW %s AS SELECT * FROM %s_view_full',
-      //                                 account.db.ident(object.name),
-      //                                 SQLiteRecordValues.tableNameWithForm(object)));
-
-      if (isChanged) {
-        await this.trigger('form:save', {form: object, account, statements, oldForm, newForm});
-      }
-
-      this.progress({message: this.processing + ' forms', count: index + 1, total: objects.length});
     }
 
-    await sync.update();
+    object.updateFromAPIAttributes(attributes);
+    object._deletedAt = null;
 
-    dataSource.source.invalidate('forms');
+    await object.save();
 
-    this.progress({message: this.finished + ' forms', count: objects.length, total: objects.length});
+    const newForm = {
+      id: object.id,
+      row_id: object.rowID,
+      name: object._name,
+      elements: object._elementsJSON
+    };
+
+    const statements = await this.updateFormTables(oldForm, newForm);
+
+    if (isChanged) {
+      await this.triggerEvent('save', {form: object, account: this.account, statements, oldForm, newForm});
+    }
   }
 
-  async updateFormTables(account, oldForm, newForm) {
+  async updateFormTables(oldForm, newForm) {
     let oldSchema = null;
     let newSchema = null;
 
@@ -97,7 +74,7 @@ export default class DownloadForms extends Task {
       newSchema = new Schema(newForm, V2, null);
     }
 
-    const tablePrefix = 'account_' + account.rowID + '_';
+    const tablePrefix = 'account_' + this.account.rowID + '_';
 
     const differ = new SchemaDiffer(oldSchema, newSchema);
 
@@ -109,7 +86,7 @@ export default class DownloadForms extends Task {
 
     const statements = generator.generate();
 
-    await account.db.transaction(async (db) => {
+    await this.db.transaction(async (db) => {
       for (const statement of statements) {
         await db.execute(statement);
       }

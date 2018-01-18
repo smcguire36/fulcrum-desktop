@@ -1,19 +1,13 @@
 import DownloadQuerySequence from './download-query-sequence';
-import Client from '../../api/client';
 import Changeset from '../../models/changeset';
-import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadChangesets extends DownloadQuerySequence {
-  get syncResourceName() {
-    return 'changesets';
-  }
-
-  get syncLabel() {
-    return 'changesets';
-  }
-
   get resourceName() {
     return 'changesets';
+  }
+
+  get typeName() {
+    return 'changeset';
   }
 
   get lastSync() {
@@ -24,40 +18,16 @@ export default class DownloadChangesets extends DownloadQuerySequence {
     return false;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return Client.getChangesets(account, sequence, this.pageSize);
+  findOrCreate(database, attributes) {
+    return Changeset.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.id});
   }
 
-  findOrCreate(database, account, attributes) {
-    return Changeset.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
-  }
-
-  async process(object, attributes) {
-    const isChanged = !object.isPersisted ||
-                      DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-    object.updateFromAPIAttributes(attributes);
-
+  async loadObject(object, attributes) {
     await this.lookup(object, attributes.form_id, '_formRowID', 'getForm');
     await this.lookup(object, attributes.closed_by_id, '_closedByRowID', 'getUser');
     await this.lookup(object, attributes.created_by_id, '_createdByRowID', 'getUser');
 
     this.account._lastSyncChangesets = object._updatedAt;
-
-    await object.save();
-
-    if (isChanged) {
-      await this.trigger('changeset:save', {changeset: object});
-    }
-  }
-
-  async finish() {
-    // update the lastSync date
-    await this.account.save();
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   attributesForQueryRow(row) {

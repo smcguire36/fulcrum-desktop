@@ -1,19 +1,14 @@
 import DownloadQuerySequence from './download-query-sequence';
-import Client from '../../api/client';
 import Video from '../../models/video';
 import { DateUtils } from 'fulcrum-core';
 
 export default class DownloadVideos extends DownloadQuerySequence {
-  get syncResourceName() {
-    return 'videos';
-  }
-
-  get syncLabel() {
-    return 'videos';
-  }
-
   get resourceName() {
     return 'videos';
+  }
+
+  get typeName() {
+    return 'video';
   }
 
   get lastSync() {
@@ -24,12 +19,8 @@ export default class DownloadVideos extends DownloadQuerySequence {
     return false;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return Client.getVideos(account, sequence, this.pageSize);
-  }
-
-  findOrCreate(database, account, attributes) {
-    return Video.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.access_key});
+  findOrCreate(database, attributes) {
+    return Video.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.access_key});
   }
 
   async process(object, attributes) {
@@ -61,15 +52,6 @@ export default class DownloadVideos extends DownloadQuerySequence {
     if (isChanged) {
       await this.trigger('video:save', {video: object});
     }
-  }
-
-  async finish() {
-    // update the lastSync date
-    await this.account.save();
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   convertTrack(track) {

@@ -9,10 +9,6 @@ export default class DownloadRecords extends DownloadQuerySequence {
     this.form = form;
   }
 
-  get syncResourceName() {
-    return 'records';
-  }
-
   get syncResourceScope() {
     return this.form.id;
   }
@@ -25,17 +21,21 @@ export default class DownloadRecords extends DownloadQuerySequence {
     return 'records';
   }
 
+  get typeName() {
+    return 'record';
+  }
+
   get lastSync() {
     return this.form._lastSync;
   }
 
-  async fetchObjects(account, lastSync, sequence) {
-    return lastSync == null ? (await Client.getRecords(account, this.form, sequence, this.pageSize))
-                            : (await Client.getRecordsHistory(account, this.form, sequence, this.pageSize));
+  async fetchObjects(lastSync, sequence) {
+    return lastSync == null ? (await Client.getRecords(this.account, this.form, sequence, this.pageSize))
+                            : (await Client.getRecordsHistory(this.account, this.form, sequence, this.pageSize));
   }
 
-  findOrCreate(database, account, attributes) {
-    return Record.findOrCreate(database, {account_id: account.rowID, resource_id: attributes.id});
+  findOrCreate(database, attributes) {
+    return Record.findOrCreate(database, {account_id: this.account.rowID, resource_id: attributes.id});
   }
 
   async process(object, attributes) {
@@ -81,10 +81,6 @@ export default class DownloadRecords extends DownloadQuerySequence {
     if (this._hasChanges) {
       await this.trigger('records:finish', {form: this.form});
     }
-  }
-
-  fail(account, results) {
-    console.log(account.organizationName.green, 'failed'.red);
   }
 
   attributesForQueryRow(row) {

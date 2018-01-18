@@ -1,53 +1,29 @@
-import Task from './task';
 import Client from '../../api/client';
 import ClassificationSet from '../../models/classification-set';
-import { DateUtils } from 'fulcrum-core';
+import DownloadResource from './download-resource';
 
-export default class DownloadClassificationSets extends Task {
-  async run({account, dataSource}) {
-    const sync = await this.checkSyncState(account, 'classification_sets');
+export default class DownloadClassificationSets extends DownloadResource {
+  get resourceName() {
+    return 'classification_sets';
+  }
 
-    if (!sync.needsUpdate) {
-      return;
-    }
+  get typeName() {
+    return 'classification-set';
+  }
 
-    this.progress({message: this.downloading + ' classification sets'});
+  get propertyName() {
+    return 'classificationSet';
+  }
 
-    const response = await Client.getClassificationSets(account);
+  fetchObjects(lastSync, sequence) {
+    return Client.getClassificationSets(this.account);
+  }
 
-    const objects = JSON.parse(response.body).classification_sets;
+  fetchLocalObjects() {
+    return this.account.findClassificationSets();
+  }
 
-    this.progress({message: this.processing + ' classification sets', count: 0, total: objects.length});
-
-    const localObjects = await account.findClassificationSets();
-
-    this.markDeletedObjects(localObjects, objects, 'classification-set', 'classificationSet');
-
-    for (let index = 0; index < objects.length; ++index) {
-      const attributes = objects[index];
-
-      const object = await ClassificationSet.findOrCreate(account.db, {resource_id: attributes.id, account_id: account.rowID});
-
-      const isChanged = !object.isPersisted ||
-                        DateUtils.parseISOTimestamp(attributes.updated_at).getTime() !== object.updatedAt.getTime();
-
-      object.updateFromAPIAttributes(attributes);
-
-      object._deletedAt = null;
-
-      await object.save();
-
-      if (isChanged) {
-        await this.trigger('classification-set:save', {classificationSet: object});
-      }
-
-      this.progress({message: this.processing + ' classification sets', count: index + 1, total: objects.length});
-    }
-
-    await sync.update();
-
-    dataSource.source.invalidate('classificationSets');
-
-    this.progress({message: this.finished + ' classification sets', count: objects.length, total: objects.length});
+  findOrCreate(database, attributes) {
+    return ClassificationSet.findOrCreate(database, {resource_id: attributes.id, account_id: this.account.rowID});
   }
 }
