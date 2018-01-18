@@ -40,14 +40,19 @@ export default class {
     let exit = false;
 
     while (!exit) {
+      if (fulcrum.args.token) {
+        await this.setupAccount({token: fulcrum.args.token});
+        return;
+      }
+
       if (fulcrum.args.email && fulcrum.args.password) {
-        await this.setupAccount(fulcrum.args.email, fulcrum.args.password);
+        await this.setupAccount({email: fulcrum.args.email, password: fulcrum.args.password});
         return;
       }
 
       const answers = await prompt(questions);
 
-      const success = await this.setupAccount(answers.email, answers.password);
+      const success = await this.setupAccount({email: answers.email, password: answers.password});
 
       if (success) {
         exit = true;
@@ -61,15 +66,17 @@ export default class {
     }
   }
 
-  setupAccount = async (email, password) => {
-    const results = await Client.authenticate(email, password);
+  setupAccount = async ({email, password, token}) => {
+    const results = token ? await Client.authenticateWithToken(token)
+                          : await Client.authenticate(email, password);
+
     const response = results;
     const body = results.body;
 
     if (response.statusCode === 200) {
-      console.log(('Successfully authenticated with ' + email).green);
-
       const user = JSON.parse(body).user;
+
+      console.log(('Successfully authenticated with ' + user.email).green);
 
       for (let context of user.contexts) {
         const contextAttributes = {

@@ -1,7 +1,7 @@
 import request from 'request';
 import Promise from 'bluebird';
-import _ from 'lodash';
 import fs from 'fs';
+import { extend } from 'lodash';
 
 const reqPromise = Promise.promisify(request);
 const req = (options) => reqPromise({forever: true, ...options});
@@ -13,22 +13,24 @@ const defaultOptions = {
   }
 };
 
-// const baseURL = 'http://localhost:3000';
-const baseURL = 'https://api.fulcrumapp.com';
-// const baseURL = 'https://edge.fulcrumapp.com';
+const BASE_URL = 'https://api.fulcrumapp.com';
 
 class Client {
   urlForResource(resource) {
-    return '' + baseURL + resource;
+    return BASE_URL + resource;
   }
 
-  optionsForRequest(account, options) {
-    const result = _.extend({}, defaultOptions, options);
-    result.headers['X-ApiToken'] = account.token;
+  optionsForAuthenticatedRequest(token, options) {
+    const result = extend({}, defaultOptions, options);
+
+    if (token) {
+      result.headers['X-ApiToken'] = token;
+    }
+
     return result;
   }
 
-  async authenticate(userName, password) {
+  authenticate(userName, password) {
     const options = {
       method: 'GET',
       uri: this.urlForResource('/api/v2/users.json'),
@@ -40,162 +42,110 @@ class Client {
       headers: defaultOptions.headers
     };
 
-    return new Promise((resolve, reject) => {
-      request(options, (err, response, body) => {
-        if (err) {
-          return reject(err);
-        } else {
-          return resolve(response);
-        }
-      });
+    return req(options);
+  }
+
+  authenticateWithToken(token) {
+    return req(this.getRequestOptions(token, '/api/v2/users.json'));
+  }
+
+  getRequestOptions(token, path, opts) {
+    return this.optionsForAuthenticatedRequest(token, {
+      url: this.urlForResource(path),
+      ...opts
     });
   }
 
-  async getSync(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/_private/sync.json')
-    });
-
-    return await req(options);
+  getResource(account, path, opts = {}) {
+    return req(this.getRequestOptions(account.token, path, opts));
   }
 
-  async getRoles(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/roles.json')
-    });
-
-    return await req(options);
+  getSync(account) {
+    return this.getResource(account, '/api/_private/sync.json');
   }
 
-  async getMemberships(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/memberships.json')
-    });
-
-    return await req(options);
+  getRoles(account) {
+    return this.getResource(account, '/api/v2/roles.json');
   }
 
-  async getForms(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/forms.json')
-    });
-
-    return await req(options);
+  getMemberships(account) {
+    return this.getResource(account, '/api/v2/memberships.json');
   }
 
-  async getChoiceLists(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/choice_lists.json')
-    });
-
-    return await req(options);
+  getForms(account) {
+    return this.getResource(account, '/api/v2/forms.json');
   }
 
-  async getClassificationSets(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/classification_sets.json')
-    });
-
-    return await req(options);
+  getChoiceLists(account) {
+    return this.getResource(account, '/api/v2/choice_lists.json');
   }
 
-  async getProjects(account) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/projects.json')
-    });
-
-    try {
-      return await req(options);
-    } catch (ex) {
-      console.log(ex);
-      console.log(ex.code === 'ETIMEDOUT');
-      console.log(ex.connect === true);
-      throw ex;
-    }
+  getClassificationSets(account) {
+    return this.getResource(account, '/api/v2/classification_sets.json');
   }
 
-  async getPhotos(account, sequence, perPage) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/photos.json')
-    });
+  getProjects(account) {
+    return this.getResource(account, '/api/v2/projects.json');
+  }
 
-    options.qs = {
+  getPhotos(account, sequence, perPage) {
+    const qs = {
       per_page: perPage,
       sequence: sequence || 0,
       full: '1'
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/photos.json', {qs});
   }
 
-  async getVideos(account, sequence, perPage) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/videos.json')
-    });
-
-    options.qs = {
+  getVideos(account, sequence, perPage) {
+    const qs = {
       per_page: perPage,
       sequence: sequence || 0,
       full: '1'
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/videos.json', {qs});
   }
 
-  async getAudio(account, sequence, perPage) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/audio.json')
-    });
-
-    options.qs = {
+  getAudio(account, sequence, perPage) {
+    const qs = {
       per_page: perPage,
       sequence: sequence || 0,
       full: '1'
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/audio.json', {qs});
   }
 
-  async getSignatures(account, sequence, perPage) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/signatures.json')
-    });
-
-    options.qs = {
+  getSignatures(account, sequence, perPage) {
+    const qs = {
       per_page: perPage,
       sequence: sequence || 0,
       full: '1'
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/signatures.json', {qs});
   }
 
-  async getChangesets(account, sequence, perPage) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/changesets.json')
-    });
-
-    options.qs = {
+  getChangesets(account, sequence, perPage) {
+    const qs = {
       per_page: perPage,
       sequence: sequence || 0,
       counts: '0'
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/changesets.json', {qs});
   }
 
   getQueryURL(account, sql) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/query')
-    });
-
-    options.qs = {
+    const qs = {
       q: sql,
       format: 'jsonseq',
       arrays: 1
     };
 
-    return options;
+    return this.getRequestOptions(account.token, '/api/v2/query', {qs});
   }
 
   getPhotoURL(account, media) {
@@ -210,12 +160,8 @@ class Client {
     return this.urlForResource(`/api/v2/videos/${ media.id }/track.json?token=${account.token}`);
   }
 
-  async getVideoTrack(account, media) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource(`/api/v2/videos/${ media.id }/track.json?token=${account.token}`)
-    });
-
-    return await req(options);
+  getVideoTrack(account, media) {
+    return this.getResource(account, `/api/v2/videos/${ media.id }/track.json`);
   }
 
   getAudioURL(account, media) {
@@ -226,12 +172,8 @@ class Client {
     return this.urlForResource(`/api/v2/audio/${ media.id }/track.json?token=${account.token}`);
   }
 
-  async getAudioTrack(account, media) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource(`/api/v2/audio/${ media.id }/track.json?token=${account.token}`)
-    });
-
-    return await req(options);
+  getAudioTrack(account, media) {
+    return this.getResource(account, `/api/v2/audio/${ media.id }/track.json`);
   }
 
   getSignatureURL(account, media) {
@@ -246,33 +188,25 @@ class Client {
     });
   }
 
-  async getRecords(account, form, sequence, pageSize) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/records.json')
-    });
-
-    options.qs = {
+  getRecords(account, form, sequence, pageSize) {
+    const qs = {
       form_id: form.id,
       per_page: pageSize,
       sequence: sequence || 0
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/records.json', {qs});
   }
 
-  async getRecordsHistory(account, form, sequence, pageSize) {
-    const options = this.optionsForRequest(account, {
-      url: this.urlForResource('/api/v2/records/history.json')
-    });
-
-    options.qs = {
+  getRecordsHistory(account, form, sequence, pageSize) {
+    const qs = {
       form_id: form.id,
       per_page: pageSize,
       extents: 0,
       sequence: sequence || 0
     };
 
-    return await req(options);
+    return this.getResource(account, '/api/v2/records/history.json', {qs});
   }
 }
 
