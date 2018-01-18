@@ -1,4 +1,4 @@
-import 'colors';
+import colors from 'colors';
 import yargs from 'yargs';
 import Account from '../models/account';
 import { DataSource } from 'fulcrum-core';
@@ -39,6 +39,10 @@ export default class CLI {
     this.app = app;
 
     this._yargs = yargs.env('FULCRUM');
+
+    if (this._yargs.argv.colors === false) {
+      colors.enabled = false;
+    }
 
     if (this.args.debugsql) {
       Database.debug = true;

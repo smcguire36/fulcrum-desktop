@@ -70,7 +70,9 @@ export default class Migrations {
   }
 
   log(message) {
-    return console.log(message);
+    if (process.env.FULCRUM_DEBUG) {
+      console.log(message);
+    }
   }
 
   async migrate() {

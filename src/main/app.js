@@ -25,14 +25,17 @@ class App {
     this._listeners = {};
     this._api = api;
 
-    this._appDirectory = paths.userData;
-    this._dotDirectory = path.join(os.homedir(), '.fulcrum');
+    const pathOverride = this.args.homePath;
 
-    mkdirp.sync(this._appDirectory);
-    mkdirp.sync(this._dotDirectory);
+    this._appPath = pathOverride || paths.userData;
+    this._homePath = pathOverride || path.join(os.homedir(), '.fulcrum');
+    this._dataPath = this.appPath('data');
+    this._pluginPath = this.path('plugins');
 
-    mkdirp.sync(path.join(this._appDirectory, 'data'));
-    mkdirp.sync(path.join(this._dotDirectory, 'plugins'));
+    mkdirp.sync(this._appPath);
+    mkdirp.sync(this._homePath);
+    mkdirp.sync(this._dataPath);
+    mkdirp.sync(this._pluginPath);
 
     this._environment = new Environment({app: this});
   }
@@ -53,20 +56,36 @@ class App {
     return this.yargs.argv;
   }
 
-  appDir(dir) {
-    return path.join(this._appDirectory, dir);
+  appPath(name) {
+    return path.join(this._appPath, name);
   }
 
-  dir(dir) {
-    return path.join(this._dotDirectory, dir);
+  appDir(name) {
+    return this.appPath(name);
+  }
+
+  path(name) {
+    return path.join(this._homePath, name);
+  }
+
+  dir(name) {
+    return this.path(name);
   }
 
   mkdirp(name) {
-    mkdirp.sync(this.dir(name));
+    mkdirp.sync(this.path(name));
+  }
+
+  get pluginPath() {
+    return this._pluginPath;
+  }
+
+  get dataPath() {
+    return this._dataPath;
   }
 
   get databaseFilePath() {
-    return path.join(this.appDir('data'), 'fulcrum.db');
+    return path.join(this.dataPath, 'fulcrum.db');
   }
 
   get db() {
@@ -120,7 +139,7 @@ class App {
   }
 
   async initializePlugins() {
-    const pluginPaths = glob.sync(path.join(this.dir('plugins'), '*'));
+    const pluginPaths = glob.sync(path.join(this.pluginPath, '*'));
 
     for (const pluginPath of pluginPaths) {
       const fullPath = path.resolve(pluginPath);
