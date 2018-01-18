@@ -11,8 +11,7 @@ query tables. It's intended to be the foundation for local/disconnected data syn
 
 ### Documentation
 
-* [Get Started](/docs/guides/installation.md)
-* [Documentation](/docs)
+http://developer.fulcrumapp.com/desktop/intro/
 
 ### Development
 
