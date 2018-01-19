@@ -1,5 +1,4 @@
 import path from 'path';
-import { execSync } from 'child_process';
 import pluginEnv from '../plugin-env';
 import git from '../git';
 import yarn from '../yarn';

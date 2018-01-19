@@ -7,6 +7,7 @@ import DownloadForms from './tasks/download-forms';
 import DownloadChangesets from './tasks/download-changesets';
 import DownloadAllRecords from './tasks/download-all-records';
 import app from '../app';
+import exec from '../utils/exec';
 
 import Client from '../api/client';
 
@@ -53,6 +54,10 @@ export default class Synchronizer {
     } while (this._tasks.length);
 
     await app.emit('sync:finish', {account});
+
+    if (app.args.afterSyncCommand) {
+      await exec(app.args.afterSyncCommand, null, 'after-sync');
+    }
 
     console.log('Synced', humanizeDuration(new Date().getTime() - start));
   }
