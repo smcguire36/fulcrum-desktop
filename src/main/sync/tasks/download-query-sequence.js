@@ -1,6 +1,5 @@
 import DownloadResource from './download-resource';
 import Client from '../../api/client';
-import request from 'request';
 import fs from 'fs';
 import tempy from 'tempy';
 import { parseFile } from '../../../jsonseq';
@@ -183,7 +182,7 @@ export default class DownloadQuerySequence extends DownloadResource {
 
   async downloadQuery(options, to) {
     return new Promise((resolve, reject) => {
-      const rq = request(options).pipe(fs.createWriteStream(to));
+      const rq = Client._request(options).pipe(fs.createWriteStream(to));
       rq.on('close', () => resolve(rq));
       rq.on('error', reject);
     });

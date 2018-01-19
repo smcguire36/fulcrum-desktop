@@ -20,6 +20,14 @@ class Client {
     return BASE_URL + resource;
   }
 
+  _request(options) {
+    return request({forever: true, ...options});
+  }
+
+  request(args) {
+    return req(args);
+  }
+
   optionsForAuthenticatedRequest(token, options) {
     const result = extend({}, defaultOptions, options);
 
@@ -42,11 +50,11 @@ class Client {
       headers: defaultOptions.headers
     };
 
-    return req(options);
+    return this.request(options);
   }
 
   authenticateWithToken(token) {
-    return req(this.getRequestOptions(token, '/api/v2/users.json'));
+    return this.request(this.getRequestOptions(token, '/api/v2/users.json'));
   }
 
   getRequestOptions(token, path, opts) {
@@ -57,7 +65,7 @@ class Client {
   }
 
   getResource(account, path, opts = {}) {
-    return req(this.getRequestOptions(account.token, path, opts));
+    return this.request(this.getRequestOptions(account.token, path, opts));
   }
 
   getSync(account) {
