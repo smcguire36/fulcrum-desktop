@@ -182,7 +182,7 @@ export default class DownloadQuerySequence extends DownloadResource {
 
   async downloadQuery(options, to) {
     return new Promise((resolve, reject) => {
-      const rq = Client._request(options).pipe(fs.createWriteStream(to));
+      const rq = Client.rawRequest(options).pipe(fs.createWriteStream(to));
       rq.on('close', () => resolve(rq));
       rq.on('error', reject);
     });

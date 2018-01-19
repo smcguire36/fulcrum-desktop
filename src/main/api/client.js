@@ -20,7 +20,7 @@ class Client {
     return BASE_URL + resource;
   }
 
-  _request(options) {
+  rawRequest(options) {
     return request({forever: true, ...options});
   }
 
