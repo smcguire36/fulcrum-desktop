@@ -24,8 +24,8 @@ class Client {
     return request({forever: true, ...options});
   }
 
-  request(args) {
-    return req(args);
+  request(options) {
+    return req(options);
   }
 
   optionsForAuthenticatedRequest(token, options) {
