@@ -23,6 +23,8 @@ export default function execute(command, options = {}, logPrefix = 'execute') {
         process.stderr.write(logPrefix.red + ' ' + data.toString());
       };
 
+      stdoutWrite(command + '\n');
+
       child.stdout.on('data', stdoutWrite);
       child.stderr.on('data', stderrWrite);
 

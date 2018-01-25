@@ -16,6 +16,7 @@ import humanizeDuration from 'humanize-duration';
 export default class Synchronizer {
   constructor() {
     this._tasks = [];
+    this._recordCount = 0;
   }
 
   addTask(task) {
@@ -26,8 +27,14 @@ export default class Synchronizer {
     return this._tasks.shift();
   }
 
+  incrementRecordCount() {
+    this._recordCount++;
+  }
+
   async run(account, formName, dataSource, {fullSync}) {
     const start = new Date().getTime();
+
+    this._recordCount = 0;
 
     const response = await Client.getSync(account);
 
@@ -56,9 +63,23 @@ export default class Synchronizer {
     await app.emit('sync:finish', {account});
 
     if (app.args.afterSyncCommand) {
-      await exec(app.args.afterSyncCommand, null, 'after-sync');
+      await exec(app.args.afterSyncCommand, this.afterSyncCommandOptions, 'after-sync');
     }
 
-    console.log('Synced', humanizeDuration(new Date().getTime() - start));
+    console.log('Synced'.green, humanizeDuration(new Date().getTime() - start));
+  }
+
+  get afterSyncCommandOptions() {
+    const options = {
+      changedRecordCount: this._recordCount,
+      args: app.args
+    };
+
+    return {
+      env: {
+        FULCRUM_PAYLOAD: JSON.stringify(options),
+        FULCRUM_CHANGED_RECORD_COUNT: options.recordCount
+      }
+    };
   }
 }

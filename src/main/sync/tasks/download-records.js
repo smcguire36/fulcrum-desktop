@@ -69,6 +69,7 @@ export default class DownloadRecords extends DownloadQuerySequence {
 
       if (isChanged) {
         this._hasChanges = true;
+        this.synchronizer.incrementRecordCount();
         await this.trigger('record:save', {record: object});
       }
     }
