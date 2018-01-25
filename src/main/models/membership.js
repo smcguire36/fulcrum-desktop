@@ -24,6 +24,10 @@ export default class Membership {
     return this._id;
   }
 
+  get updatedAt() {
+    return this._updatedAt;
+  }
+
   static get tableName() {
     return 'memberships';
   }
