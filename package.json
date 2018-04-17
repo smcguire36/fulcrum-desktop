@@ -178,7 +178,7 @@
     "delimit-stream": "^0.1.0",
     "ejs": "^2.4.1",
     "electron-log": "^2.2.3",
-    "electron-updater": "^1.14.2",
+    "electron-updater": "^2.21.4",
     "exif": "^0.6.0",
     "filesize": "^3.3.0",
     "fulcrum-core": "^0.10.7",
