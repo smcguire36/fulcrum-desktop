@@ -46,23 +46,25 @@ export default class DownloadForms extends DownloadResource {
     object.updateFromAPIAttributes(attributes);
     object._deletedAt = null;
 
-    await object.save();
+    await this.db.transaction(async (db) => {
+      await object.save({db});
 
-    const newForm = {
-      id: object.id,
-      row_id: object.rowID,
-      name: object._name,
-      elements: object._elementsJSON
-    };
+      const newForm = {
+        id: object.id,
+        row_id: object.rowID,
+        name: object._name,
+        elements: object._elementsJSON
+      };
 
-    const statements = await this.updateFormTables(oldForm, newForm);
+      const statements = await this.updateFormTables(db, oldForm, newForm);
 
-    if (isChanged) {
-      await this.triggerEvent('save', {form: object, account: this.account, statements, oldForm, newForm});
-    }
+      if (isChanged) {
+        await this.triggerEvent('save', {form: object, account: this.account, statements, oldForm, newForm});
+      }
+    });
   }
 
-  async updateFormTables(oldForm, newForm) {
+  async updateFormTables(db, oldForm, newForm) {
     let oldSchema = null;
     let newSchema = null;
 
@@ -86,11 +88,9 @@ export default class DownloadForms extends DownloadResource {
 
     const statements = generator.generate();
 
-    await this.db.transaction(async (db) => {
-      for (const statement of statements) {
-        await db.execute(statement);
-      }
-    });
+    for (const statement of statements) {
+      await db.execute(statement);
+    }
 
     return statements;
   }
