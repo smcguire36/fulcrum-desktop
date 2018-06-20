@@ -78,11 +78,9 @@ SELECT
   "record_id" AS "record_id",
   "content_type" AS "content_type",
   "file_size" AS "file_size",
-  "created_by"."name" AS "created_by",
-  "updated_by"."name" AS "updated_by"
+  NULL AS "created_by",
+  NULL AS "updated_by"
 FROM "signatures" AS "records"
-LEFT OUTER JOIN "memberships" AS "created_by" ON (("records"."created_by_id") = ("created_by"."user_id"))
-LEFT OUTER JOIN "memberships" AS "updated_by" ON (("records"."updated_by_id") = ("updated_by"."user_id"))
 WHERE
   "records".updated_at > '${sequenceString}'
 ORDER BY

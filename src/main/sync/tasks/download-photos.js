@@ -84,11 +84,9 @@ SELECT
   "latitude" AS "latitude",
   "longitude" AS "longitude",
   "exif" AS "exif",
-  "created_by"."name" AS "created_by",
-  "updated_by"."name" AS "updated_by"
+  NULL AS "created_by",
+  NULL AS "updated_by"
 FROM "photos" AS "records"
-LEFT OUTER JOIN "memberships" AS "created_by" ON (("records"."created_by_id") = ("created_by"."user_id"))
-LEFT OUTER JOIN "memberships" AS "updated_by" ON (("records"."updated_by_id") = ("updated_by"."user_id"))
 WHERE
   "records".updated_at > '${sequenceString}'
 ORDER BY

@@ -169,10 +169,10 @@ SELECT
   "_edited_duration" AS "edited_duration",
   "_updated_duration" AS "updated_duration",
   "_created_duration" AS "created_duration",
-  "created_by"."name" AS "created_by",
-  "updated_by"."name" AS "updated_by",
-  "assigned_to"."name" AS "assigned_to",
-  "project"."name" AS "project",
+  NULL AS "created_by",
+  NULL AS "updated_by",
+  NULL AS "assigned_to",
+  NULL AS "project",
   "_changeset_id" AS "changeset_id",
   "_created_latitude" AS "created_latitude",
   "_created_longitude" AS "created_longitude",
@@ -183,10 +183,6 @@ SELECT
   "_updated_altitude" AS "updated_altitude",
   "_updated_horizontal_accuracy" AS "updated_horizontal_accuracy"
 FROM "${ this.form.id }/_full" AS "records"
-LEFT OUTER JOIN "memberships" AS "created_by" ON (("records"."_created_by_id") = ("created_by"."user_id"))
-LEFT OUTER JOIN "memberships" AS "updated_by" ON (("records"."_updated_by_id") = ("updated_by"."user_id"))
-LEFT OUTER JOIN "memberships" AS "assigned_to" ON (("records"."_assigned_to_id") = ("assigned_to"."user_id"))
-LEFT OUTER JOIN "projects" AS "project" ON (("records"."_project_id") = ("project"."project_id"))
 WHERE
   _server_updated_at > '${sequenceString}'
 ORDER BY
