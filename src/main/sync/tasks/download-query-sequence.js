@@ -5,7 +5,7 @@ import tempy from 'tempy';
 import { parseFile } from '../../../jsonseq';
 import { format } from 'util';
 
-const QUERY_PAGE_SIZE = 20000;
+const QUERY_PAGE_SIZE = 5000;
 
 export default class DownloadQuerySequence extends DownloadResource {
   get useRestAPI() {
