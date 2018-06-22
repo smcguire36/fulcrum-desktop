@@ -951,13 +951,21 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
-babel-polyfill@^6.23.0, babel-polyfill@^6.9.0:
+babel-polyfill@^6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.23.0.tgz#8364ca62df8eafb830499f699177466c3b03499d"
   dependencies:
     babel-runtime "^6.22.0"
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
+
+babel-polyfill@^6.9.0:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
+  dependencies:
+    babel-runtime "^6.26.0"
+    core-js "^2.5.0"
+    regenerator-runtime "^0.10.5"
 
 babel-preset-env@^1.4.0:
   version "1.4.0"
@@ -1086,6 +1094,13 @@ babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.9.2:
   dependencies:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
+
+babel-runtime@^6.26.0:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
+  dependencies:
+    core-js "^2.4.0"
+    regenerator-runtime "^0.11.0"
 
 babel-template@^6.22.0, babel-template@^6.23.0, babel-template@^6.24.1:
   version "6.24.1"
@@ -1431,6 +1446,10 @@ convert-source-map@^1.1.0:
 core-js@^2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.4.1.tgz#4de911e667b0eae9124e34254b53aea6fc618d3e"
+
+core-js@^2.5.0:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.7.tgz#f972608ff0cead68b841a16a932d0b183791814e"
 
 core-util-is@~1.0.0:
   version "1.0.2"
@@ -2275,12 +2294,12 @@ fulcrum-query-sql@^0.0.69:
     moment-timezone "^0.5.11"
     pg-query-deparser "github:zhm/pg-query-deparser#master"
 
-fulcrum-schema@fulcrumapp/fulcrum-schema#v2:
-  version "1.17.0"
-  resolved "https://codeload.github.com/fulcrumapp/fulcrum-schema/tar.gz/31b89840da08132700f20e573a5ed0d890abb1b1"
+fulcrum-schema@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/fulcrum-schema/-/fulcrum-schema-2.0.3.tgz#a3883f6f9df35c34fe3e0223353633c1f3bf8921"
   dependencies:
     babel-polyfill "^6.9.0"
-    sqldiff "0.0.19"
+    sqldiff "^0.0.21"
     underscore "^1.8.3"
 
 function-bind@^1.0.2, function-bind@^1.1.0:
@@ -3765,6 +3784,14 @@ regenerator-runtime@^0.10.0:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.3.tgz#8c4367a904b51ea62a908ac310bf99ff90a82a3e"
 
+regenerator-runtime@^0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
+
+regenerator-runtime@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
+
 regenerator-runtime@^0.9.5:
   version "0.9.6"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.9.6.tgz#d33eb95d0d2001a4be39659707c51b0cb71ce029"
@@ -4120,9 +4147,9 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sqldiff@0.0.19, sqldiff@fulcrumapp/sqldiff#master:
-  version "0.0.19"
-  resolved "https://codeload.github.com/fulcrumapp/sqldiff/tar.gz/f0f609aad6a981b844f2eeab67a37a9c726e02ac"
+sqldiff@^0.0.21:
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.0.21.tgz#5ffdb090d18235179ad34a2ee01c541088367a24"
   dependencies:
     underscore "^1.7.0"
 
@@ -4449,9 +4476,13 @@ uid-number@^0.0.6, uid-number@~0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
 
-underscore@^1.7.0, underscore@^1.8.3:
+underscore@^1.7.0:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
+
+underscore@^1.8.3:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
 
 unique-string@^1.0.0:
   version "1.0.0"
