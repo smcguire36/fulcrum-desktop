@@ -63,6 +63,50 @@ RUN apt-get update -y && apt-get install -y \
       postgresql-client \
       libx11-xcb1
 
+# Install wkhtmltopdf
+RUN apt-get install -y \
+  zip \
+  xfonts-encodings \
+  xfonts-utils \
+  xfonts-base xfonts-75dpi
+
+RUN apt-get install -y \
+  xfonts-intl-european \
+  xfonts-intl-asian \
+  xfonts-intl-arabic \
+  xfonts-intl-chinese \
+  xfonts-intl-chinese-big \
+  xfonts-intl-japanese \
+  xfonts-intl-japanese-big \
+  xfonts-intl-phonetic \
+  xfonts-wqy \
+  xfonts-thai \
+  fonts-khmeros-core \
+  ttf-indic-fonts-core \
+  ttf-indic-fonts \
+  ttf-bengali-fonts \
+  ttf-devanagari-fonts \
+  ttf-gujarati-fonts \
+  ttf-kannada-fonts \
+  ttf-malayalam-fonts \
+  ttf-oriya-fonts \
+  ttf-punjabi-fonts \
+  ttf-tamil-fonts \
+  ttf-telugu-fonts \
+  ttf-wqy-microhei \
+  fonts-wqy-microhei \
+  fonts-lao \
+  fonts-droid
+
+ENV WKHTMLTOPDF_URL "http://zhm.s3.amazonaws.com/wkhtmltopdf/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb"
+ENV WKHTMLTOPDF_PATH /opt/wkhtmltopdf-build/wkhtmltopdf.deb
+
+RUN mkdir -p `dirname $WKHTMLTOPDF_PATH`
+RUN curl $WKHTMLTOPDF_URL > $WKHTMLTOPDF_PATH
+RUN fc-cache -f -v
+RUN dpkg --install $WKHTMLTOPDF_PATH
+RUN rm /opt/wkhtmltopdf-build/wkhtmltopdf.deb
+
 RUN VERSION=$( \
     curl -s "$GITHUB_FEED" | \
     grep '"name":' | \
