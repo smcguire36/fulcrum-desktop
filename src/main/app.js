@@ -29,7 +29,7 @@ class App {
 
     this._appPath = pathOverride || paths.userData;
     this._homePath = pathOverride || path.join(os.homedir(), '.fulcrum');
-    this._dataPath = this.appPath('data');
+    this._dataPath = this.args.dataPath || this.appPath('data');
     this._pluginPath = this.path('plugins');
 
     mkdirp.sync(this._appPath);
