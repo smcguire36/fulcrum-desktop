@@ -38,14 +38,16 @@ export default class CLI {
   async setup() {
     this.app = app;
 
-    this._yargs = yargs.env('FULCRUM');
-
-    if (this._yargs.argv.colors === false) {
+    if (this.args.colors === false) {
       colors.enabled = false;
     }
 
     if (this.args.debugsql) {
       Database.debug = true;
+    }
+
+    if (this.args.debug) {
+      console.log(this.args);
     }
 
     await this.app.initialize();
@@ -120,11 +122,11 @@ export default class CLI {
   }
 
   get yargs() {
-    return this._yargs;
+    return this.app.yargs;
   }
 
   get args() {
-    return yargs.argv;
+    return this.app.yargs.argv;
   }
 
   async fetchAccount(name) {

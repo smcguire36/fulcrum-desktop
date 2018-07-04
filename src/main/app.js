@@ -49,7 +49,10 @@ class App {
   }
 
   get yargs() {
-    return yargs;
+    if (!this._yargs) {
+      this._yargs = yargs.env('FULCRUM');
+    }
+    return this._yargs;
   }
 
   get args() {
