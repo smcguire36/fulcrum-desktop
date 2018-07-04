@@ -14,6 +14,7 @@ import WatchPlugins from './watch-plugins';
 import Sync from './sync';
 import Query from './query';
 import Reset from './reset';
+import Console from './console';
 import fulcrumPackage from '../../version';
 
 import { Database } from 'minidb';
@@ -31,7 +32,8 @@ const COMMANDS = [
   UpdatePlugins,
   BuildPlugins,
   WatchPlugins,
-  Query
+  Query,
+  Console
 ];
 
 export default class CLI {
