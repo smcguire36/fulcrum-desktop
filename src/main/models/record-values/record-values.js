@@ -34,9 +34,9 @@ export default class RecordValues {
 
     if (feature instanceof RepeatableItemValue) {
       // TODO(zhm) add public interface for accessing _element, like `get repeatableElement()`
-      tableName = this.tableNameWithForm(form, feature._element);
+      tableName = this.tableNameWithForm(form, feature._element, options);
     } else {
-      tableName = this.tableNameWithForm(form, null);
+      tableName = this.tableNameWithForm(form, null, options);
     }
 
     if (options.valuesTransformer) {
@@ -122,7 +122,7 @@ export default class RecordValues {
 
     const values = this.multipleValuesForFeature(feature, record);
 
-    const tableName = this.multipleValueTableNameWithForm(form);
+    const tableName = this.multipleValueTableNameWithForm(form, options);
 
     let parentResourceId = null;
 
@@ -358,60 +358,64 @@ export default class RecordValues {
     return db.deleteStatement(tableName, {});
   }
 
-  static deleteForRecordStatements(db, record, form) {
+  static deleteForRecordStatements(db, record, form, options) {
     const repeatables = form.elementsOfType('Repeatable');
 
     const statements = [];
 
-    let tableName = this.tableNameWithForm(form, null);
+    let tableName = this.tableNameWithForm(form, null, options);
 
     statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
 
     for (const repeatable of repeatables) {
-      tableName = this.tableNameWithForm(form, repeatable);
+      tableName = this.tableNameWithForm(form, repeatable, options);
 
       statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
     }
 
-    tableName = this.multipleValueTableNameWithForm(form);
+    tableName = this.multipleValueTableNameWithForm(form, options);
 
     statements.push(this.deleteRowsForRecordStatement(db, record, tableName));
 
     return statements;
   }
 
-  static deleteForFormStatements(db, form) {
+  static deleteForFormStatements(db, form, options) {
     const repeatables = form.elementsOfType('Repeatable');
 
     const statements = [];
 
-    let tableName = this.tableNameWithForm(form, null);
+    let tableName = this.tableNameWithForm(form, null, options);
 
     statements.push(this.deleteRowsStatement(db, tableName));
 
     for (const repeatable of repeatables) {
-      tableName = this.tableNameWithForm(form, repeatable);
+      tableName = this.tableNameWithForm(form, repeatable, options);
 
       statements.push(this.deleteRowsStatement(db, tableName));
     }
 
-    tableName = this.multipleValueTableNameWithForm(form);
+    tableName = this.multipleValueTableNameWithForm(form, options);
 
     statements.push(this.deleteRowsStatement(db, tableName));
 
     return statements;
   }
 
-  static multipleValueTableNameWithForm(form) {
-    return format('account_%s_form_%s_values', form._accountRowID, form.rowID);
+  static multipleValueTableNameWithForm(form, options) {
+    const prefix = options && options.schema ? options.schema + '.' : '';
+
+    return format('%saccount_%s_form_%s_values', prefix, form._accountRowID, form.rowID);
   }
 
-  static tableNameWithForm(form, repeatable) {
+  static tableNameWithForm(form, repeatable, options) {
+    const prefix = options && options.schema ? options.schema + '.' : '';
+
     if (repeatable == null) {
-      return format('account_%s_form_%s', form._accountRowID, form.rowID);
+      return format('%saccount_%s_form_%s', prefix, form._accountRowID, form.rowID);
     }
 
-    return format('account_%s_form_%s_%s', form._accountRowID, form.rowID, repeatable.key);
+    return format('%saccount_%s_form_%s_%s', prefix, form._accountRowID, form.rowID, repeatable.key);
   }
 
   static setupSearch(values, feature) {
