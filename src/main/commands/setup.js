@@ -31,7 +31,13 @@ export default class {
     return cli.command({
       command: 'setup',
       desc: 'setup the local fulcrum database',
-      builder: {},
+      builder: {
+        org: {
+          desc: 'organization name',
+          required: true,
+          type: 'string'
+        }
+      },
       handler: this.runCommand
     });
   }
@@ -78,26 +84,38 @@ export default class {
 
       console.log(('Successfully authenticated with ' + user.email).green);
 
-      for (let context of user.contexts) {
-        const contextAttributes = {
-          user_resource_id: user.id,
-          organization_resource_id: context.id
-        };
+      const context = user.contexts.find(o => o.name === fulcrum.args.org);
 
-        const db = fulcrum.db;
-
-        const account = await Account.findOrCreate(db, contextAttributes);
-
-        account._organizationName = context.name;
-        account._firstName = user.first_name;
-        account._lastName = user.last_name;
-        account._email = user.email;
-        account._token = context.api_token;
-
-        await account.save();
-
-        console.log('✓'.green, context.name);
+      if (!context) {
+        console.error(`Organization ${ fulcrum.args.org } not found for this account.`.red);
+        return false;
       }
+
+      const isOwner = context.role.name === 'Owner' && context.role.is_system;
+
+      if (!isOwner) {
+        console.error(`This account is not an owner of ${ fulcrum.args.org }. You must be an account owner to use Fulcrum Desktop.`.red);
+        return false;
+      }
+
+      const contextAttributes = {
+        user_resource_id: user.id,
+        organization_resource_id: context.id
+      };
+
+      const db = fulcrum.db;
+
+      const account = await Account.findOrCreate(db, contextAttributes);
+
+      account._organizationName = context.name;
+      account._firstName = user.first_name;
+      account._lastName = user.last_name;
+      account._email = user.email;
+      account._token = context.api_token;
+
+      await account.save();
+
+      console.log('✓'.green, context.name);
 
       return true;
     } else {

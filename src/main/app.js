@@ -185,7 +185,7 @@ class App {
       where.organization_name = name;
     }
 
-    const accounts = await Account.findAll(this.db, where);
+    const accounts = await Account.findAll(this.db, where, 'updated_at DESC');
 
     return accounts[0];
   }
