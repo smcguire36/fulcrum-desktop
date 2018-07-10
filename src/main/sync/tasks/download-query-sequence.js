@@ -128,7 +128,12 @@ export default class DownloadQuerySequence extends DownloadResource {
       await new Promise((resolve, reject) => {
         const onObject = (json, done) => {
           if (json.row) {
-            this.processQueryObject(json, database, (object) => {
+            this.processQueryObject(json, database, (err, object) => {
+              if (err) {
+                console.error('Error', err.message, err.stack);
+                return done(err);
+              }
+
               lastObject = object;
               this.progress({message: this.processing + ' ' + this.syncLabel.blue, count: index + 1, total: -1});
               ++index;
@@ -167,7 +172,7 @@ export default class DownloadQuerySequence extends DownloadResource {
   }
 
   processQueryObject(attributes, database, done) {
-    this.processObjectAsync(attributes, database).then(done).catch(done);
+    this.processObjectAsync(attributes, database).then(o => done(null, o)).catch(done);
   }
 
   async processObjectAsync(json, database) {
